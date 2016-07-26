@@ -1,0 +1,879 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=7"/>
+<title> 记事狗微博二次注射漏洞 | WooYun-2013-43394 | WooYun.org </title>
+<meta name="author" content="80sec"/>
+<meta name="copyright" content="http://www.wooyun.org/"/>
+<meta name="keywords" content="杭州神话漏洞,Chora,SQL注射漏洞,wooyun,应用安全,web安全,系统安全,网络安全,漏洞公布,漏洞报告,安全资讯。"/>
+<meta name="description" content="这个漏洞可以写个自动化攻击程序，但是混口饭吃而已，认真你就输了。。。建议贵公司把最新补丁打包到源码安装包里面，不然上次的漏洞有详细利用方法，新用户会受到牵连。
+官方下的版本，然后去你们官方博客里找了最新的补丁都打上了。|WooYun是一个位于厂商和安全研究者之间的漏洞报告平台,注重尊重,进步,与意义"/>
+<link rel="icon" href="http://wooyun.org/favicon.ico" sizes="32x32" />
+<link href="../css/style.css?v=201501291909" rel="stylesheet" type="text/css"/>
+<script src="https://static.wooyun.org/static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+</head>
+
+<body id="bugDetail">
+
+<style>
+#myBugListTab { position:relative; display:inline; border:none }
+#myBugList { position:absolute; display:none; margin-left:309px; * margin-left:-60px; * margin-top:18px ; border:#c0c0c0 1px solid; padding:2px 7px; background:#FFF }
+#myBugList li { text-align:left }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	if ( $("#__cz_push_d_object_box__") ) {
+		$("script[src^='http://cip4.czpush.com/']").attr("src"," ").remove();
+		$("#__cz_push_d_object_box__").empty().remove();
+		$("a[id^='__czUnion_a']").attr("href","#").remove();
+	}
+
+	if ( $("#ooDiv") ) {
+		$("#ooDiv").empty().parent("div").remove();
+	}
+
+	$("#myBugListTab").toggle(
+		function(){
+			$("#myBugList").css("display","block");
+		},
+		function(){
+			$("#myBugList").css("display","none");
+		}
+	);
+
+	if ( $(window).scrollTop() > 120 ) {
+		$("#back-to-top").fadeIn(300);
+	} else {
+		$("#back-to-top").fadeOut(300);
+	} 
+
+	$(window).scroll(function(){
+		if ( $(window).scrollTop() > 120 ) {
+			$("#back-to-top").fadeIn(300);
+		} else {
+			$("#back-to-top").fadeOut(300);
+		} 
+	});
+
+	$("#back-to-top a").click(function() {
+		$('body,html').animate({scrollTop:0},300);
+		return false;
+	});
+
+	$("#go-to-comment a").click(function() {
+		var t = $("#replys").offset().top - 52;
+		$('body,html').animate({scrollTop:t},300);
+		return false;
+	});
+
+});
+
+function gofeedback(){
+	var bugid=$("#fbid").val();
+	if(bugid){
+		var url="/feedback.php?bugid="+bugid;
+	}else{
+		var url="/feedback.php"
+	}
+	window.open(url);
+}
+</script>
+
+	<div class="go-to-wrapper">
+		<ul class="go-to">
+		    <li id="go-to-comment" title="转到评论"><a href="wooyun-2013-043394#">转到评论</a></li>
+		    <li id="go-to-feedback" title="我要反馈"><a href="javascript:void(0)" onclick="gofeedback()">我要反馈</a></li>
+		    <li id="back-to-top" title="回到顶部"><a href="wooyun-2013-043394#">回到顶部</a></li>
+		</ul>
+	</div>
+	<div class="banner">
+		<div class="logo">
+		<h1>WooYun.org</h1>
+		<div class="weibo"><iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=1981622273&style=2&btn=red&dpc=1"></iframe>
+		</div>
+		<div class="wxewm">
+			<a class="ewmthumb" href="javascript:void(0)"><span><img src="https://static.wooyun.org/static/images/ewm.jpg"width="220" border="0"></span><img src="https://static.wooyun.org/static/images/weixin_30.png"width="22" border="0"></a>
+		</div>
+		</div>
+		
+				<div class="login">
+					<a href="http://wooyun.org/user.php?action=login">登录</a> | <a href="http://wooyun.org/user.php?action=register" class="reg">注册</a>
+				</div>
+				</div>
+
+	<div class="nav" id="nav_sc">
+		<ul>
+			<li><a href="http://wooyun.org/index.php">首页</a></li>
+			<li><a href="http://wooyun.org/corps/">厂商列表</a></li>
+			<li><a href="http://wooyun.org/whitehats/">白帽子</a></li>
+			<li><a href="http://wooyun.org/top/">乌云榜</a></li> 
+            <li><a href="http://wooyun.org/teams/">团队</a></li>
+            <li><a href="http://wooyun.org/bugs/">漏洞列表</a></li>
+			<li class="new"><a href="http://wooyun.org/bug/submit">提交漏洞</a></li>
+			<!--li><a href="/corp_actions">厂商活动</a></li-->
+			<!--<li><a target='_blank' href="http://security.wooyun.org/">安全中心</a></li>-->
+			<li><a href="http://summit.wooyun.org" target="_blank" style="color:rgb(246,172,110);font-size:14px;font-weight:blod">乌云峰会</a></li>
+			<!--li><a href="/job/">企业招聘</a></li-->
+						<li><a href="http://job.wooyun.org" target="_blank">乌云招聘</a></li>
+						<li><a href="http://drops.wooyun.org" target="_blank">知识库</a></li>
+						<li><a href="http://wooyun.org/notice/">公告</a></li>
+		</ul>
+        <form action="http://wooyun.org/searchbug.php" method="post" id="searchbox">
+            <input type="text" name="q" id="search_input" />
+            <input type="submit" value="搜索" id="search_button" />
+        </form>
+	</div>
+
+	<div class="bread" style="padding-top: 4px;">
+		<div style="float:left">当前位置：<a href="http://wooyun.org/index.php">WooYun</a> >> <a href="wooyun-2013-043394#">漏洞信息</a></div>
+			</div><script language="javascript">
+var _LANGJS = {"COMMENT_LIKE_SELF":"\u4e0d\u80fd\u81ea\u5df1\u8d5e\u81ea\u5df1\u7684\u8bc4\u8bba","COMMENT_LIKED":"\u5df2\u8d5e\u6b64\u8bc4\u8bba","COMMENT_NOT":"\u6b64\u8bc4\u8bba\u4e0d\u5b58\u5728","COMMENT_FILL":"\u8bf7\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","COMMENT_STAT":"\u8bc4\u8bba\u4e0d\u80fd\u4e3a\u7a7a","COMMENT_LOGIN":"\u767b\u9646\u540e\u624d\u80fd\u8bc4\u8bba","COMMENT_GOOD_DONE":"\u5df2\u8d5e\u8fc7\u6b64\u6761\u8bc4\u8bba","COMMENT_SELF":"\u4e0d\u80fd\u8bc4\u4ef7\u81ea\u5df1\u53d1\u5e03\u7684\u8bc4\u8bba","COMMENT_CLICK_FILL":"\u70b9\u51fb\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","FAIL":"\u64cd\u4f5c\u5931\u8d25","FAIL_MANAGE":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u4e0e\u7ba1\u7406\u5458\u8054\u7cfb","FAIL_NO_WHITEHATS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u767d\u5e3d\u5b50","FAIL_NO_CORPS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u5382\u5546","BUGS_CORPS_SELECT":"\u9009\u62e9\u5382\u5546(\u53ef\u8f93\u5165\u5173\u952e\u5b57\u641c\u7d22)","BUGS_CORPS_OTHER":"Other\/\u5176\u5b83\u5382\u5546","BUGS_CORPS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u7c7b\u578b","BUGS_CORPS_NAME_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u540d\u79f0","BUGS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u7c7b\u578b\uff0c\u4e71\u9009\u6263\u5206","BUGS_TITLE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u6807\u9898","BUGS_HARMLEVEL_STAT":"\u8be5\u6f0f\u6d1e\u7684\u5371\u5bb3\u7b49\u7ea7","BUGS_DESCRIPTION_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u7b80\u8981\u63cf\u8ff0\uff0c\u53ef\u4ee5\u7b80\u5355\u63cf\u8ff0\u6f0f\u6d1e\u7684\u5371\u5bb3\u548c\u6210\u56e0\uff0c\u4e0d\u8981\u900f\u6f0f\u6f0f\u6d1e\u7684\u7ec6\u8282","BUGS_CONTENT_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u8be6\u7ec6\u63cf\u8ff0\uff0c\u8bf7\u5c3d\u91cf\u591a\u7684\u6df1\u5165\u7ec6\u8282\u4ee5\u65b9\u4fbf\u5bf9\u6f0f\u6d1e\u7684\u7406\u89e3\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_POC_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6982\u5ff5\u6027\u8bc1\u660e\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_PATCH_STAT":"\u5efa\u8bae\u7684\u6f0f\u6d1e\u4fee\u590d\u65b9\u6848\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_TEST_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6807\u51c6\u6d4b\u8bd5\u4ee3\u7801\u4ee5\u66f4\u4e3a\u65b9\u4fbf\u7684\u5bf9\u6f0f\u6d1e\u8fdb\u884c\u6d4b\u8bd5\u548c\u9a8c\u8bc1\uff0c\u6d4b\u8bd5\u4ee3\u7801\u5bf9\u5916\u9ed8\u8ba4\u4e0d\u663e\u793a\uff0c<br\/>\u5176\u4ed6\u767d\u5e3d\u5b50\u652f\u4ed8\u4e4c\u4e91\u5e01\u67e5\u770b\u540e\u4f60\u5c06\u83b7\u5f97\u989d\u5916\u4e4c\u4e91\u5e01\uff0c<br\/>\u540c\u65f6\u4e5f\u5c06\u5728\u4f60\u7684\u4e2a\u4eba\u9875\u9762\u4f53\u73b0\u4f60\u7684\u6d4b\u8bd5\u4ee3\u7801\u7f16\u5199\u80fd\u529b\u3002","BUGS_QUESTION_SELECT":"\u8bf7\u9009\u62e9\u95ee\u9898\u5382\u5546","BUGS_TITLE_NOTICE":"\u6f0f\u6d1e\u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a","BUGS_RANK_NOTICE1":"\u8bf7\u586b\u5199\u81ea\u8bc4Rank","BUGS_RANK_NOTICE2":"\u81ea\u8bc4Rank\u4e3a\u5927\u4e8e0\u7684\u6570\u5b57","BUGS_TYPE_SELECT":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7c7b\u578b","BUGS_TYPE_NOTICE":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u7c7b\u578b","BUGS_HARMLEVEL_SELECT":"\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_NOTICE":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_LOWER":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4f4e \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a1-5","BUGS_HARMLEVEL_MIDDLE":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4e2d \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a5-10","BUGS_HARMLEVEL_HIGH":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u9ad8 \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a10-20","BUGS_AREA_SELECT":"\u8bf7\u9009\u62e9\u5730\u533a\uff01","BUGS_DOMAILS":"\u6f0f\u6d1e\u6240\u5728\u57df\u540d(\u5982qq.com)","BUGS_DOMAIN_FILL":"\u8bf7\u586b\u5199\u57df\u540d\uff01","BUGS_DETAIL_MORE":"\u67e5\u770b\u8be6\u60c5","BUGS_IGNORE_DAYS":"\u8ddd\u6f0f\u6d1e\u5ffd\u7565\u8fd8\u6709","BUGS_CONFIRM_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb","BUGS":"\u6f0f\u6d1e","BUGS_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u5411\u516c\u4f17\u516c\u5f00\u8fd8\u6709","BUGS_IGNORE_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u672a\u786e\u8ba4\u65e0\u5f71\u54cd\u5ffd\u7565\u8fd8\u6709","BUGS_REPAIR_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb\u4fee\u590d\u6f0f\u6d1e","BUGS_HARMLEVEL_REMIND":"\u8bf7\u9009\u62e9\u5371\u5bb3\u7b49\u7ea7","BUGS_RANK_STAT":"rank\u4e3a1-20\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT1":"rank\u4e3a1-5\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT2":"rank\u4e3a5-10\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT3":"rank\u4e3a10-20\u7684\u6b63\u6574\u6570","BUGS_COMPLEMENT_REASON":"\u6dfb\u52a0\u5bf9\u6f0f\u6d1e\u7684\u8865\u5145\u8bf4\u660e\u4ee5\u53ca\u505a\u51fa\u8bc4\u4ef7\u7684\u7406\u7531","BUGS_REPLY_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u56de\u590d","BUGS_IGNORE_CONFIRM":"\u786e\u5b9a\u5ffd\u7565\u6b64\u6f0f\u6d1e\u5417","BUGS_STATUS_NEW_UPDATE":"\u66f4\u6539\u6f0f\u6d1e\u7684\u6700\u65b0\u72b6\u6001","BUGS_STATUS_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u72b6\u6001","BUGS_PUBLIC_ADVANCE":"\u786e\u5b9a\u63d0\u524d\u516c\u5f00\u6b64\u6f0f\u6d1e\u5417","BUGS_COUNT":"\u6f0f\u6d1e\u6570","BUGS_REPLY_HAT":"\u56de\u590d\u6b64\u4eba","BUGS_DELAY_CONFIRM":"\u786e\u5b9a\u8981\u5ef6\u671f\u4e48?","BUGS_DELAY":"\u7533\u8bf7\u5ef6\u671f","BUGS_DELAY_DONE":"\u5df2\u7ecf\u5ef6\u671f","BUGS_RISK_CONFIM":"\u786e\u5b9a\u6b64\u6f0f\u6d1e\u4e3a\u9ad8\u5371\u5417?","BUGS_NULL_EDITE":"\u7559\u7a7a\u8868\u793a\u4e0d\u4fee\u6539","BUGS_DONE_CONFIRM":"\u8be5\u64cd\u4f5c\u6682\u65f6\u4e0d\u53ef\u9006\uff0c\u786e\u5b9a\uff1f","BUGS_UPUBLIC":"\u4f60\u4ece\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_UPUBLIC1":"\u91cc\u53c8\u83b7\u5f97\u4e86","BUGS_PRECHECK":"\u6709\u4eba\u63d0\u524d\u67e5\u770b\u4e86\u4f60\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_PRECHECK_UNPUBLIC":"\u63d0\u524d\u67e5\u770b\u672a\u516c\u5f00\u6f0f\u6d1e","BUGS_NUM":"\u6f0f\u6d1e\u6570\u91cf","RANKAVG":"\u4eba\u5747\u8d21\u732e Rank","CAPTCHA_GET":"\u83b7\u53d6\u9a8c\u8bc1\u7801","CAPTCHA_FILL":"\u8bf7\u8f93\u5165\u56fe\u7247\u4e2d\u7684\u9a8c\u8bc1\u7801","CAPTCHA_NULL":"\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","CAPTCHA_ERROR":"\u9a8c\u8bc1\u7801\u8f93\u5165\u9519\u8bef","CAPTCHA_PHONE_ERROR":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u6b63\u786e","CAPTCHA_PHONE_SEND":"\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\u5230\u4f60\u7684\u624b\u673a\u4e0a\u8bf7\u6ce8\u610f\u67e5\u6536","CAPTCHA_SEND_AGAIN":"\u540e\u53ef\u91cd\u53d1","CAPTCHA_SEND_OVER":"\u77ed\u4fe1\u5df2\u53d1\u9001\u6210\u529f,\u9a8c\u8bc1\u7801\u533a\u5206\u5927\u5c0f\u5199","CAPTCHA_PHONE_NO":"\u4e0d\u9700\u8981\u77ed\u4fe1\u9a8c\u8bc1\u7801","CAPTCHA_PHONE_NULL":"\u77ed\u4fe1\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PHONE_TYPE_ERROR":"\u7535\u8bdd\u683c\u5f0f\u4e0d\u5bf9","PHONE_NOTING":"\u7535\u8bdd\u4e0d\u80fd\u4e3a\u7a7a","PHONE_FILL":"\u8bf7\u586b\u5199\u624b\u673a\u53f7","PHONE_CAPTCHA_NOTING":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_NOTING":"\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_CONFIRM_NOTING":"\u5bc6\u7801\u786e\u8ba4\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_PAY_LESS":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u5c11\u4e8e6\u4f4d","PASSWORD_FILL_DIFFERENT":"\u8f93\u5165\u7684\u4e24\u6b21\u5bc6\u7801\u4e0d\u4e00\u6837","PASSWORD_PAY_LOGIN_SAME":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u540c\u767b\u9646\u5bc6\u7801\u4e00\u6837","PASSWORD_PAY_FILL":"\u8bf7\u586b\u5199\u652f\u4ed8\u5bc6\u7801","PASSWORD_LENGH_LESS":"\u5bc6\u7801\u957f\u5ea6\u4e0d\u80fd\u5c0f\u4e8e6\u4f4d","PASSWORD_SEND_OK":"\u53d1\u9001\u5bc6\u7801\u90ae\u4ef6\u6210\u529f","PASSWORD_OFER_WRROR":"\u60a8\u63d0\u4f9b\u7684\u627e\u56de\u5bc6\u7801\u4fe1\u606f\u4e0d\u6b63\u786e","PASSWORD_OLD_ERROR":"\u539f\u5bc6\u7801\u9519\u8bef","PASSWORD_UPDATE_OK":"\u5bc6\u7801\u4fee\u6539\u6210\u529f","EMAILL_USED":"\u90ae\u7bb1\u5df2\u88ab\u5360\u7528","EMAILL_NULL":"\u90ae\u7bb1\u4e0d\u80fd\u4e3a\u7a7a\uff01","NOTING":"\u65e0","LEAVEWORDS_NULL":"\u7559\u8a00\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a","LOGIN_FIRST":"\u8bf7\u5148\u767b\u5f55","CONFIRM":"\u786e\u8ba4","YEAR":"\u5e74","DAYS":"\u5929","HOURS":"\u65f6","HOUR":"\u5c0f\u65f6","MINUTE":"\u5206","SECOND":"\u79d2","IS":"\u4e3a","ONE":"\u4e00","TWE":"\u4e8c","TIMES":"\u6b21","COUNTENT_UPDATE_FILL":"\u8bf7\u586b\u5199\u4fee\u6539\u5185\u5bb9","CANCLE":"\u53d6\u6d88","OPERATE_CONFIRM":"\u786e\u5b9a\u6b64\u64cd\u4f5c\u5417\uff1f","USERNAME":"\u59d3\u540d","SUCCESS":"\u64cd\u4f5c\u6210\u529f","FAIL_REPLY":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u586b\u5199\u56de\u590d\u4fe1\u606f","SEND_OK":"\u53d1\u9001\u6210\u529f","PHONE_BIND_DONE":"\u5df2\u7ed1\u5b9a","TAGS_USE":"\u4f7f\u7528\u6b64\u6807\u7b7e","WHITEHATS":"\u767d\u5e3d\u5b50","WHITEHATS_VERTIFY":"\u8ba4\u8bc1\u767d\u5e3d\u5b50","WHITEHATES_NAME":"\u8bf7\u8f93\u5165\u767d\u5e3d\u5b50\u7528\u6237\u540d","USER_ZONE_EDIT":"\u7f16\u8f91\u9886\u57df","WB_TRANSFER":"\u6211\u8981\u8f6c\u8d26","WB_TRANSFER_CANCEL":"\u53d6\u6d88\u8f6c\u8d26","WB_NUM":"\u8bf7\u8f93\u5165\u4e4c\u4e91\u5e01\u6570\u91cf","WB_NUMBER":"\u4e4c\u4e91\u5e01\u6570\u91cf\u4e3a\u6b63\u6574\u6570","WB_NEED_LESS":"\u81f3\u5c11\u9700\u8981","WB_NEED_SUM":"\u4e2a\u4e4c\u4e91\u5e01","WB_TRANSFER_OK":"\u8f6c\u8d26\u6210\u529f","WB_MY":"\u6211\u7684\u4e4c\u4e91\u5e01","WB_CAN_USE":"\u53ef\u7528\u7684\u4e4c\u4e91\u5e01","WB_FROZEN":"\u51bb\u7ed3\u7684\u4e4c\u4e91\u5e01","WB_LACK":"\u4e4c\u4e91\u5e01\u4e0d\u8db3","WB_SET_SCOPE":"\u51fa\u4ef7\u8303\u56f4\u4e3a","WB_BIND_CANCEL_STAT":"(\u70b9\u51fb\u201c\u53d6\u6d88\u7ed1\u5b9a\u201d\u83b7\u53d6\u9a8c\u8bc1\u7801\uff0c\u5411\u4e4c\u4e91\u516c\u4f17\u8d26\u53f7\u53d1\u9001\u9a8c\u8bc1\u7801\u53d6\u6d88\u5fae\u4fe1\u7ed1\u5b9a\uff0c\u7136\u540e\u5237\u65b0\u672c\u9875\u9762)","EMAIL_LOGIN_MEXT":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_UPDATE_LOGIN_MEXT":"\u66f4\u6539\u8bf7\u6c42\u5df2\u53d1\u9001\u5230\u90ae\u7bb1,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_SEND_OK":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f\uff01","CORPS":"\u5382\u5546","TEAM_NAME_NULL":"\u56e2\u961f\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","TEAM_HOMEPAGE_NULL":"\u56e2\u961f\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","TEAM_QQ_NULL":"\u56e2\u961fqq\u4e0d\u80fd\u4e3a\u7a7a","TEAM_BRIEF_NULL":"\u56e2\u961f\u7b80\u4ecb\u4e0d\u80fd\u4e3a\u7a7a","TEAM_EXIST":"\u56e2\u961f\u5df2\u5b58\u5728","TEAM_DISMISS_CONFIRM":"\u786e\u5b9a\u89e3\u6563\u672c\u56e2\u961f\u5417?","TEAM_NAME":"\u56e2\u961f\u540d\u79f0","TEAM_CREATER":"\u521b\u5efa\u4eba","TEAM_DONATER":"\u56e2\u961f\u4e3b\u529b","TEAM_MUMBER":"\u4eba\u6570","TEAM":"\u56e2\u961f","REGISTER_BRIEF":"*\u8bf7\u8f93\u5165\u4e2a\u4eba\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_TYPE":"*\u9009\u62e9\u6ce8\u518c\u7c7b\u578b","REGISTER_CORPS_BRIEF":"*\u8f93\u5165\u5382\u5546\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_EMAIL":"*\u5382\u5546\u90ae\u4ef6\u5fc5\u987b\u4e3a\u4f01\u4e1a\u4f7f\u7528\u7684\u6b63\u5f0f\u90ae\u4ef6","REGISTER_NAME_NULL":"\u7528\u6237\u540d\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_HOMEPAGE_NULL":"\u4e2a\u4eba\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_BREIF_NULL":"\u7b80\u8981\u4ecb\u7ecd\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPNAME_NULL":"\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPHOMEPAGE_NULL":"\u5b98\u65b9\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_LAW_AGREE":"\u540c\u610f\u300a\u4fe1\u606f\u5b89\u5168\u76f8\u5173\u4fdd\u62a4\u548c\u58f0\u660e\u300b\u624d\u80fd\u6ce8\u518c","ATTENTION":"\u5173\u6ce8","ATTENTION_SUM":"\u5173\u6ce8\u6570","ATTENTION_DONE":"\u5df2\u5173\u6ce8","ATTENTION_CANCEL":"\u53d6\u6d88\u5173\u6ce8","ATTENTION_BUG_DONE":"\u5df2\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u5173\u6ce8","ATTENTION_BUG":"\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_UNDO":"\u6ca1\u6709\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_HAT_DONE":"\u5df2\u5173\u6ce8\u6b64\u767d\u5e3d\u5b50","ATTENTION_HAT_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u767d\u5e3d\u5b50\u7684\u5173\u6ce8?","COLLECTION":"\u6536\u85cf","COLLECTION_DONE":"\u5df2\u6536\u85cf","COLLECTION_BUG_DONE":"\u5df2\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_UNDO":"\u6ca1\u6709\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u6536\u85cf","SMS_SEND_NAME":"* \u7528\u6237\u6635\u79f0\/\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_TITLE":"* \u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CONTENT":"* \u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CAPTCHA":"* \u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a<br \/>","NUMBER":"\u7684\u6b63\u6574\u6570","RATING_SUCCESS":"\u8bc4\u5206\u6210\u529f","RATING_BUGS_DONE":"\u5df2\u5bf9\u6b64\u6f0f\u6d1e\u8fdb\u884c\u8fc7\u8bc4\u5206","RATING_BUGS_SELF":"\u4e0d\u80fd\u5bf9\u81ea\u5df1\u53d1\u5e03\u7684\u6f0f\u6d1e\u8fdb\u884c\u8bc4\u5206","RATING_SUBMIT_CANCLE":"\u53d6\u6d88\u63d0\u4ea4\u8bc4\u5206","RATING_SUBMIT":"\u63d0\u4ea4\u6211\u7684\u8bc4\u5206","RATING_SUBMIT_CHECK":"\u8bf7\u786e\u5b9a\u6bcf\u4e00\u9879\u90fd\u9009\u62e9\u4e86\u8bc4\u5206","RATING_CONFIRM":"\u786e\u5b9a\u63d0\u4ea4\u5bf9\u6b64\u5382\u5546\u7684\u8bc4\u5206\u5417\uff1f","RATING_LOGIN":"\u53ea\u6709\u767b\u5f55\u7684\u767d\u5e3d\u5b50\u624d\u80fd\u8bc4\u5206","RATING_DONE":"\u5df2\u7ecf\u8bc4\u8fc7\u5206\u4e86","WOOYUN_CORPS":"\u4e4c\u4e91\u5382\u5546","MARST_IMAGE":"\u5bf9\u56fe\u7247\u6253\u7801","FEEDBACK_LINK_NULL":"\u94fe\u63a5\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_LINK_ERROR":"\u8bf7\u4e66\u5199\u6b63\u786e\u7684\u94fe\u63a5\u5730\u5740\uff01","FEEDBACK_CONTENT_NULL":"\u95ee\u9898\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_ALLOW_LIMIT":"\u534a\u5c0f\u65f6\u53ea\u5141\u8bb8\u53cd\u9988\u4e00\u6b21","TOP_RANK":"\u6392\u540d","TOP_BUG_TITLE":"\u6f0f\u6d1e\u6807\u9898","TOP_RANK_NONE":"\u6682\u65e0\u6392\u540d","TOP_BUGS_GOOD":"\u4f18\u8d28\u6f0f\u6d1e\u6570","NICKNAME":"\u6635\u79f0","LEVEL":"\u7b49\u7ea7","VALUE":"\u503c","EDITOR_INSERT_PIC":"\u63d2\u5165\u56fe\u7247","EDITOR_PIC_ADDR":"\u5730\u5740\uff1a","EDITOR_CONFIRM":"\u786e\u5b9a","EDITOR_PIC_NULL":"\u8bf7\u4e0a\u4f20\u56fe\u7247\u6216\u586b\u5199\u56fe\u7247\u5730\u5740","EDITOR_INSERT_VIDIO":"\u63d2\u5165\u89c6\u9891","EDITOR_VIDIO_ADDR":"\u89c6\u9891\u5730\u5740\uff1a","EDITOR_VIDIO_NULL":"\u8bf7\u586b\u5199\u89c6\u9891\u5730\u5740(.swf)","EDITOR_VIDIO_TYPE":"\u76ee\u524d\u4ec5\u652f\u6301.swf\u683c\u5f0f","PIC_SELECT":"\u8bf7\u9009\u62e9\u5f85\u4e0a\u4f20\u7684\u56fe\u7247","PIC_TYPE_IS":"\u56fe\u7247\u7c7b\u578b\u4e3a","UPLOAD":"\u4e0a\u4f20","RANK_AVG":"\u6f0f\u6d1e\u5e73\u5747"};
+
+$(function(){
+    function getParamsOfShareWindow(width, height) {
+        return ['toolbar=0,status=0,resizable=1,width=' + width + ',height=' + height + ',left=',(screen.width-width)/2,',top=',(screen.height-height)/2].join('');
+    }
+});
+
+function errimg(img){
+	tmp=img.src;
+	nimg=tmp.replace("http://wooyun.org/","http://www.wooyun.org/");
+	img.src=nimg;
+	$(img).parent().attr('href',nimg);
+	img.onerror=null;
+}
+function AttendBug(id){
+	$.get('/ajaxdo.php',{module:'attendbug',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+		if(re==1){
+			$("#attention_num").html(parseInt($("#attention_num").html())+1);
+			$("#attend_action").html('√'+_LANGJS.ATTENTION_DONE+' <a class="btn" href="javascript:void(0)" onclick="AttendCancel('+id+')">'+_LANGJS.ATTENTION_CANCEL+'</a></span>');
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.ATTENTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function AttendCancel(id){
+	if(confirm(_LANGJS.ATTENTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{module:'attendcancel',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+			if(re==1){
+				$("#attention_num").html(parseInt($("#attention_num").html())-1);
+				$("#attend_action").html('<a class="btn" href="javascript:void(0)" onclick="AttendBug('+id+')">'+_LANGJS.ATTENTION_BUG+'</a></span>');
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+
+function CollectBug(id,token){
+	$.get('/ajaxdo.php',{'module':'collect','id':id,'token':token,'rid':Math.random()},function(re){
+		if(re==1){
+			$("#collection_num").html(parseInt($("#collection_num").html())+1);
+			$(".btn-fav").removeClass("fav-add");
+			$(".btn-fav").addClass("fav-cancel");
+			$(".btn-fav").unbind();
+			$(".btn-fav").click(function(){
+					CollectCancel(id,token);
+				});
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.COLLECTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function CollectCancel(id,token){
+	if(confirm(_LANGJS.COLLECTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{'module':'collectcancel','id':id,'token':token,'rid':Math.random()},function(re){
+			if(re==1){
+				$("#collection_num").html(parseInt($("#collection_num").html())-1);
+				$(".btn-fav").removeClass("fav-cancel");
+				$(".btn-fav").addClass("fav-add");
+				$(".btn-fav").unbind();
+				$(".btn-fav").click(function(){
+					CollectBug(id,token);
+				});
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+</script>
+
+	<div class="content">
+<input type="hidden" id="token" style="display:none" value="" />
+		<h2>漏洞概要
+						<span style="margin:0 0 0 580px; float:right; position:absolute; font-size:14px; font-weight:normal">关注数(<span id="attention_num">12</span>)
+		 <span id="attend_action">
+		 		 <a class="btn" href="javascript:void(0)" onclick="AttendBug(43394)">关注此漏洞</a></span>
+		 		 </span></h2>
+
+		<h3>缺陷编号：		<a href="wooyun-2013-043394">WooYun-2013-43394</a>
+			<input id="fbid" type="hidden" value="43394">
+					</h3>
+
+		<h3 class='wybug_title'>漏洞标题：		记事狗微博二次注射漏洞  										<img src="http://wooyun.org/images/m1.png" alt="" class="credit">
+					</h3>
+
+		<h3 class='wybug_corp'>相关厂商：		<a href="http://www.wooyun.org/corps/杭州神话">
+														杭州神话														</a>
+		</h3>
+
+		<h3 class='wybug_author'>漏洞作者：		<a href="http://www.wooyun.org/whitehats/Chora">Chora</a><img height="12" width="12" style="vertical-align:-2px;margin-left:2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" /></h3>
+		<h3 class='wybug_date'>提交时间：		2013-11-19 22:57</h3>
+				<h3 class='wybug_open_date'>公开时间：		2014-02-17 22:57</h3>
+		<h3 class='wybug_type'>漏洞类型：		SQL注射漏洞</h3>
+
+		<h3 class='wybug_level'>危害等级：		高</h3>
+				<h3>自评Rank：		20</h3>
+				<h3 class='wybug_status'>漏洞状态：
+															厂商已经确认
+																</h3>
+
+		<h3>漏洞来源：		<a href="http://www.wooyun.org">http://www.wooyun.org</a>，如有疑问或需要帮助请联系 help@wooyun.org</h3>
+		<h3>Tags标签：
+								无
+					
+</h3>
+		<h3>
+		<!-- Baidu Button BEGIN -->
+        <div id="share">
+        	<div style="float:right; margin-right:100px;font-size:12px">
+            <span class="fav-num"><a id="collection_num">1</a>人收藏</span>
+			<a style="text-decoration:none; font-size:12px" href="javascript:void(0)" class="fav-add btn-fav">收藏</a>
+<script type="text/javascript">
+var token="";
+var id="43394";
+
+$(".btn-fav").click(function(){ CollectBug(id,token); });
+
+</script>
+			</div>
+            <span style="float:left;">分享漏洞：</span>
+            <div id="bdshare" class="bdshare_b" style="line-height: 12px;"><img src="http://bdimg.share.baidu.com/static/images/type-button-5.jpg" />
+                <a class="shareCount"></a>
+            </div>
+        </div>
+        <!-- Baidu Button END -->
+    	</h3>
+		<hr align="center"/>
+
+		<h2>漏洞详情</h2>
+		<h3 class="detailTitle">披露状态：</h3>
+		<p class="detail" style="padding-bottom:0">
+					</p>
+		<p class="detail wybug_open_status">
+									2013-11-19：	细节已通知厂商并且等待厂商处理中<br/>
+									2013-11-21：	厂商已经确认，细节仅向厂商公开<br/>
+									2013-11-24：	细节向第三方安全合作伙伴开放（<a href="http://www.nsfocus.com.cn/" target="_blank">绿盟科技</a>、<a href="http://tangscan.com/" target="_blank">唐朝安全巡航</a>、<a href="http://www.silence.com.cn" target="_blank">无声信息</a>）<br/>
+									2014-01-15：	细节向核心白帽子及相关领域专家公开<br/>
+									2014-01-25：	细节向普通白帽子公开<br/>
+									2014-02-04：	细节向实习白帽子公开<br/>
+									2014-02-17：	细节向公众公开<br/>
+								</p>
+		<h3 class="detailTitle">简要描述：</h3>
+
+		<p class="detail wybug_description">这个漏洞可以写个自动化攻击程序，但是混口饭吃而已，认真你就输了。。。建议贵公司把最新补丁打包到源码安装包里面，不然上次的漏洞有详细利用方法，新用户会受到牵连。<br />
+官方下的版本，然后去你们官方博客里找了最新的补丁都打上了。</p>
+
+		
+						<h3 class="detailTitle">详细说明：</h3>
+    <div class='wybug_detail'>
+			<p class="detail">modules/member.mod.php<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>function DoRegister()<br />
+	{<br />
+		......<br />
+		/**<br />
+		 * 验证码检查<br />
+		 * 如果开启了注册验证码检查，就校验<br />
+		 */<br />
+		if ($this-&gt;Config[&#039;seccode_enable&#039;]&gt;1 &amp;&amp; $this-&gt;Config[&#039;seccode_register&#039;] &amp;&amp; $this-&gt;yxm_title &amp;&amp; $this-&gt;Config[&#039;seccode_pub_key&#039;] &amp;&amp; $this-&gt;Config[&#039;seccode_pri_key&#039;]) {<br />
+//我们可以看到用了&amp;&amp;而不是||，所以在这个页面注册根本不需要注册码，导致了自动化攻击的实现。<br />
+			$YinXiangMa_response=jlogic(&#039;seccode&#039;)-&gt;CheckYXM(@$_POST[&#039;add_YinXiangMa_challenge&#039;],@$_POST[&#039;add_YXM_level&#039;][0],@$_POST[&#039;add_YXM_input_result&#039;]);<br />
+			if($YinXiangMa_response != &quot;true&quot;){<br />
+				$this-&gt;Messager(&quot;验证码输入错误&quot;,-1);<br />
+			}<br />
+		}<br />
+		/* 邀请处理 */<br />
+		$inviter_member = array();<br />
+		$invite_code = ($this-&gt;Post[&#039;invite_code&#039;] ? $this-&gt;Post[&#039;invite_code&#039;] : $this-&gt;Get[&#039;invite_code&#039;]);<br />
+		$check_result = jsg_member_register_check_invite($invite_code);<br />
+<br />
+		if($regstatus[&#039;invite_enable&#039;] &amp;&amp; !$regstatus[&#039;normal_enable&#039;])<br />
+		{<br />
+			if(!$invite_code)<br />
+			{<br />
+				$this-&gt;Messager(&quot;本站目前需要有好友邀请链接才能注册。&lt;br&gt;&lt;br&gt;看看&lt;a href=\&quot;?mod=topic&amp;code=top\&quot;&gt;达人榜&lt;/a&gt;中有没有你认识的人，让他给你发一个好友邀请。&quot;, null);<br />
+			}<br />
+<br />
+			if(!$check_result)<br />
+			{<br />
+				$this-&gt;Messager(&quot;对不起，您访问的邀请链接不正确或者因邀请数已满而失效，请重新与邀请人索取链接。&quot;, null);<br />
+			}<br />
+		}<br />
+<br />
+		if($check_result[&#039;uid&#039;] &gt; 0)<br />
+		{<br />
+			$inviter_member = jsg_member_info($check_result[&#039;uid&#039;]);<br />
+		}<br />
+		if(!$inviter_member &amp;&amp; $this-&gt;Config[&#039;register_invite_input&#039;])<br />
+		{<br />
+			$inviter_member = jsg_member_info($this-&gt;Post[&#039;inviter_nickname&#039;], &#039;nickname&#039;);<br />
+		}<br />
+<br />
+		/* 接收变量 */<br />
+		$password = $this-&gt;Post[&#039;password&#039;];<br />
+		$email = $this-&gt;Post[&#039;email&#039;];<br />
+		$username = $nickname = $this-&gt;Post[&#039;nickname&#039;];<br />
+<br />
+		/* 密码过滤 */<br />
+		if(strlen($password) &lt; 5) {<br />
+			$this-&gt;Messager(&quot;密码过短，请设置至少5位&quot;,-1);<br />
+		}<br />
+		if($password != $this-&gt;Post[&#039;password2&#039;]) {<br />
+			$this-&gt;Messager(&quot;两次输入的密码不相同&quot;,-1);<br />
+		}<br />
+<br />
+		if($GLOBALS[&#039;_J&#039;][&#039;plugins&#039;][&#039;func&#039;][&#039;reg&#039;]) {<br />
+			hookscript(&#039;reg&#039;, &#039;funcs&#039;, array(&#039;param&#039; =&gt; $this-&gt;Post, &#039;step&#039; =&gt; &#039;check&#039;), &#039;reg&#039;);<br />
+		}<br />
+<br />
+		/* 进行注册 */<br />
+		$uid = jsg_member_register($nickname, $password, $email);//跟进0x01<br />
+......<br />
+	}</code></pre></fieldset><p class='detail'><br />
+<br />
+include/class/passport.class.php<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>function register($nickname, $password, $email, $username = &#039;&#039;, $ucuid = 0, $role_id = 0) {<br />
+		<br />
+......<br />
+		$nickname = trim(strip_tags($nickname));<br />
+		$jsg_result = $this-&gt;checkname($nickname, 1, $ucuid);//跟进<br />
+		if($jsg_result &lt; 1) {<br />
+			return $jsg_result;<br />
+......<br />
+		$timestamp = time();<br />
+		$sql_datas = array();<br />
+		$sql_datas[&#039;ucuid&#039;] 	= $ucuid;<br />
+		$sql_datas[&#039;salt&#039;]		= jsg_member_salt();<br />
+		$sql_datas[&#039;password&#039;]	= jsg_member_password($password, $sql_datas[&#039;salt&#039;]);<br />
+		$sql_datas[&#039;nickname&#039;]	= $nickname;<br />
+		$sql_datas[&#039;username&#039;]  = ($username ? $username : &#039;&#039;);<br />
+		$sql_datas[&#039;email&#039;] 	= $email;<br />
+		$sql_datas[&#039;role_type&#039;]	= &#039;normal&#039;;<br />
+		$sql_datas[&#039;role_id&#039;] 	= (int) ($GLOBALS[&#039;_J&#039;][&#039;config&#039;][&#039;reg_email_verify&#039;] ? $GLOBALS[&#039;_J&#039;][&#039;config&#039;][&#039;no_verify_email_role_id&#039;] : $GLOBALS[&#039;_J&#039;][&#039;config&#039;][&#039;normal_default_role_id&#039;]);<br />
+		$sql_datas[&#039;invitecode&#039;]= substr(md5(random(32)),-16);<br />
+		$sql_datas[&#039;regdate&#039;]	= $sql_datas[&#039;lastactivity&#039;] = $timestamp;<br />
+		$sql_datas[&#039;regip&#039;]		= $sql_datas[&#039;lastip&#039;] = $ip;<br />
+<br />
+				if ($GLOBALS[&#039;_J&#039;][&#039;config&#039;][&#039;extcredits_enable&#039;])<br />
+		{<br />
+			$credits = ConfigHandler::get(&#039;credits&#039;);<br />
+			foreach ($credits[&#039;ext&#039;] as $_k=&gt;$_v)<br />
+			{<br />
+				if ($_v[&#039;enable&#039;] &amp;&amp; $_v[&#039;default&#039;])<br />
+				{<br />
+					$sql_datas[$_k] = (int) $_v[&#039;default&#039;];<br />
+				}<br />
+			}<br />
+		}<br />
+<br />
+		<br />
+		DB::query(&quot;insert into `&quot; . TABLE_PREFIX . &quot;members` (`&quot; . implode(&quot;`,`&quot;, array_keys($sql_datas)) . &quot;`) values (&#039;&quot;.implode(&quot;&#039;,&#039;&quot;,$sql_datas).&quot;&#039;)&quot;); //这里入库。<br />
+......<br />
+	}<br />
+function checkname($username, $is_nickname = 0, $ucuid = 0, $check_exists = -1) {<br />
+		$username = trim(strip_tags($username));<br />
+<br />
+		<br />
+		$username_len = jstrlen($username);<br />
+		$ulmax = ($is_nickname &amp;&amp; true !== UCENTER ? 50 : 15);//50位足够利用，只要你的语句足够短，所以该例我用了一个回显的注入，而不是盲注，那样就能增加可用数量。<br />
+        $nickname_length = (int) $GLOBALS[&#039;_J&#039;][&#039;config&#039;][&#039;nickname_length&#039;];<br />
+        $is_nickname &amp;&amp; $ulmax = !$nickname_length ? $ulmax : ($nickname_length &gt;$ulmax ? $ulmax : $nickname_length);<br />
+<br />
+		if($username_len &lt; 3 || $username_len &gt; $ulmax)<br />
+		{<br />
+			return -1;<br />
+		}<br />
+<br />
+				if($ucuid &lt; 1)<br />
+		{<br />
+						if(is_numeric($username)) {<br />
+				return -1;<br />
+			}<br />
+<br />
+			<br />
+			if($is_nickname)<br />
+			{<br />
+												if(false != preg_match(&#039;~[\&lt;\&gt;\?\@\$\#\[\]\{\}\s]+~&#039;,$username)) //虽然过滤了空格跟其他字符，但是我们可以提交/**/来绕过。<br />
+				{<br />
+					return -1;<br />
+				}<br />
+							}<br />
+			else<br />
+			{<br />
+								if((false == preg_match(&#039;~^[\w\d\_]+$~&#039;,$username)))<br />
+				{<br />
+					return -1;<br />
+				}<br />
+			}<br />
+		}<br />
+......<br />
+	}</code></pre></fieldset><p class='detail'><br />
+<br />
+modules/ajax/pm.mod.php<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>function send()<br />
+	{<br />
+		$uid = intval($this-&gt;Post[&#039;uid&#039;]);<br />
+				$member = DB::fetch_first(&quot;SELECT nickname FROM &quot;.DB::table(&quot;members&quot;).&quot; WHERE uid=&#039;{$uid}&#039;&quot;);<br />
+		if (empty($member)) {<br />
+			Mobile::error(&quot;No User&quot;, 300);<br />
+		}<br />
+		$to_user = $member[&#039;nickname&#039;]; //出库<br />
+		$data = array(<br />
+			&#039;to_user&#039; =&gt; $to_user,<br />
+			&#039;message&#039; =&gt; trim($this-&gt;Post[&#039;message&#039;]),<br />
+		);<br />
+		$ret = $this-&gt;MyPmLogic-&gt;pmSend($data);//跟进0x02<br />
+		if ($ret == 0) {<br />
+			Mobile::success(&quot;Success&quot;);<br />
+		} else if ($ret == 1) {<br />
+			Mobile::error(&quot;Content not emtpy&quot;, 420);<br />
+		} else if ($ret == 2) {<br />
+			Mobile::error(&quot;Content not emtpy&quot;, 321);<br />
+		} else if (ret == 3) {<br />
+			Mobile::error(&quot;Content not emtpy&quot;, 321);<br />
+		}<br />
+		Mobile::error(&quot;Unkonw error&quot;, 250);<br />
+	}</code></pre></fieldset><p class='detail'><br />
+<br />
+include/logic/pm.logic.php 0x02<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>function pmSend($post,$suid=MEMBER_ID,$susername=MEMBER_NAME,$snickname=MEMBER_NICKNAME){<br />
+				if(jaccess(&#039;pm&#039;,&#039;send&#039;, $suid)==false) {<br />
+			return 6;<br />
+		}<br />
+<br />
+		$to_user_list=array();<br />
+		$f_rets = filter($post[&#039;message&#039;]);<br />
+		if($f_rets)<br />
+		{<br />
+			if($f_rets[&#039;error&#039;])<br />
+			{<br />
+				return $f_rets[&#039;msg&#039;];<br />
+			}<br />
+		}<br />
+<br />
+		$post[&#039;subject&#039;]=jhtmlspecialchars(trim($post[&#039;subject&#039;]));<br />
+		if($post[&#039;message&#039;]==&#039;&#039;)<br />
+		{<br />
+			return 1;<br />
+		}<br />
+		if ($post[&#039;buddy_list&#039;]==false &amp;&amp; $post[&#039;to_user&#039;]==&quot;&quot;)<br />
+		{<br />
+			return 2;<br />
+		}<br />
+<br />
+		if(trim($post[&#039;to_user&#039;])!=&#039;&#039;)<br />
+		{<br />
+			$in=$this-&gt;DatabaseHandler-&gt;BuildIn($post[&#039;to_user&#039;],&quot;nickname&quot;);<br />
+			<br />
+						$sql=&quot;<br />
+			SELECT<br />
+				`uid`,`username`,`nickname`,`notice_pm`,`email`,`email_checked`,`newpm`,`at_new`,`event_new`,`fans_new`,`vote_new`,`qun_new`,`dig_new`,`channel_new`,`comment_new`,`user_notice_time`,`lastactivity`<br />
+			FROM<br />
+				&quot;.TABLE_PREFIX.&#039;members&#039;.&quot;<br />
+			WHERE<br />
+				$in&quot;;<br />
+			$query = $this-&gt;DatabaseHandler-&gt;Query($sql);//引入引号进行注入。<br />
+<br />
+			while($row=$query-&gt;GetRow())<br />
+			{<br />
+......<br />
+	}</code></pre></fieldset><p class='detail'><br />
+<br />
+POST<br />
+<br />
+email=www@**.**.**.**&amp;password=12345&amp;password2=12345&amp;nickname=woo<br />
+<br />
+到<br />
+<br />
+http://localhost/jishigou/index.php?mod=member&amp;code=doregister<br />
+<br />
+先注册一个woo用户，用于回显。<br />
+<br />
+然后POST<br />
+<br />
+email=Chora@**.**.**.**&amp;password=12345&amp;password2=12345&amp;nickname=woo&#039;)and/**/1=1/**/and(&#039;1<br />
+<br />
+到<br />
+<br />
+http://localhost/jishigou/index.php?mod=member&amp;code=doregister<br />
+<br />
+引入注入语句。<br />
+<br />
+然后访问自己的主页，查看自己的UID。<br />
+<br />
+最后POST<br />
+<br />
+uid=你的UID&amp;message=wooyun<br />
+<br />
+到<br />
+<br />
+http://localhost/jishigou/mobile/ajax.php?mod=pm&amp;code=send<br />
+<br />
+出发注入。 </p>
+    </div>
+						
+			<h3 class="detailTitle">漏洞证明：</h3>
+      <div class='wybug_poc'>
+			<p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/192005357a1f9d062a8f19af28c0e5621f788e28.png" target="_blank"><img src="../upload/201311/192005357a1f9d062a8f19af28c0e5621f788e28.png" alt="1.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/19200546cde2fef71cf2a91499edef102a05895c.png" target="_blank"><img src="../upload/201311/19200546cde2fef71cf2a91499edef102a05895c.png" alt="2.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/1920055535559c407e7c30615755f1032fbfe9a1.png" target="_blank"><img src="../upload/201311/1920055535559c407e7c30615755f1032fbfe9a1.png" alt="3.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/19200608373ecc8ae554bf00e0df039240f4d930.png" target="_blank"><img src="../upload/201311/19200608373ecc8ae554bf00e0df039240f4d930.png" alt="4.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/1920061925dda8063a5f85263803a8c68729eac5.png" target="_blank"><img src="../upload/201311/1920061925dda8063a5f85263803a8c68729eac5.png" alt="5.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"></p><p class="detail usemasaic"><a href="../upload/201311/192006317c34746347dbe4cc265b9f42ef6f5669.png" target="_blank"><img src="../upload/201311/192006317c34746347dbe4cc265b9f42ef6f5669.png" alt="6.png" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"> </p>
+    </div>
+									<h3 class="detailTitle">修复方案：</h3>
+      <div class='wybug_patch'>
+			<p class="detail">包养不动了。。。 </p>
+    </div>
+													<h3 class="detailTitle">版权声明：转载请注明来源 <a style="font-weight:normal" href="http://www.wooyun.org/whitehats/Chora" title="Chora">Chora</a>@<a style="font-weight:normal" href="http://www.wooyun.org/bugs/wooyun-2010-043394" title="记事狗微博二次注射漏洞">乌云</a></h3>
+		<hr align="center"/>
+
+		
+			<h2 id="bugreply">漏洞回应</h2>
+      <div class='bug_result'>
+			
+				
+				
+															<h3 class="detailTitle">厂商回应：</h3>
+						<p class="detail">危害等级：高</p>
+						<p class="detail">漏洞Rank：15 </p>
+													<p class="detail">确认时间：2013-11-21 17:13</p>
+												<h3 class="detailTitle">厂商回复：</h3>
+						<p class="detail">非常感谢 Chora@乌云 的反馈，正在修理了。。。</p>
+					
+					<h3 class="detailTitle">最新状态：</h3>
+
+											<p class="detail">暂无</p>
+					
+				      </div>
+					
+		
+<hr align="center" />
+<script type="text/javascript">
+var bugid="43394";
+var bugRating="-3";
+var myRating="";
+var ratingCount="0";
+
+
+
+function ShowBugRating(k){
+	var ratingItems=$(".myrating span");
+	$.each(ratingItems,function(i,n){
+		var nk=parseInt($(n).attr("rel"));
+		if(nk<=k){
+			$(n).addClass("on");
+		}else{
+			$(n).removeClass("on");
+		}
+	});
+	$(".myrating span").hover(
+		function(){
+			$("#ratingShow").html($(this).attr("data-title"));
+		},
+		function(){
+			$("#ratingShow").html("");
+		}
+	);
+}
+$(document).ready(function(){
+	if(myRating==""){
+		var ratingItems=$(".myrating span");
+		$(".myrating span").hover(
+			function(){
+				$(this).addClass("hover");
+				var k=parseInt($(this).attr("rel"));
+				$.each(ratingItems,function(i,n){
+					var nk=parseInt($(n).attr("rel"));
+					if(nk<k) $(n).addClass("on");
+					if(nk>k) $(n).removeClass("on");
+				});
+				$("#ratingShow").html($(this).attr("data-title"));
+			},
+			function(){
+				$(this).removeClass("hover");
+				if($("#myRating").val()==""){
+					$.each(ratingItems,function(i,n){
+						$(n).removeClass("on");
+					});
+				}
+				$("#ratingShow").html("");
+			}
+		);
+
+		$(".myrating span").click(function(){
+			var rating=$(this).attr("rel");
+			var k=parseInt($(this).attr("rel"));
+			$.post("/ajaxdo.php?module=bugrating",{"id":bugid,"rating":rating,"token":$("#token").val()},function(re){
+				//消除操作绑定
+				$(".myrating span").unbind();
+				re=parseInt(re);
+				switch(re){
+					case 1:
+						$("#ratingShow").html(_LANGJS.RATING_SUCCESS);
+						$("#ratingSpan").html(parseInt($("#ratingSpan").html())+1);
+						$.each(ratingItems,function(i,n){
+							var nk=parseInt($(n).attr("rel"));
+							if(nk<=k){
+								$(n).addClass("on");
+							}else{
+								$(n).removeClass("on");
+							}
+						});
+						ShowBugRating(rating);
+						break;
+					case 2:
+						$("#ratingShow").html(_LANGJS.LOGIN_FIRST);
+						break;
+					case 4:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_DONE);
+						break;
+					case 6:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_SELF);
+						break;
+					default:break;
+				}
+			});
+		});
+	}else{
+		if(ratingCount>2){
+			ShowBugRating(bugRating);
+		}else{
+			ShowBugRating(-3);
+		}
+	}
+});
+
+</script>
+<h3 class="detailTitle">漏洞评价：</h3>
+<p class="detail">对本漏洞信息进行评价，以更好的反馈信息的价值，包括信息客观性，内容是否完整以及是否具备学习价值</p>
+		<h5 class="rating">
+		<div class="ratingText">漏洞评价<span>(共<span id="ratingSpan">0</span>人评价)</span>:</div>
+		<div class="myrating">
+			<span rel="-2" data-title="信息虚假或者没有任何自己的思考"></span>
+			<span rel="-1" data-title="内容不详并且漏洞信息评级及类型明显错误"></span>
+			<span rel="0" data-title="还可以，洞主继续努力"></span>
+			<span rel="1" data-title="信息完整，过程清晰，有截图有代码有视频有真相"></span>
+			<span rel="2" data-title="角度独特思路新颖值得学习"></span>
+			<div id="ratingShow">
+			登陆后才能进行评分			</div>
+		</div>
+		</h5>
+		<input type="hidden" id="myRating" value="" />
+
+<hr align="center" />
+<h2>评价</h2>
+
+<div id="replys" class="replys">
+	    <ol class="replylist">
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-11-20 10:24</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/小胖子">小胖子</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 核心白帽子 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:1878 漏洞数:129        | 不要患得患失，我羡慕你，但是我还是选择做...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="70545"></span>
+        <span class="liketext liketext_min"><span id="likenum_70545">1</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>哈哈哈，宝贝，不要生气了。那些不在补丁里说明来源感谢作者的公司都很无良，@xsser 通用型走起！？ </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">1#</span>
+                        <a title="回复 小胖子" href="javascript:void(0)" class="replyBtn" onclick="Reply('小胖子')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-11-20 12:27</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/xsser">xsser</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:297 漏洞数:17        | 当我又回首一切,这个世界会好吗?)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="70564"></span>
+        <span class="liketext liketext_min"><span id="likenum_70564">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@小胖子 搞起 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">2#</span>
+                        <a title="回复 xsser" href="javascript:void(0)" class="replyBtn" onclick="Reply('xsser')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-12-11 17:56</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/小胖子">小胖子</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 核心白帽子 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:1878 漏洞数:129        | 不要患得患失，我羡慕你，但是我还是选择做...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="73274"></span>
+        <span class="liketext liketext_min"><span id="likenum_73274">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>一口气看完了，宝贝，追踪动态参数真是个累人的活，xsser给你发了多少奖金来着？ </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">3#</span>
+                        <a title="回复 小胖子" href="javascript:void(0)" class="replyBtn" onclick="Reply('小胖子')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-12-11 20:04</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/Chora">Chora</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:377 漏洞数:25        | 生存、生活、生命。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="73296"></span>
+        <span class="liketext liketext_min"><span id="likenum_73296">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@小胖子 大宝贝，这是苦逼干的活啊，只够饭钱啊，哪像你众测搞这么多
+，还有小姐包。福利好啊求带。 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">4#</span>
+                        <a title="回复 Chora" href="javascript:void(0)" class="replyBtn" onclick="Reply('Chora')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-12-17 00:34</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/door">door</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:10 漏洞数:1        | 没什么说明)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="73842"></span>
+        <span class="liketext liketext_min"><span id="likenum_73842">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>能拿shell？希望帖个最新版拿shell的  </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">5#</span>
+                        <a title="回复 door" href="javascript:void(0)" class="replyBtn" onclick="Reply('door')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+            </ol><!-- replylist End -->
+</div><!-- replys End -->
+
+<div id="reply" class="reply">
+<a name="comment"></a>
+<p class="detail">
+登录后才能发表评论，请先 <a href="http://wooyun.org/user.php?action=login"><u>登录</u></a> 。
+</p>
+<script type="text/javascript">
+var masaic = '0';
+
+function CommentLike(id){
+	$.post("/ajaxdo.php?module=commentrating",{"id":id,"token":$("#token").val()},function(re){
+		re=parseInt(re);
+		switch(re){
+			case 1:
+				$("#likenum_"+id).html(parseInt($("#likenum_"+id).html())+1);
+				break;
+			case 4:
+				alert(_LANGJS.COMMENT_GOOD_DONE);
+				break;
+			case 6:
+				alert(_LANGJS.COMMENT_SELF);
+				break;
+			default:break;
+		}
+	});
+}
+$(document).ready(function(){
+	$(".likebox .likepre").click(function(){
+            CommentLike($(this).attr("rel"));
+        });
+});
+
+
+</script>
+<div>
+	</div>
+	<div id="footer">
+        <span class="copyright fleft">
+    		Copyright &copy; 2010 - 2015 <a href="wooyun-2013-043394#">wooyun.org</a>, All Rights Reserved
+    		<a href="http://www.miibeian.gov.cn/">京ICP备15041338号-1</a>
+    		<!--a href="http://sae.sina.com.cn" target="_blank"><img src="/images/sae_bottom_logo.png" title="Powered by Sina App Engine"></a-->
+    	</span>
+        <span class="other fright">
+                        <a href="http://wooyun.org/impression">行业观点</a>
+            · <a href="http://wooyun.org/lawer">法律顾问</a>
+            · <a href="http://wooyun.org/contactus">联系我们</a>
+            · <a href="http://wooyun.org/help">帮助</a>
+            · <a href="http://wooyun.org/about">关于</a>
+        </span>
+    </div>
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc12f88b5c1cd041a732dea597a5ec94c' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+    <script type="text/javascript" id="bdshare_js" data="type=button" ></script>
+    <script type="text/javascript" id="bdshell_js"></script>
+    <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+        
+        if (top.location !== self.location) top.location=self.location;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=7"/>
+<title> 敏感信息泄露系列#4 信息泄露导致91旗下安卓网2100万+用户信息告急 | WooYun-2013-39854 | WooYun.org </title>
+<meta name="author" content="80sec"/>
+<meta name="copyright" content="http://www.wooyun.org/"/>
+<meta name="keywords" content="福建网龙漏洞,猪猪侠,敏感信息泄露,wooyun,应用安全,web安全,系统安全,网络安全,漏洞公布,漏洞报告,安全资讯。"/>
+<meta name="description" content="通常由于没有一个通用标准的防御规则保护好中间件配置信息、DNS信息、业务数据信息、用户信息、源码备份文件、版本管理工具信息、系统错误信息和敏感地址信息(后台或测试地址)的泄露，攻击者可能会通过收集这些保护不足的数据，利用这些信息对系统实施进一步的攻击。
+
+有时候，一个微不足道的信息泄露问题就能造成整个企业安全的崩盘。
+#安全需顾全整体#|WooYun是一个位于厂商和安全研究者之间的漏洞报告平台,注重尊重,进步,与意义"/>
+<link rel="icon" href="http://wooyun.org/favicon.ico" sizes="32x32" />
+<link href="../css/style.css?v=201501291909" rel="stylesheet" type="text/css"/>
+<script src="https://static.wooyun.org/static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+</head>
+
+<body id="bugDetail">
+
+<style>
+#myBugListTab { position:relative; display:inline; border:none }
+#myBugList { position:absolute; display:none; margin-left:309px; * margin-left:-60px; * margin-top:18px ; border:#c0c0c0 1px solid; padding:2px 7px; background:#FFF }
+#myBugList li { text-align:left }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	if ( $("#__cz_push_d_object_box__") ) {
+		$("script[src^='http://cip4.czpush.com/']").attr("src"," ").remove();
+		$("#__cz_push_d_object_box__").empty().remove();
+		$("a[id^='__czUnion_a']").attr("href","#").remove();
+	}
+
+	if ( $("#ooDiv") ) {
+		$("#ooDiv").empty().parent("div").remove();
+	}
+
+	$("#myBugListTab").toggle(
+		function(){
+			$("#myBugList").css("display","block");
+		},
+		function(){
+			$("#myBugList").css("display","none");
+		}
+	);
+
+	if ( $(window).scrollTop() > 120 ) {
+		$("#back-to-top").fadeIn(300);
+	} else {
+		$("#back-to-top").fadeOut(300);
+	} 
+
+	$(window).scroll(function(){
+		if ( $(window).scrollTop() > 120 ) {
+			$("#back-to-top").fadeIn(300);
+		} else {
+			$("#back-to-top").fadeOut(300);
+		} 
+	});
+
+	$("#back-to-top a").click(function() {
+		$('body,html').animate({scrollTop:0},300);
+		return false;
+	});
+
+	$("#go-to-comment a").click(function() {
+		var t = $("#replys").offset().top - 52;
+		$('body,html').animate({scrollTop:t},300);
+		return false;
+	});
+
+});
+
+function gofeedback(){
+	var bugid=$("#fbid").val();
+	if(bugid){
+		var url="/feedback.php?bugid="+bugid;
+	}else{
+		var url="/feedback.php"
+	}
+	window.open(url);
+}
+</script>
+
+	<div class="go-to-wrapper">
+		<ul class="go-to">
+		    <li id="go-to-comment" title="转到评论"><a href="wooyun-2013-039854#">转到评论</a></li>
+		    <li id="go-to-feedback" title="我要反馈"><a href="javascript:void(0)" onclick="gofeedback()">我要反馈</a></li>
+		    <li id="back-to-top" title="回到顶部"><a href="wooyun-2013-039854#">回到顶部</a></li>
+		</ul>
+	</div>
+	<div class="banner">
+		<div class="logo">
+		<h1>WooYun.org</h1>
+		<div class="weibo"><iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=1981622273&style=2&btn=red&dpc=1"></iframe>
+		</div>
+		<div class="wxewm">
+			<a class="ewmthumb" href="javascript:void(0)"><span><img src="https://static.wooyun.org/static/images/ewm.jpg"width="220" border="0"></span><img src="https://static.wooyun.org/static/images/weixin_30.png"width="22" border="0"></a>
+		</div>
+		</div>
+		
+				<div class="login">
+					<a href="http://wooyun.org/user.php?action=login">登录</a> | <a href="http://wooyun.org/user.php?action=register" class="reg">注册</a>
+				</div>
+				</div>
+
+	<div class="nav" id="nav_sc">
+		<ul>
+			<li><a href="http://wooyun.org/index.php">首页</a></li>
+			<li><a href="http://wooyun.org/corps/">厂商列表</a></li>
+			<li><a href="http://wooyun.org/whitehats/">白帽子</a></li>
+			<li><a href="http://wooyun.org/top/">乌云榜</a></li> 
+            <li><a href="http://wooyun.org/teams/">团队</a></li>
+            <li><a href="http://wooyun.org/bugs/">漏洞列表</a></li>
+			<li class="new"><a href="http://wooyun.org/bug/submit">提交漏洞</a></li>
+			<!--li><a href="/corp_actions">厂商活动</a></li-->
+			<!--<li><a target='_blank' href="http://security.wooyun.org/">安全中心</a></li>-->
+			<li><a href="http://summit.wooyun.org" target="_blank" style="color:rgb(246,172,110);font-size:14px;font-weight:blod">乌云峰会</a></li>
+			<!--li><a href="/job/">企业招聘</a></li-->
+						<li><a href="http://job.wooyun.org" target="_blank">乌云招聘</a></li>
+						<li><a href="http://drops.wooyun.org" target="_blank">知识库</a></li>
+						<li><a href="http://wooyun.org/notice/">公告</a></li>
+		</ul>
+        <form action="http://wooyun.org/searchbug.php" method="post" id="searchbox">
+            <input type="text" name="q" id="search_input" />
+            <input type="submit" value="搜索" id="search_button" />
+        </form>
+	</div>
+
+	<div class="bread" style="padding-top: 4px;">
+		<div style="float:left">当前位置：<a href="http://wooyun.org/index.php">WooYun</a> >> <a href="wooyun-2013-039854#">漏洞信息</a></div>
+			</div><script language="javascript">
+var _LANGJS = {"COMMENT_LIKE_SELF":"\u4e0d\u80fd\u81ea\u5df1\u8d5e\u81ea\u5df1\u7684\u8bc4\u8bba","COMMENT_LIKED":"\u5df2\u8d5e\u6b64\u8bc4\u8bba","COMMENT_NOT":"\u6b64\u8bc4\u8bba\u4e0d\u5b58\u5728","COMMENT_FILL":"\u8bf7\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","COMMENT_STAT":"\u8bc4\u8bba\u4e0d\u80fd\u4e3a\u7a7a","COMMENT_LOGIN":"\u767b\u9646\u540e\u624d\u80fd\u8bc4\u8bba","COMMENT_GOOD_DONE":"\u5df2\u8d5e\u8fc7\u6b64\u6761\u8bc4\u8bba","COMMENT_SELF":"\u4e0d\u80fd\u8bc4\u4ef7\u81ea\u5df1\u53d1\u5e03\u7684\u8bc4\u8bba","COMMENT_CLICK_FILL":"\u70b9\u51fb\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","FAIL":"\u64cd\u4f5c\u5931\u8d25","FAIL_MANAGE":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u4e0e\u7ba1\u7406\u5458\u8054\u7cfb","FAIL_NO_WHITEHATS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u767d\u5e3d\u5b50","FAIL_NO_CORPS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u5382\u5546","BUGS_CORPS_SELECT":"\u9009\u62e9\u5382\u5546(\u53ef\u8f93\u5165\u5173\u952e\u5b57\u641c\u7d22)","BUGS_CORPS_OTHER":"Other\/\u5176\u5b83\u5382\u5546","BUGS_CORPS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u7c7b\u578b","BUGS_CORPS_NAME_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u540d\u79f0","BUGS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u7c7b\u578b\uff0c\u4e71\u9009\u6263\u5206","BUGS_TITLE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u6807\u9898","BUGS_HARMLEVEL_STAT":"\u8be5\u6f0f\u6d1e\u7684\u5371\u5bb3\u7b49\u7ea7","BUGS_DESCRIPTION_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u7b80\u8981\u63cf\u8ff0\uff0c\u53ef\u4ee5\u7b80\u5355\u63cf\u8ff0\u6f0f\u6d1e\u7684\u5371\u5bb3\u548c\u6210\u56e0\uff0c\u4e0d\u8981\u900f\u6f0f\u6f0f\u6d1e\u7684\u7ec6\u8282","BUGS_CONTENT_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u8be6\u7ec6\u63cf\u8ff0\uff0c\u8bf7\u5c3d\u91cf\u591a\u7684\u6df1\u5165\u7ec6\u8282\u4ee5\u65b9\u4fbf\u5bf9\u6f0f\u6d1e\u7684\u7406\u89e3\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_POC_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6982\u5ff5\u6027\u8bc1\u660e\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_PATCH_STAT":"\u5efa\u8bae\u7684\u6f0f\u6d1e\u4fee\u590d\u65b9\u6848\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_TEST_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6807\u51c6\u6d4b\u8bd5\u4ee3\u7801\u4ee5\u66f4\u4e3a\u65b9\u4fbf\u7684\u5bf9\u6f0f\u6d1e\u8fdb\u884c\u6d4b\u8bd5\u548c\u9a8c\u8bc1\uff0c\u6d4b\u8bd5\u4ee3\u7801\u5bf9\u5916\u9ed8\u8ba4\u4e0d\u663e\u793a\uff0c<br\/>\u5176\u4ed6\u767d\u5e3d\u5b50\u652f\u4ed8\u4e4c\u4e91\u5e01\u67e5\u770b\u540e\u4f60\u5c06\u83b7\u5f97\u989d\u5916\u4e4c\u4e91\u5e01\uff0c<br\/>\u540c\u65f6\u4e5f\u5c06\u5728\u4f60\u7684\u4e2a\u4eba\u9875\u9762\u4f53\u73b0\u4f60\u7684\u6d4b\u8bd5\u4ee3\u7801\u7f16\u5199\u80fd\u529b\u3002","BUGS_QUESTION_SELECT":"\u8bf7\u9009\u62e9\u95ee\u9898\u5382\u5546","BUGS_TITLE_NOTICE":"\u6f0f\u6d1e\u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a","BUGS_RANK_NOTICE1":"\u8bf7\u586b\u5199\u81ea\u8bc4Rank","BUGS_RANK_NOTICE2":"\u81ea\u8bc4Rank\u4e3a\u5927\u4e8e0\u7684\u6570\u5b57","BUGS_TYPE_SELECT":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7c7b\u578b","BUGS_TYPE_NOTICE":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u7c7b\u578b","BUGS_HARMLEVEL_SELECT":"\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_NOTICE":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_LOWER":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4f4e \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a1-5","BUGS_HARMLEVEL_MIDDLE":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4e2d \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a5-10","BUGS_HARMLEVEL_HIGH":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u9ad8 \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a10-20","BUGS_AREA_SELECT":"\u8bf7\u9009\u62e9\u5730\u533a\uff01","BUGS_DOMAILS":"\u6f0f\u6d1e\u6240\u5728\u57df\u540d(\u5982qq.com)","BUGS_DOMAIN_FILL":"\u8bf7\u586b\u5199\u57df\u540d\uff01","BUGS_DETAIL_MORE":"\u67e5\u770b\u8be6\u60c5","BUGS_IGNORE_DAYS":"\u8ddd\u6f0f\u6d1e\u5ffd\u7565\u8fd8\u6709","BUGS_CONFIRM_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb","BUGS":"\u6f0f\u6d1e","BUGS_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u5411\u516c\u4f17\u516c\u5f00\u8fd8\u6709","BUGS_IGNORE_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u672a\u786e\u8ba4\u65e0\u5f71\u54cd\u5ffd\u7565\u8fd8\u6709","BUGS_REPAIR_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb\u4fee\u590d\u6f0f\u6d1e","BUGS_HARMLEVEL_REMIND":"\u8bf7\u9009\u62e9\u5371\u5bb3\u7b49\u7ea7","BUGS_RANK_STAT":"rank\u4e3a1-20\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT1":"rank\u4e3a1-5\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT2":"rank\u4e3a5-10\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT3":"rank\u4e3a10-20\u7684\u6b63\u6574\u6570","BUGS_COMPLEMENT_REASON":"\u6dfb\u52a0\u5bf9\u6f0f\u6d1e\u7684\u8865\u5145\u8bf4\u660e\u4ee5\u53ca\u505a\u51fa\u8bc4\u4ef7\u7684\u7406\u7531","BUGS_REPLY_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u56de\u590d","BUGS_IGNORE_CONFIRM":"\u786e\u5b9a\u5ffd\u7565\u6b64\u6f0f\u6d1e\u5417","BUGS_STATUS_NEW_UPDATE":"\u66f4\u6539\u6f0f\u6d1e\u7684\u6700\u65b0\u72b6\u6001","BUGS_STATUS_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u72b6\u6001","BUGS_PUBLIC_ADVANCE":"\u786e\u5b9a\u63d0\u524d\u516c\u5f00\u6b64\u6f0f\u6d1e\u5417","BUGS_COUNT":"\u6f0f\u6d1e\u6570","BUGS_REPLY_HAT":"\u56de\u590d\u6b64\u4eba","BUGS_DELAY_CONFIRM":"\u786e\u5b9a\u8981\u5ef6\u671f\u4e48?","BUGS_DELAY":"\u7533\u8bf7\u5ef6\u671f","BUGS_DELAY_DONE":"\u5df2\u7ecf\u5ef6\u671f","BUGS_RISK_CONFIM":"\u786e\u5b9a\u6b64\u6f0f\u6d1e\u4e3a\u9ad8\u5371\u5417?","BUGS_NULL_EDITE":"\u7559\u7a7a\u8868\u793a\u4e0d\u4fee\u6539","BUGS_DONE_CONFIRM":"\u8be5\u64cd\u4f5c\u6682\u65f6\u4e0d\u53ef\u9006\uff0c\u786e\u5b9a\uff1f","BUGS_UPUBLIC":"\u4f60\u4ece\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_UPUBLIC1":"\u91cc\u53c8\u83b7\u5f97\u4e86","BUGS_PRECHECK":"\u6709\u4eba\u63d0\u524d\u67e5\u770b\u4e86\u4f60\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_PRECHECK_UNPUBLIC":"\u63d0\u524d\u67e5\u770b\u672a\u516c\u5f00\u6f0f\u6d1e","BUGS_NUM":"\u6f0f\u6d1e\u6570\u91cf","RANKAVG":"\u4eba\u5747\u8d21\u732e Rank","CAPTCHA_GET":"\u83b7\u53d6\u9a8c\u8bc1\u7801","CAPTCHA_FILL":"\u8bf7\u8f93\u5165\u56fe\u7247\u4e2d\u7684\u9a8c\u8bc1\u7801","CAPTCHA_NULL":"\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","CAPTCHA_ERROR":"\u9a8c\u8bc1\u7801\u8f93\u5165\u9519\u8bef","CAPTCHA_PHONE_ERROR":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u6b63\u786e","CAPTCHA_PHONE_SEND":"\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\u5230\u4f60\u7684\u624b\u673a\u4e0a\u8bf7\u6ce8\u610f\u67e5\u6536","CAPTCHA_SEND_AGAIN":"\u540e\u53ef\u91cd\u53d1","CAPTCHA_SEND_OVER":"\u77ed\u4fe1\u5df2\u53d1\u9001\u6210\u529f,\u9a8c\u8bc1\u7801\u533a\u5206\u5927\u5c0f\u5199","CAPTCHA_PHONE_NO":"\u4e0d\u9700\u8981\u77ed\u4fe1\u9a8c\u8bc1\u7801","CAPTCHA_PHONE_NULL":"\u77ed\u4fe1\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PHONE_TYPE_ERROR":"\u7535\u8bdd\u683c\u5f0f\u4e0d\u5bf9","PHONE_NOTING":"\u7535\u8bdd\u4e0d\u80fd\u4e3a\u7a7a","PHONE_FILL":"\u8bf7\u586b\u5199\u624b\u673a\u53f7","PHONE_CAPTCHA_NOTING":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_NOTING":"\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_CONFIRM_NOTING":"\u5bc6\u7801\u786e\u8ba4\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_PAY_LESS":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u5c11\u4e8e6\u4f4d","PASSWORD_FILL_DIFFERENT":"\u8f93\u5165\u7684\u4e24\u6b21\u5bc6\u7801\u4e0d\u4e00\u6837","PASSWORD_PAY_LOGIN_SAME":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u540c\u767b\u9646\u5bc6\u7801\u4e00\u6837","PASSWORD_PAY_FILL":"\u8bf7\u586b\u5199\u652f\u4ed8\u5bc6\u7801","PASSWORD_LENGH_LESS":"\u5bc6\u7801\u957f\u5ea6\u4e0d\u80fd\u5c0f\u4e8e6\u4f4d","PASSWORD_SEND_OK":"\u53d1\u9001\u5bc6\u7801\u90ae\u4ef6\u6210\u529f","PASSWORD_OFER_WRROR":"\u60a8\u63d0\u4f9b\u7684\u627e\u56de\u5bc6\u7801\u4fe1\u606f\u4e0d\u6b63\u786e","PASSWORD_OLD_ERROR":"\u539f\u5bc6\u7801\u9519\u8bef","PASSWORD_UPDATE_OK":"\u5bc6\u7801\u4fee\u6539\u6210\u529f","EMAILL_USED":"\u90ae\u7bb1\u5df2\u88ab\u5360\u7528","EMAILL_NULL":"\u90ae\u7bb1\u4e0d\u80fd\u4e3a\u7a7a\uff01","NOTING":"\u65e0","LEAVEWORDS_NULL":"\u7559\u8a00\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a","LOGIN_FIRST":"\u8bf7\u5148\u767b\u5f55","CONFIRM":"\u786e\u8ba4","YEAR":"\u5e74","DAYS":"\u5929","HOURS":"\u65f6","HOUR":"\u5c0f\u65f6","MINUTE":"\u5206","SECOND":"\u79d2","IS":"\u4e3a","ONE":"\u4e00","TWE":"\u4e8c","TIMES":"\u6b21","COUNTENT_UPDATE_FILL":"\u8bf7\u586b\u5199\u4fee\u6539\u5185\u5bb9","CANCLE":"\u53d6\u6d88","OPERATE_CONFIRM":"\u786e\u5b9a\u6b64\u64cd\u4f5c\u5417\uff1f","USERNAME":"\u59d3\u540d","SUCCESS":"\u64cd\u4f5c\u6210\u529f","FAIL_REPLY":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u586b\u5199\u56de\u590d\u4fe1\u606f","SEND_OK":"\u53d1\u9001\u6210\u529f","PHONE_BIND_DONE":"\u5df2\u7ed1\u5b9a","TAGS_USE":"\u4f7f\u7528\u6b64\u6807\u7b7e","WHITEHATS":"\u767d\u5e3d\u5b50","WHITEHATS_VERTIFY":"\u8ba4\u8bc1\u767d\u5e3d\u5b50","WHITEHATES_NAME":"\u8bf7\u8f93\u5165\u767d\u5e3d\u5b50\u7528\u6237\u540d","USER_ZONE_EDIT":"\u7f16\u8f91\u9886\u57df","WB_TRANSFER":"\u6211\u8981\u8f6c\u8d26","WB_TRANSFER_CANCEL":"\u53d6\u6d88\u8f6c\u8d26","WB_NUM":"\u8bf7\u8f93\u5165\u4e4c\u4e91\u5e01\u6570\u91cf","WB_NUMBER":"\u4e4c\u4e91\u5e01\u6570\u91cf\u4e3a\u6b63\u6574\u6570","WB_NEED_LESS":"\u81f3\u5c11\u9700\u8981","WB_NEED_SUM":"\u4e2a\u4e4c\u4e91\u5e01","WB_TRANSFER_OK":"\u8f6c\u8d26\u6210\u529f","WB_MY":"\u6211\u7684\u4e4c\u4e91\u5e01","WB_CAN_USE":"\u53ef\u7528\u7684\u4e4c\u4e91\u5e01","WB_FROZEN":"\u51bb\u7ed3\u7684\u4e4c\u4e91\u5e01","WB_LACK":"\u4e4c\u4e91\u5e01\u4e0d\u8db3","WB_SET_SCOPE":"\u51fa\u4ef7\u8303\u56f4\u4e3a","WB_BIND_CANCEL_STAT":"(\u70b9\u51fb\u201c\u53d6\u6d88\u7ed1\u5b9a\u201d\u83b7\u53d6\u9a8c\u8bc1\u7801\uff0c\u5411\u4e4c\u4e91\u516c\u4f17\u8d26\u53f7\u53d1\u9001\u9a8c\u8bc1\u7801\u53d6\u6d88\u5fae\u4fe1\u7ed1\u5b9a\uff0c\u7136\u540e\u5237\u65b0\u672c\u9875\u9762)","EMAIL_LOGIN_MEXT":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_UPDATE_LOGIN_MEXT":"\u66f4\u6539\u8bf7\u6c42\u5df2\u53d1\u9001\u5230\u90ae\u7bb1,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_SEND_OK":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f\uff01","CORPS":"\u5382\u5546","TEAM_NAME_NULL":"\u56e2\u961f\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","TEAM_HOMEPAGE_NULL":"\u56e2\u961f\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","TEAM_QQ_NULL":"\u56e2\u961fqq\u4e0d\u80fd\u4e3a\u7a7a","TEAM_BRIEF_NULL":"\u56e2\u961f\u7b80\u4ecb\u4e0d\u80fd\u4e3a\u7a7a","TEAM_EXIST":"\u56e2\u961f\u5df2\u5b58\u5728","TEAM_DISMISS_CONFIRM":"\u786e\u5b9a\u89e3\u6563\u672c\u56e2\u961f\u5417?","TEAM_NAME":"\u56e2\u961f\u540d\u79f0","TEAM_CREATER":"\u521b\u5efa\u4eba","TEAM_DONATER":"\u56e2\u961f\u4e3b\u529b","TEAM_MUMBER":"\u4eba\u6570","TEAM":"\u56e2\u961f","REGISTER_BRIEF":"*\u8bf7\u8f93\u5165\u4e2a\u4eba\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_TYPE":"*\u9009\u62e9\u6ce8\u518c\u7c7b\u578b","REGISTER_CORPS_BRIEF":"*\u8f93\u5165\u5382\u5546\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_EMAIL":"*\u5382\u5546\u90ae\u4ef6\u5fc5\u987b\u4e3a\u4f01\u4e1a\u4f7f\u7528\u7684\u6b63\u5f0f\u90ae\u4ef6","REGISTER_NAME_NULL":"\u7528\u6237\u540d\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_HOMEPAGE_NULL":"\u4e2a\u4eba\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_BREIF_NULL":"\u7b80\u8981\u4ecb\u7ecd\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPNAME_NULL":"\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPHOMEPAGE_NULL":"\u5b98\u65b9\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_LAW_AGREE":"\u540c\u610f\u300a\u4fe1\u606f\u5b89\u5168\u76f8\u5173\u4fdd\u62a4\u548c\u58f0\u660e\u300b\u624d\u80fd\u6ce8\u518c","ATTENTION":"\u5173\u6ce8","ATTENTION_SUM":"\u5173\u6ce8\u6570","ATTENTION_DONE":"\u5df2\u5173\u6ce8","ATTENTION_CANCEL":"\u53d6\u6d88\u5173\u6ce8","ATTENTION_BUG_DONE":"\u5df2\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u5173\u6ce8","ATTENTION_BUG":"\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_UNDO":"\u6ca1\u6709\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_HAT_DONE":"\u5df2\u5173\u6ce8\u6b64\u767d\u5e3d\u5b50","ATTENTION_HAT_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u767d\u5e3d\u5b50\u7684\u5173\u6ce8?","COLLECTION":"\u6536\u85cf","COLLECTION_DONE":"\u5df2\u6536\u85cf","COLLECTION_BUG_DONE":"\u5df2\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_UNDO":"\u6ca1\u6709\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u6536\u85cf","SMS_SEND_NAME":"* \u7528\u6237\u6635\u79f0\/\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_TITLE":"* \u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CONTENT":"* \u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CAPTCHA":"* \u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a<br \/>","NUMBER":"\u7684\u6b63\u6574\u6570","RATING_SUCCESS":"\u8bc4\u5206\u6210\u529f","RATING_BUGS_DONE":"\u5df2\u5bf9\u6b64\u6f0f\u6d1e\u8fdb\u884c\u8fc7\u8bc4\u5206","RATING_BUGS_SELF":"\u4e0d\u80fd\u5bf9\u81ea\u5df1\u53d1\u5e03\u7684\u6f0f\u6d1e\u8fdb\u884c\u8bc4\u5206","RATING_SUBMIT_CANCLE":"\u53d6\u6d88\u63d0\u4ea4\u8bc4\u5206","RATING_SUBMIT":"\u63d0\u4ea4\u6211\u7684\u8bc4\u5206","RATING_SUBMIT_CHECK":"\u8bf7\u786e\u5b9a\u6bcf\u4e00\u9879\u90fd\u9009\u62e9\u4e86\u8bc4\u5206","RATING_CONFIRM":"\u786e\u5b9a\u63d0\u4ea4\u5bf9\u6b64\u5382\u5546\u7684\u8bc4\u5206\u5417\uff1f","RATING_LOGIN":"\u53ea\u6709\u767b\u5f55\u7684\u767d\u5e3d\u5b50\u624d\u80fd\u8bc4\u5206","RATING_DONE":"\u5df2\u7ecf\u8bc4\u8fc7\u5206\u4e86","WOOYUN_CORPS":"\u4e4c\u4e91\u5382\u5546","MARST_IMAGE":"\u5bf9\u56fe\u7247\u6253\u7801","FEEDBACK_LINK_NULL":"\u94fe\u63a5\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_LINK_ERROR":"\u8bf7\u4e66\u5199\u6b63\u786e\u7684\u94fe\u63a5\u5730\u5740\uff01","FEEDBACK_CONTENT_NULL":"\u95ee\u9898\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_ALLOW_LIMIT":"\u534a\u5c0f\u65f6\u53ea\u5141\u8bb8\u53cd\u9988\u4e00\u6b21","TOP_RANK":"\u6392\u540d","TOP_BUG_TITLE":"\u6f0f\u6d1e\u6807\u9898","TOP_RANK_NONE":"\u6682\u65e0\u6392\u540d","TOP_BUGS_GOOD":"\u4f18\u8d28\u6f0f\u6d1e\u6570","NICKNAME":"\u6635\u79f0","LEVEL":"\u7b49\u7ea7","VALUE":"\u503c","EDITOR_INSERT_PIC":"\u63d2\u5165\u56fe\u7247","EDITOR_PIC_ADDR":"\u5730\u5740\uff1a","EDITOR_CONFIRM":"\u786e\u5b9a","EDITOR_PIC_NULL":"\u8bf7\u4e0a\u4f20\u56fe\u7247\u6216\u586b\u5199\u56fe\u7247\u5730\u5740","EDITOR_INSERT_VIDIO":"\u63d2\u5165\u89c6\u9891","EDITOR_VIDIO_ADDR":"\u89c6\u9891\u5730\u5740\uff1a","EDITOR_VIDIO_NULL":"\u8bf7\u586b\u5199\u89c6\u9891\u5730\u5740(.swf)","EDITOR_VIDIO_TYPE":"\u76ee\u524d\u4ec5\u652f\u6301.swf\u683c\u5f0f","PIC_SELECT":"\u8bf7\u9009\u62e9\u5f85\u4e0a\u4f20\u7684\u56fe\u7247","PIC_TYPE_IS":"\u56fe\u7247\u7c7b\u578b\u4e3a","UPLOAD":"\u4e0a\u4f20","RANK_AVG":"\u6f0f\u6d1e\u5e73\u5747"};
+
+$(function(){
+    function getParamsOfShareWindow(width, height) {
+        return ['toolbar=0,status=0,resizable=1,width=' + width + ',height=' + height + ',left=',(screen.width-width)/2,',top=',(screen.height-height)/2].join('');
+    }
+});
+
+function errimg(img){
+	tmp=img.src;
+	nimg=tmp.replace("http://wooyun.org/","http://www.wooyun.org/");
+	img.src=nimg;
+	$(img).parent().attr('href',nimg);
+	img.onerror=null;
+}
+function AttendBug(id){
+	$.get('/ajaxdo.php',{module:'attendbug',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+		if(re==1){
+			$("#attention_num").html(parseInt($("#attention_num").html())+1);
+			$("#attend_action").html('√'+_LANGJS.ATTENTION_DONE+' <a class="btn" href="javascript:void(0)" onclick="AttendCancel('+id+')">'+_LANGJS.ATTENTION_CANCEL+'</a></span>');
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.ATTENTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function AttendCancel(id){
+	if(confirm(_LANGJS.ATTENTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{module:'attendcancel',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+			if(re==1){
+				$("#attention_num").html(parseInt($("#attention_num").html())-1);
+				$("#attend_action").html('<a class="btn" href="javascript:void(0)" onclick="AttendBug('+id+')">'+_LANGJS.ATTENTION_BUG+'</a></span>');
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+
+function CollectBug(id,token){
+	$.get('/ajaxdo.php',{'module':'collect','id':id,'token':token,'rid':Math.random()},function(re){
+		if(re==1){
+			$("#collection_num").html(parseInt($("#collection_num").html())+1);
+			$(".btn-fav").removeClass("fav-add");
+			$(".btn-fav").addClass("fav-cancel");
+			$(".btn-fav").unbind();
+			$(".btn-fav").click(function(){
+					CollectCancel(id,token);
+				});
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.COLLECTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function CollectCancel(id,token){
+	if(confirm(_LANGJS.COLLECTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{'module':'collectcancel','id':id,'token':token,'rid':Math.random()},function(re){
+			if(re==1){
+				$("#collection_num").html(parseInt($("#collection_num").html())-1);
+				$(".btn-fav").removeClass("fav-cancel");
+				$(".btn-fav").addClass("fav-add");
+				$(".btn-fav").unbind();
+				$(".btn-fav").click(function(){
+					CollectBug(id,token);
+				});
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+</script>
+
+	<div class="content">
+<input type="hidden" id="token" style="display:none" value="" />
+		<h2>漏洞概要
+						<span style="margin:0 0 0 580px; float:right; position:absolute; font-size:14px; font-weight:normal">关注数(<span id="attention_num">29</span>)
+		 <span id="attend_action">
+		 		 <a class="btn" href="javascript:void(0)" onclick="AttendBug(39854)">关注此漏洞</a></span>
+		 		 </span></h2>
+
+		<h3>缺陷编号：		<a href="wooyun-2013-039854">WooYun-2013-39854</a>
+			<input id="fbid" type="hidden" value="39854">
+					</h3>
+
+		<h3 class='wybug_title'>漏洞标题：		敏感信息泄露系列#4 信息泄露导致91旗下安卓网2100万+用户信息告急  					</h3>
+
+		<h3 class='wybug_corp'>相关厂商：		<a href="http://www.wooyun.org/corps/福建网龙">
+														福建网龙														</a>
+		</h3>
+
+		<h3 class='wybug_author'>漏洞作者：		<a href="http://www.wooyun.org/whitehats/猪猪侠">猪猪侠</a><img height="12" width="12" style="vertical-align:-2px;margin-left:2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" /></h3>
+		<h3 class='wybug_date'>提交时间：		2013-10-16 00:01</h3>
+				<h3 class='wybug_open_date'>公开时间：		2013-11-30 00:01</h3>
+		<h3 class='wybug_type'>漏洞类型：		敏感信息泄露</h3>
+
+		<h3 class='wybug_level'>危害等级：		高</h3>
+				<h3>自评Rank：		20</h3>
+				<h3 class='wybug_status'>漏洞状态：
+															厂商已经确认
+																</h3>
+
+		<h3>漏洞来源：		<a href="http://www.wooyun.org">http://www.wooyun.org</a>，如有疑问或需要帮助请联系 help@wooyun.org</h3>
+		<h3>Tags标签：
+												<span class="tag"><a href="http://wooyun.org/tags/%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2">敏感信息泄露</a></span>
+							<span class="tag"><a href="http://wooyun.org/tags/%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF%E6%9C%AA%E5%B1%8F%E8%94%BD">错误信息未屏蔽</a></span>
+								
+</h3>
+		<h3>
+		<!-- Baidu Button BEGIN -->
+        <div id="share">
+        	<div style="float:right; margin-right:100px;font-size:12px">
+            <span class="fav-num"><a id="collection_num">9</a>人收藏</span>
+			<a style="text-decoration:none; font-size:12px" href="javascript:void(0)" class="fav-add btn-fav">收藏</a>
+<script type="text/javascript">
+var token="";
+var id="39854";
+
+$(".btn-fav").click(function(){ CollectBug(id,token); });
+
+</script>
+			</div>
+            <span style="float:left;">分享漏洞：</span>
+            <div id="bdshare" class="bdshare_b" style="line-height: 12px;"><img src="http://bdimg.share.baidu.com/static/images/type-button-5.jpg" />
+                <a class="shareCount"></a>
+            </div>
+        </div>
+        <!-- Baidu Button END -->
+    	</h3>
+		<hr align="center"/>
+
+		<h2>漏洞详情</h2>
+		<h3 class="detailTitle">披露状态：</h3>
+		<p class="detail" style="padding-bottom:0">
+					</p>
+		<p class="detail wybug_open_status">
+									2013-10-16：	细节已通知厂商并且等待厂商处理中<br/>
+									2013-10-16：	厂商已经确认，细节仅向厂商公开<br/>
+									2013-10-26：	细节向核心白帽子及相关领域专家公开<br/>
+									2013-11-05：	细节向普通白帽子公开<br/>
+									2013-11-15：	细节向实习白帽子公开<br/>
+									2013-11-30：	细节向公众公开<br/>
+								</p>
+		<h3 class="detailTitle">简要描述：</h3>
+
+		<p class="detail wybug_description">通常由于没有一个通用标准的防御规则保护好中间件配置信息、DNS信息、业务数据信息、用户信息、源码备份文件、版本管理工具信息、系统错误信息和敏感地址信息(后台或测试地址)的泄露，攻击者可能会通过收集这些保护不足的数据，利用这些信息对系统实施进一步的攻击。<br />
+<br />
+有时候，一个微不足道的信息泄露问题就能造成整个企业安全的崩盘。<br />
+#安全需顾全整体#</p>
+
+		
+						<h3 class="detailTitle">详细说明：</h3>
+    <div class='wybug_detail'>
+			<p class="detail">#1 信息泄露源<br />
+<br />
+由于安卓网CDN服务器WEB中间件配置缺陷，以及开发人员代码上线后未严格测试，直接导致服务器脚本文件被客户端任意下载，从而造成整站源码泄露，被间接利用即可获取服务器系统权限，从而导致核心数据被窃！<br />
+<br />
+<br />
+<br />
+#2 信息泄露源<br />
+<br />
+<br />
+<br />
+http://121.207.242.90/config/db.cfg.php<br />
+<br />
+http://121.207.242.64/config/db.cfg.php<br />
+<br />
+http://121.207.242.58/config/db.cfg.php<br />
+<br />
+<br />
+<br />
+http://cdn.market.hiapk.com/login.php<br />
+<br />
+http://cdn.market.hiapk.com/config/db.cfg.php<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+#3 可以直接通过浏览器下载任意源码<br />
+<br />
+<br />
+<br />
+login.php<br />
+<br />
+<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+require(&#039;app.inc.php&#039;);<br />
+<br />
+if (!APP_IN_LOCAL &amp;&amp; $_SERVER[&#039;HTTP_HOST&#039;] == APP_DOMAIN){<br />
+	header(&quot;{$_SERVER[&quot;SERVER_PROTOCOL&quot;]} 403 access forbidden&quot;);<br />
+    exit;<br />
+}<br />
+<br />
+//初始化<br />
+//v::set(CFG::VAR_UID, 1);<br />
+unset($_SESSION[&#039;BOSS_UID&#039;]);<br />
+<br />
+v::run();<br />
+?&gt;</code></pre></fieldset><p class='detail'><br />
+<br />
+<br />
+<br />
+app.inc.php<br />
+<br />
+<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+/**<br />
+ * 应用程序初始化<br />
+ * <br />
+ * @package weip<br />
+ * @subpackage common<br />
+ * @author 魏永增 &lt;catorwei@gmail.com&gt;<br />
+ */<br />
+ob_start();<br />
+error_reporting(E_ALL);<br />
+require(dirname(__FILE__) . &#039;/config/application.cfg.php&#039;);<br />
+<br />
+// 初始化环境<br />
+if (CFG::DISABLED) {<br />
+    exit(&#039;Sorry, the application is inactive.&#039;);<br />
+}<br />
+if (CFG::SESSION) {<br />
+    session_start();<br />
+}<br />
+if (isset($_REQUEST[&#039;re&#039;])) {<br />
+    CFG::$response[&#039;engine&#039;] = $_REQUEST[&#039;re&#039;];<br />
+} elseif (isset($_SERVER[&#039;HTTP_X_REQUESTED_WITH&#039;]) &amp;&amp; isset($_REQUEST[&#039;do&#039;])) {<br />
+    if ($_SERVER[&#039;HTTP_X_REQUESTED_WITH&#039;] == &#039;XMLHttpRequest&#039;) {<br />
+        CFG::$response[&#039;engine&#039;] = &#039;json&#039;;<br />
+    }<br />
+}<br />
+<br />
+// 初始化时区及本地设置<br />
+date_default_timezone_set(CFG::TIMEZONE);<br />
+setlocale(LC_ALL, CFG::LOCALE);<br />
+<br />
+// 自动识别语言包<br />
+if (isset($_COOKIE[CFG::VAR_LANG])) {<br />
+    $lang = $_COOKIE[CFG::VAR_LANG];<br />
+} elseif (isset($_SERVER[&#039;HTTP_ACCEPT_LANGUAGE&#039;]) &amp;&amp; !empty($_SERVER[&#039;HTTP_ACCEPT_LANGUAGE&#039;])) {<br />
+    list($lang) = explode(&#039;,&#039;, $_SERVER[&#039;HTTP_ACCEPT_LANGUAGE&#039;]);<br />
+}<br />
+if (isset($lang)) {<br />
+    $langFile = PATH_LANGUAGE . strtolower($lang) . &#039;.lang.php&#039;;<br />
+    if (is_file($langFile)) {<br />
+        CFG::$response[&#039;language&#039;] = $lang;<br />
+    }<br />
+}<br />
+<br />
+// HTTP头信息处理<br />
+header(&#039;Content-type: &#039; . CFG::$response[&#039;contentType&#039;] . &#039;; charset=&#039; . CFG::$response[&#039;charset&#039;]);<br />
+//if (CFG::$response[&#039;cached&#039;]) {<br />
+//    header(&#039;Expires: Mon, 1 Jan 2038 00:00:00 GMT&#039;);<br />
+//    header(&#039;Cache-Control: PUBLIC, max-age=2145888000, must-revalidate&#039;);<br />
+//} else {<br />
+//    header(&#039;Expires: Mon, 29 Jun 1979 05:00:00 GMT&#039;);<br />
+//    header(&#039;Last-Modified: &#039; . gmdate(&#039;D, d M Y H:i:s&#039;) . &#039; GMT&#039;);<br />
+//    header(&#039;Cache-Control: no-store, no-cache, must-revalidate&#039;);<br />
+//    header(&#039;Cache-Control: post-check=0, pre-check=0&#039;, false); <br />
+//    header(&#039;Pragma: no-cache&#039;);<br />
+//}<br />
+<br />
+// 载入WEIP架构<br />
+require(PATH_LIB . &#039;weip.inc.php&#039;);<br />
+require(PATH_LIB . &#039;core/WEIP.class.php&#039;);<br />
+<br />
+/**<br />
+ * 自动类定义加载函数<br />
+ * @param string $class 类名<br />
+ */<br />
+function __autoload($class) {<br />
+    if (isset(CFG::$classes[$class])) {<br />
+        require(CFG::$classes[$class]);<br />
+    }  elseif (is_file($file = PATH_MODEL . $class . &#039;.class.php&#039;)) {<br />
+        require($file);<br />
+    } elseif (is_file($file = PATH_DD . $class . &#039;.class.php&#039;)) {<br />
+        require($file);<br />
+    } elseif (is_file($file = PATH_ORM_CI . $class . &#039;.class.php&#039;)) {<br />
+        require($file);<br />
+    } elseif (is_file($file = PATH_ORM_MAPPING . $class . &#039;.class.php&#039;)) {<br />
+        require($file);<br />
+    } elseif (isset(QueryTypeDef::$qtClasses[$class])){<br />
+    	require(QueryTypeDef::$qtClasses[$class]);<br />
+    } elseif (isset(QueryTypeDef::$EClasses[$class])){<br />
+    	require(QueryTypeDef::$EClasses[$class]);<br />
+    }<br />
+}<br />
+function sqlexe($sql){<br />
+	$dsn = explode(&quot;;&quot;,CFG::$db[0][&#039;params&#039;][&#039;dsn&#039;]);<br />
+	$local = substr(strstr($dsn[0],&quot;=&quot;),1).&#039;:&#039;. substr(strstr($dsn[1], &quot;=&quot;), 1);<br />
+	$conn = @mysql_connect($local, CFG::$db[0][&#039;params&#039;][&#039;user&#039;], CFG::$db[0][&#039;params&#039;][&#039;password&#039;]);<br />
+	$dbname = substr(strstr($dsn[2],&quot;=&quot;),1);<br />
+	@mysql_select_db($dbname, $conn);<br />
+	@mysql_query(&quot;set names utf8&quot;);<br />
+	return @mysql_query($sql);<br />
+}</code></pre></fieldset><p class='detail'> </p>
+    </div>
+						
+			<h3 class="detailTitle">漏洞证明：</h3>
+      <div class='wybug_poc'>
+			<p class="detail">#1 写一个脚本，利用正则分析出所有include、require包含的文件，即可下载整站源代码至本地，进行源代码白盒审计。<br />
+<br />
+<br />
+<br />
+由于系统mo=reportreportSetting下的do=SaveDbConfig函数未严格校验来自客户端的变量，导致可写入任意内容至 /config/*****.cfg.php 文件，从而获取到WebShell。<br />
+<br />
+<br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201310/15235434abe44ec9be30bf5797d1f3dc32553e65.jpg" target="_blank"><img src="../upload/201310/15235434abe44ec9be30bf5797d1f3dc32553e65.jpg" alt="hiapk_shell.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+<br />
+<br />
+#2 通过泄露的相关配置信息和数据库配置文件 db.cfg.php<br />
+<br />
+<br />
+<br />
+application.cfg.php<br />
+<br />
+<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+// 各类路径定义(绝对路径)<br />
+define(&#039;APP_ID&#039;,                0);                                         // 应用程序ID<br />
+define(&#039;PAGE_TIME&#039;,             time());                                    // 当前页面载入时间<br />
+define(&#039;PATH_CONFIG&#039;,           dirname(__FILE__) . &#039;/&#039;);                   // 配置文件路径<br />
+define(&#039;PATH_ROOT&#039;,             dirname(PATH_CONFIG) . &#039;/&#039;);                // 应用程序根路径<br />
+define(&#039;PATH_LANGUAGE&#039;,         PATH_CONFIG . &#039;/lang/&#039;);                    // 应用程序根路径<br />
+define(&#039;PATH_MODEL&#039;,            PATH_ROOT . &#039;models/&#039;);                     // 模型文件路径<br />
+define(&#039;PATH_ACTION&#039;,           PATH_ROOT . &#039;actions/&#039;);                    // 模型文件路径<br />
+define(&#039;PATH_LIB&#039;,              PATH_ROOT . &#039;lib/&#039;);                        // 类库路径<br />
+if (!defined(&#039;PATH_RESOURCE&#039;)) {<br />
+    define(&#039;PATH_RESOURCE&#039;,     PATH_ROOT . &#039;resource/&#039;);                   // 资源文件路径<br />
+}<br />
+define(&#039;PATH_TEMPLATES&#039;,        PATH_RESOURCE . &#039;templates/&#039;);              // 模板文件路径<br />
+define(&#039;PATH_DATA&#039;,             PATH_ROOT . &#039;data/&#039;);                       // 数据文件路径<br />
+define(&#039;PATH_APPDATA&#039;,          PATH_ROOT . &#039;appdata/&#039;);                    // 程序日志缓存数据文件路径<br />
+define(&#039;PATH_CACHE&#039;,            PATH_APPDATA . &#039;cache/&#039;);                      // 缓存文件保存路径<br />
+define(&#039;PATH_UPLOAD&#039;,           PATH_DATA . &#039;upload/&#039;);                     // 用户上传文件保存路径<br />
+define(&#039;PATH_TMP&#039;,              PATH_APPDATA . &#039;tmp/&#039;);                        // 临时文件保存路径<br />
+define(&#039;APP_IN_LOCAL&#039;,          preg_match(&#039;/^(127\.0\.0\.1|192\.168|10\.)/&#039;, $_SERVER[&#039;REMOTE_ADDR&#039;]));<br />
+if (APP_IN_LOCAL) {<br />
+	define(&#039;PATH_LOG&#039;,              PATH_APPDATA . &#039;log/&#039;);                        // 日志文件保存路径<br />
+} else {<br />
+	define(&#039;PATH_LOG&#039;,              &quot;/data/weblogs/market.hiapk.com/weblogs/&quot;);    // 日志文件保存路径<br />
+}<br />
+define(&#039;PATH_ORM_MAPPING&#039;,      PATH_MODEL . &#039;orm/&#039;);                       // ORM Mapping文件保存路径<br />
+define(&#039;PATH_ORM_CI&#039;,           PATH_MODEL . &#039;ci/&#039;);                        // ORM Mapping文件保存路径<br />
+define(&#039;PATH_DD&#039;,               PATH_MODEL . &#039;dd/&#039;);                        // 字典模型类保存位置<br />
+if (APP_IN_LOCAL) {<br />
+    define(&#039;APP_DOMAIN&#039;,        &#039;hiapk.local&#039;);<br />
+    define(&#039;APP_URI&#039;,           &#039;http://hiapk.local/&#039;);<br />
+    define(&#039;BBS_URL&#039;,           &#039;http://bbs.hiapk.com/&#039;);<br />
+<br />
+    //memcache<br />
+    define(&#039;APP_MEMCACHE_SERVER&#039;, &#039;127.0.0.1&#039;);<br />
+    define(&#039;APP_MEMCACHE_SERVER_2&#039;, &#039;192.168.213.112&#039;);<br />
+    define(&#039;APP_MEMCACHE_SERVER_3&#039;, &#039;192.168.213.112&#039;);<br />
+    define(&#039;APP_MEMCACHE_PREFIX&#039;, &#039;l3&#039;);<br />
+    define(&#039;APP_MEMCACHE_PORT&#039;, &#039;11214&#039;);<br />
+    define(&#039;APP_MEMCACHE_PORT_2&#039;, &#039;11213&#039;);<br />
+    <br />
+    define(&#039;REFRESH_HTML_URL&#039;, &#039;http://admin.market.hiapk.test.nd/Handler/ApkToStaticHandler.ashx&#039;);<br />
+    define(&#039;REFRESH_HTML_KEY&#039;, &#039;fb14f648-40dd-40f7-ae3e-3b44d813c64e&#039;);<br />
+    <br />
+    //sphinx<br />
+    define(&#039;SPHINX_SERVER&#039;, &#039;127.0.0.1&#039;);<br />
+    define(&#039;SPHINX_PORT&#039;, 9312);<br />
+    define(&#039;SPHINX_SERVER_APK&#039;, &#039;127.0.0.1&#039;);<br />
+    define(&#039;SPHINX_PORT_APK&#039;, 9312);<br />
+    define(&#039;SPHINX_SERVER_FOR_SEARCHE&#039;, &#039;127.0.0.1&#039;);<br />
+    define(&#039;SPHINX_PORT_FOR_SEARCHE&#039;, 9312);<br />
+    <br />
+    //cdn<br />
+    define(&#039;CDN_APK_HOST&#039;, &#039;cdn.market.hiapk.com&#039;);<br />
+    define(&#039;CDN_IMG_HOST&#039;, &#039;cdn.image.market.hiapk.com&#039;);<br />
+} else { // 生产服务器<br />
+    define(&#039;APP_DOMAIN&#039;,        &#039;market.hiapk.com&#039;);<br />
+    define(&#039;APP_URI&#039;,           &#039;http://market.hiapk.com/&#039;);<br />
+    define(&#039;BBS_URL&#039;,           &#039;http://bbs.hiapk.com/&#039;);<br />
+    <br />
+    //memcache<br />
+    define(&#039;APP_MEMCACHE_SERVER&#039;, &#039;10.1.242.82&#039;);<br />
+    define(&#039;APP_MEMCACHE_SERVER_2&#039;, &#039;10.1.242.32&#039;);<br />
+    define(&#039;APP_MEMCACHE_SERVER_3&#039;, &#039;10.1.242.77&#039;);<br />
+    define(&#039;APP_MEMCACHE_PREFIX&#039;, &#039;s3&#039;);<br />
+    define(&#039;APP_MEMCACHE_PORT&#039;, &#039;11211&#039;);<br />
+    define(&#039;APP_MEMCACHE_PORT_2&#039;, &#039;11211&#039;);<br />
+        <br />
+    define(&#039;REFRESH_HTML_URL&#039;, &#039;http://admin.sc.hiapk.com/Handler/ApkToStaticHandler.ashx&#039;);<br />
+    define(&#039;REFRESH_HTML_KEY&#039;, &#039;fb14f648-40dd-40f7-ae3e-3b44d813c64e&#039;);<br />
+    <br />
+    //sphinx<br />
+    define(&#039;SPHINX_SERVER&#039;, &#039;10.1.242.12&#039;); //10.1.242.66<br />
+    define(&#039;SPHINX_PORT&#039;, 9312);<br />
+    define(&#039;SPHINX_SERVER_APK&#039;, &#039;10.1.242.12&#039;); //10.1.242.5<br />
+    define(&#039;SPHINX_PORT_APK&#039;, 9312);<br />
+    define(&#039;SPHINX_SERVER_FOR_SEARCHE&#039;, &#039;10.1.242.12&#039;); //10.1.242.22<br />
+    define(&#039;SPHINX_PORT_FOR_SEARCHE&#039;, 9312);<br />
+    <br />
+    //cdn<br />
+    define(&#039;CDN_APK_HOST&#039;, &#039;cdn.market.hiapk.com&#039;);<br />
+    define(&#039;CDN_IMG_HOST&#039;, &#039;cdn.image.market.hiapk.com&#039;);<br />
+}<br />
+define(&#039;MARKET_KEY&#039;,            &#039;9c2a6t0o9r7w9e1i&#039;);<br />
+define(&#039;MAX_INT&#039;, 0x7FFFFFFF);<br />
+define( &quot;WB_AKEY&quot; , &#039;3116842722&#039; );<br />
+define( &quot;WB_SKEY&quot; , &#039;5034204bf026970daa82cfd1540a3d95&#039; );<br />
+define(&quot;HIAPK_WEIBO_ID&quot;, &#039;2101284045&#039;);<br />
+/**<br />
+ * 应用程序配置类<br />
+ * @package weip<br />
+ * @subpackage configure<br />
+ * @author 魏永增(Cator Wei) &lt;catorwei@gmail.com&gt;<br />
+ * @version 1.0<br />
+ */<br />
+class CFG {<br />
+    const NAME                  = &#039;HiAPK Market&#039;;                      // 系统名称<br />
+    const VERSION               = &#039;1.0&#039;;                                    // 系统版本<br />
+    const COMPANY               = &#039;NetDragon&#039;;                              // 公司名<br />
+    const DEBUG                 = 3;                                        // 调试开关/等级(0-2),会影响错误和异常的LOG信息量, 0:关闭BUG信息 1:只包含文本信息 2:包含程序堆栈 3:包含现场环境(只对错误有效)<br />
+    const SESSION               = true;                                     // 是否开启SESSION<br />
+    const TIMEZONE              = &#039;Asia/Shanghai&#039;;                          // 时区<br />
+    const LOCALE                = &#039;zh_CN&#039;;                                  // 本地化信息<br />
+    const DISABLED              = false;                                    // 系统是否开放<br />
+    const TIMEOUT               = 3600;                                     // 系统超时秒数<br />
+    const SYS_LOG_ID            = 0;                                        // 系统错误/异常LOG配置项ID<br />
+<br />
+    const ORM_DEBUG             = 0;                                        // 设置ORM的DEBUG模式<br />
+    const ORM_CACHE             = true;                                    // 是否缓存ORM实体对象<br />
+    const ORM_CACHE_ID          = 0;                                        // 用于缓存ORM实体对象的CACHE配置项ID<br />
+    const ORM_CACHE_PREFIX      = &#039;orm/entity/&#039;;                            // 用于缓存ORM实体对象的CACHE项键值前缀<br />
+<br />
+    const DOMAIN                = APP_DOMAIN;                              // URI域名<br />
+    const URI                   = APP_URI;                      // URI<br />
+    const URI_JS                = &#039;resource/js/&#039;;          // URI for JS files<br />
+    const URI_CHARTS            = &#039;resource/charts/&#039;;         // URI for CSS files<br />
+    const URI_CSS               = &#039;resource/css/&#039;;         // URI for CSS files<br />
+    const URI_IMAGES            = &#039;resource/images/&#039;;      // URI for image files<br />
+    const URI_TEMPLATES         = &#039;resource/templates/&#039;;   // URI for template files<br />
+<br />
+    const COOKIES_PATH          = &#039;/&#039;;                                      // The path on the server in which the cookie will be available on<br />
+    const COOKIES_DOMAIN        = self::DOMAIN;                             // The domain that the cookie is available<br />
+    const COOKIES_EXPIRE        = 3600;                                     // Cookies有效期秒数<br />
+    <br />
+    const VAR_LANG              = &#039;BOSS_LANG&#039;;                              // 保存语言语种的变量名称<br />
+    const VAR_UID               = &#039;BOSS_UID&#039;;                               // 保存用户ID(User Id)的变量名称<br />
+    const VAR_UIN               = &#039;BOSS_UIN&#039;;                               // 保存用户ID(User Id)的变量名称<br />
+    const VAR_UNAME             = &#039;BOSS_UNAME&#039;;                             // 保存用户名称(User Name)的变量名称<br />
+    const VAR_RID               = &#039;BOSS_RID&#039;;                               // 保存角色ID(Role Id)的变量名称<br />
+    const VAR_RNAME             = &#039;BOSS_RNAME&#039;;                             // 保存角色名(Role Name)的变量名称<br />
+    const VAR_LOGIN_TIME        = &#039;BOSS_LOGIN_TIME&#039;;                        // 保存用户登录时间的变量名称<br />
+    const VAR_LIVE_TIME         = &#039;BOSS_LIVE_TIME&#039;;                         // 保存用户最后生存(最后一次与服务器的交互)时间的变量名称<br />
+    <br />
+    static public $response = array(<br />
+            &#039;charset&#039;           =&gt; &#039;UTF-8&#039;,                                 // 响应数据编码 <br />
+            &#039;contentType&#039;       =&gt; &#039;text/html&#039;,                             // 响应数据格式 <br />
+            &#039;title&#039;             =&gt; &#039;HiAPK&#039;,                             // 响应数据标题 <br />
+            &#039;cached&#039;            =&gt; false,                                   // 响应数据是否允许访问者本地缓存 (保留设置,暂无效果) <br />
+            &#039;engine&#039;            =&gt; &#039;extjs&#039;,                                 // 响应数据引擎 (weip|json|xml|excel)<br />
+            &#039;language&#039;          =&gt; &#039;zh-cn&#039;,                                 // 响应数据语言包<br />
+            &#039;autoOutput&#039;        =&gt; true,                                    // 自动输出响应数据<br />
+            &#039;pageSize&#039;          =&gt; 20,                                      // 分页的默认大小<br />
+        );<br />
+    static public $cache = array(<br />
+//            array(                                                          // Memcache Cache<br />
+//                &#039;engine&#039;        =&gt; &#039;memcache&#039;,                              // CACHE引擎 (file|memcache)<br />
+//                &#039;host&#039;          =&gt; &#039;192.168.158.14&#039;,                        // Memcached服务器地址 <br />
+//                &#039;port&#039;          =&gt; 11211,                                   // 端口 <br />
+//                &#039;timeout&#039;       =&gt; 10,                                      // 超时时间(秒)<br />
+//                &#039;prefix&#039;        =&gt; &#039;weip&#039;,                                  // 键名前缀 <br />
+//                &#039;persistent&#039;    =&gt; true,                                    // 连接持续化 <br />
+//            ),<br />
+            array(                                                          // File Cache<br />
+                &#039;engine&#039;        =&gt; &#039;file&#039;,                                  // Cache引擎 (file|memcache)<br />
+                &#039;root&#039;          =&gt; PATH_CACHE,                              // 文件Cache的根路径 <br />
+            ),<br />
+            1=&gt;array(                                                          // Memcache Cache<br />
+                &#039;engine&#039;        =&gt; &#039;memcache&#039;,                              // CACHE引擎 (file|memcache)<br />
+                &#039;host&#039;          =&gt; APP_MEMCACHE_SERVER,                        //缓存服务器<br />
+                &#039;port&#039;          =&gt; APP_MEMCACHE_PORT,                                   // 端口 <br />
+                &#039;timeout&#039;       =&gt; 3,                                      // 超时时间(秒)<br />
+                &#039;prefix&#039;        =&gt; APP_MEMCACHE_PREFIX,                                  // 键名前缀 <br />
+                &#039;persistent&#039;    =&gt; true,                                    // 连接持续化 <br />
+            ),<br />
+             2=&gt;array(                                                          // Memcache Cache<br />
+                &#039;engine&#039;        =&gt; &#039;memcache&#039;,                              // CACHE引擎 (file|memcache)<br />
+                &#039;host&#039;          =&gt; APP_MEMCACHE_SERVER_2,                        //缓存服务器<br />
+                &#039;port&#039;          =&gt; APP_MEMCACHE_PORT_2,                                   // 端口 <br />
+                &#039;timeout&#039;       =&gt; 3,                                      // 超时时间(秒)<br />
+                &#039;prefix&#039;        =&gt; APP_MEMCACHE_PREFIX,                                  // 键名前缀 <br />
+                &#039;persistent&#039;    =&gt; true,                                    // 连接持续化 <br />
+            ),<br />
+        );<br />
+    static public $log = array(<br />
+            array(                                                          // File LOG<br />
+                &#039;engine&#039;        =&gt; &#039;file&#039;,                                  // LOG引擎 (file|db|memcache)<br />
+                &#039;root&#039;          =&gt; PATH_LOG,                                // 文件Log的根路径 <br />
+                &#039;mode&#039;          =&gt; &#039;serialize&#039;,                             // 数据存储模式 (json|serialize)<br />
+            ),<br />
+//            array(                                                          // Memcache LOG<br />
+//                &#039;engine&#039;        =&gt; &#039;memcache&#039;,                              // LOG引擎 (file|db|memcache)<br />
+//                &#039;host&#039;          =&gt; &#039;192.168.158.14&#039;,                        // Memcached服务器地址 <br />
+//                &#039;port&#039;          =&gt; 11211,                                   // 端口 <br />
+//                &#039;timeout&#039;       =&gt; 10,                                      // 超时时间(秒) <br />
+//                &#039;key&#039;           =&gt; &#039;weip_log_index&#039;,                        // 当前指针的键名 <br />
+//                &#039;prefix&#039;        =&gt; &#039;weip_log&#039;,                              // 键名前缀<br />
+//                &#039;persistent&#039;    =&gt; true,                                    // 连接持续化 <br />
+//            ),<br />
+//            array(                                                          // DB LOG<br />
+//                &#039;engine&#039;        =&gt; &#039;db&#039;,                                    // LOG引擎 (file|db|memcache)<br />
+//                &#039;db&#039;            =&gt; 0,                                       // 数据库配置索引,参见CFG::$db数组 <br />
+//            ),<br />
+        );<br />
+    static public $acl = array(<br />
+            &#039;engine&#039;            =&gt; &#039;file&#039;,                                  // ACL存储引擎类型 (db|file)<br />
+            &#039;db&#039;                =&gt; 0,                                       // 如果engine=db,该值代表CFG::$db配置的索引值,否则将以文件的形式保存在PATH_DATA/acl/下<br />
+            &#039;table&#039;             =&gt; &#039;acl_item&#039;,                              // 如果engine=db,该值代表数据库中保存ACL配置项的数据库名<br />
+            &#039;value&#039;             =&gt; 0,                                       // ACL的值, 等于0表示不允许访问, 负数代表ACL配置有错, 正数表示允许访问, 不同的数值分别代表可以访问的级别<br />
+        );<br />
+    static public $db = array();                                              // 数据库配置<br />
+    static public $classes = array();                                         // 系统类列表,用于__autoload<br />
+    static public $plugins = array(                                           // 框架插件配置项<br />
+            &#039;firephp&#039;           =&gt; array(<br />
+                &#039;enabled&#039;           =&gt; false,<br />
+            ),<br />
+//            &#039;smarty&#039;    =&gt; array(                                           // Smarty插件配置<br />
+//                &#039;template_dir&#039;      =&gt; PATH_TEMPLATES,<br />
+//                &#039;compile_dir&#039;       =&gt; PATH_CACHE . &#039;smarty/&#039;,<br />
+//                &#039;left_delimiter&#039;    =&gt; &#039;&lt;?#&#039;,<br />
+//                &#039;right_delimiter&#039;   =&gt; &#039;? &gt;&#039;,<br />
+//            ),<br />
+        );<br />
+    static public $others = array();                                         // 系统类列表,用于__autoload<br />
+}<br />
+require(&#039;db.cfg.php&#039;); // 数据库配置<br />
+require(&#039;autoload.cfg.php&#039;); // 系统类列表<br />
+require(&#039;extjs.cfg.php&#039;); // ExtJS框架配置</code></pre></fieldset><p class='detail'><br />
+<br />
+<br />
+<br />
+db.cfg.php<br />
+<br />
+<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+/**<br />
+ * 配置文件－－数据库配置文件<br />
+ * @package weip<br />
+ * @subpackage configure<br />
+ * @author 魏永增 &lt;catorwei@gmail.com&gt;<br />
+ * @version 1.0<br />
+ */<br />
+if (APP_IN_LOCAL) {<br />
+    CFG::$db[0] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=192.168.9.67;port=3306;dbname=hiapk_market_debug&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;hi_market&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;abc!@#$%^&amp;*()&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; TRUE,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );<br />
+    CFG::$db[&#039;cmdb&#039;] = &amp;CFG::$db[0];<br />
+    CFG::$db[&#039;hiapk_x2_uc&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=192.168.213.112;port=3380;dbname=bbs_android&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;root&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;mysql&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;pre_&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );    <br />
+	 CFG::$db[&#039;hiapk_x2&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=192.168.213.112;port=3380;dbname=bbs_android&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;root&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;mysql&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;pre_&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );    <br />
+    CFG::$db[&#039;search&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=192.168.9.67;port=3306;dbname=hiapk_market_debug&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;hi_market&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;abc!@#$%^&amp;*()&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; TRUE,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );    <br />
+    CFG::$db[&#039;swb&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=192.168.9.67;port=3306;dbname=hiapk_market_weibo&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;hi_market&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;abc!@#$%^&amp;*()&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; TRUE,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );<br />
+} else {<br />
+    CFG::$db[0] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=10.1.242.26;port=3306;dbname=hiapk_market_new&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;hiapk_market&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;sRU4vyHYLsMVDrQF&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );<br />
+    CFG::$db[&#039;cmdb&#039;] = &amp;CFG::$db[0];<br />
+	 CFG::$db[&#039;hiapk_x2_uc&#039;] = array( // Database (PDO)<br />
+	            &#039;params&#039;    =&gt; array(<br />
+	                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+	                &#039;dsn&#039;             =&gt; &#039;mysql:host=10.1.242.111;port=3306;dbname=hiapk_x2_uc&#039;,<br />
+	                &#039;user&#039;            =&gt; &#039;him_web&#039;,<br />
+	                &#039;password&#039;        =&gt; &#039;3pDEdfvQCDHMbfrF&#039;,<br />
+	            ),<br />
+	            &#039;options&#039;   =&gt; array(<br />
+	                &#039;tablePrefix&#039;                   =&gt; &#039;pre_&#039;,                  // 表前缀 <br />
+	                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+	                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+	            ),<br />
+	        );    <br />
+		 CFG::$db[&#039;hiapk_x2&#039;] = array( // Database (PDO)<br />
+	            &#039;params&#039;    =&gt; array(<br />
+	                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+	                &#039;dsn&#039;             =&gt; &#039;mysql:host=10.1.242.111;port=3306;;dbname=hiapk_x2&#039;,<br />
+	                &#039;user&#039;            =&gt; &#039;him_web&#039;,<br />
+	                &#039;password&#039;        =&gt; &#039;3pDEdfvQCDHMbfrF&#039;,<br />
+	            ),<br />
+	            &#039;options&#039;   =&gt; array(<br />
+	                &#039;tablePrefix&#039;                   =&gt; &#039;pre_&#039;,                  // 表前缀 <br />
+	                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+	                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+	            ),<br />
+	        );    	<br />
+    CFG::$db[&#039;search&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=10.1.242.47;port=3306;dbname=hiapk_market_new&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;hiapk_market&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;sRU4vyHYLsMVDrQF&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );<br />
+   	CFG::$db[&#039;swb&#039;] = array( // Database (PDO)<br />
+            &#039;params&#039;    =&gt; array(<br />
+                &#039;driver&#039;          =&gt; &#039;pdo&#039;,<br />
+                &#039;dsn&#039;             =&gt; &#039;mysql:host=10.1.242.26;port=3306;dbname=hiapk_market_weibo&#039;,<br />
+                &#039;user&#039;            =&gt; &#039;himarket_web&#039;,<br />
+                &#039;password&#039;        =&gt; &#039;m5sstDX8s7BHP7RD&#039;,<br />
+            ),<br />
+            &#039;options&#039;   =&gt; array(<br />
+                &#039;tablePrefix&#039;                   =&gt; &#039;&#039;,                  // 表前缀 <br />
+                PDO::ATTR_PERSISTENT            =&gt; false,               // 是否持续化连接 <br />
+                PDO::MYSQL_ATTR_INIT_COMMAND    =&gt; &#039;SET NAMES UTF8&#039;,    // 设置字符集 <br />
+            ),<br />
+        );     <br />
+}</code></pre></fieldset><p class='detail'><br />
+<br />
+<br />
+<br />
+#3 成功访问到用户敏感信息<br />
+<br />
+<br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201310/15235940165912b8158db81b74291b16ee08d1e3.jpg" target="_blank"><img src="../upload/201310/15235940165912b8158db81b74291b16ee08d1e3.jpg" alt="hiapk_members.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+<br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201310/15235953f6eefc14528cb0c549577467d38635ce.jpg" target="_blank"><img src="../upload/201310/15235953f6eefc14528cb0c549577467d38635ce.jpg" alt="hiapk_members_info.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+<br />
+<br />
+更多内容就不披露了，希望各大厂商都能认真的重视此类问题！<br />
+<br />
+<br />
+<br />
+ </p>
+    </div>
+									<h3 class="detailTitle">修复方案：</h3>
+      <div class='wybug_patch'>
+			<p class="detail">#1 对每个漏洞完整的修复<br />
+<br />
+#2 找专业安全人员代码审计<br />
+<br />
+#3 可以找乌云众测平台的白帽子们帮你们消灭掉存在的边界隐患 </p>
+    </div>
+													<h3 class="detailTitle">版权声明：转载请注明来源 <a style="font-weight:normal" href="http://www.wooyun.org/whitehats/猪猪侠" title="猪猪侠">猪猪侠</a>@<a style="font-weight:normal" href="http://www.wooyun.org/bugs/wooyun-2010-039854" title="敏感信息泄露系列#4 信息泄露导致91旗下安卓网2100万+用户信息告急">乌云</a></h3>
+		<hr align="center"/>
+
+		
+			<h2 id="bugreply">漏洞回应</h2>
+      <div class='bug_result'>
+			
+				
+				
+															<h3 class="detailTitle">厂商回应：</h3>
+						<p class="detail">危害等级：高</p>
+						<p class="detail">漏洞Rank：20 </p>
+													<p class="detail">确认时间：2013-10-16 17:39</p>
+												<h3 class="detailTitle">厂商回复：</h3>
+						<p class="detail">感谢 猪猪侠 提供的漏洞，已安排修复处理</p>
+					
+					<h3 class="detailTitle">最新状态：</h3>
+
+											<p class="detail">暂无</p>
+					
+				      </div>
+					
+		
+<hr align="center" />
+<script type="text/javascript">
+var bugid="39854";
+var bugRating="-3";
+var myRating="";
+var ratingCount="0";
+
+
+
+function ShowBugRating(k){
+	var ratingItems=$(".myrating span");
+	$.each(ratingItems,function(i,n){
+		var nk=parseInt($(n).attr("rel"));
+		if(nk<=k){
+			$(n).addClass("on");
+		}else{
+			$(n).removeClass("on");
+		}
+	});
+	$(".myrating span").hover(
+		function(){
+			$("#ratingShow").html($(this).attr("data-title"));
+		},
+		function(){
+			$("#ratingShow").html("");
+		}
+	);
+}
+$(document).ready(function(){
+	if(myRating==""){
+		var ratingItems=$(".myrating span");
+		$(".myrating span").hover(
+			function(){
+				$(this).addClass("hover");
+				var k=parseInt($(this).attr("rel"));
+				$.each(ratingItems,function(i,n){
+					var nk=parseInt($(n).attr("rel"));
+					if(nk<k) $(n).addClass("on");
+					if(nk>k) $(n).removeClass("on");
+				});
+				$("#ratingShow").html($(this).attr("data-title"));
+			},
+			function(){
+				$(this).removeClass("hover");
+				if($("#myRating").val()==""){
+					$.each(ratingItems,function(i,n){
+						$(n).removeClass("on");
+					});
+				}
+				$("#ratingShow").html("");
+			}
+		);
+
+		$(".myrating span").click(function(){
+			var rating=$(this).attr("rel");
+			var k=parseInt($(this).attr("rel"));
+			$.post("/ajaxdo.php?module=bugrating",{"id":bugid,"rating":rating,"token":$("#token").val()},function(re){
+				//消除操作绑定
+				$(".myrating span").unbind();
+				re=parseInt(re);
+				switch(re){
+					case 1:
+						$("#ratingShow").html(_LANGJS.RATING_SUCCESS);
+						$("#ratingSpan").html(parseInt($("#ratingSpan").html())+1);
+						$.each(ratingItems,function(i,n){
+							var nk=parseInt($(n).attr("rel"));
+							if(nk<=k){
+								$(n).addClass("on");
+							}else{
+								$(n).removeClass("on");
+							}
+						});
+						ShowBugRating(rating);
+						break;
+					case 2:
+						$("#ratingShow").html(_LANGJS.LOGIN_FIRST);
+						break;
+					case 4:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_DONE);
+						break;
+					case 6:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_SELF);
+						break;
+					default:break;
+				}
+			});
+		});
+	}else{
+		if(ratingCount>2){
+			ShowBugRating(bugRating);
+		}else{
+			ShowBugRating(-3);
+		}
+	}
+});
+
+</script>
+<h3 class="detailTitle">漏洞评价：</h3>
+<p class="detail">对本漏洞信息进行评价，以更好的反馈信息的价值，包括信息客观性，内容是否完整以及是否具备学习价值</p>
+		<h5 class="rating">
+		<div class="ratingText">漏洞评价<span>(共<span id="ratingSpan">0</span>人评价)</span>:</div>
+		<div class="myrating">
+			<span rel="-2" data-title="信息虚假或者没有任何自己的思考"></span>
+			<span rel="-1" data-title="内容不详并且漏洞信息评级及类型明显错误"></span>
+			<span rel="0" data-title="还可以，洞主继续努力"></span>
+			<span rel="1" data-title="信息完整，过程清晰，有截图有代码有视频有真相"></span>
+			<span rel="2" data-title="角度独特思路新颖值得学习"></span>
+			<div id="ratingShow">
+			登陆后才能进行评分			</div>
+		</div>
+		</h5>
+		<input type="hidden" id="myRating" value="" />
+
+<hr align="center" />
+<h2>评价</h2>
+
+<div id="replys" class="replys">
+	    <ol class="replylist">
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-10-16 00:24</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/爱上平顶山">爱上平顶山</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 核心白帽子 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:3097 漏洞数:614        | [不戴帽子]异乡过客.曾就职于天朝某机构.IT...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="66332"></span>
+        <span class="liketext liketext_min"><span id="likenum_66332">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>厉害。   猪猪侠  你上次给我的球球查不到啊 我没有加上  我Q:2250086856  能加下吗？ 谢谢 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">1#</span>
+                        <a title="回复 爱上平顶山" href="javascript:void(0)" class="replyBtn" onclick="Reply('爱上平顶山')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-10-16 08:13</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/寂寞的瘦子">寂寞的瘦子</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:242 漏洞数:53        | ☯☯☯☯☯☯☯☯☯☯)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="66335"></span>
+        <span class="liketext liketext_min"><span id="likenum_66335">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>说出主显帐号 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">2#</span>
+                        <a title="回复 寂寞的瘦子" href="javascript:void(0)" class="replyBtn" onclick="Reply('寂寞的瘦子')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-10-16 11:51</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/冷静">冷静</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:3 漏洞数:2        )
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="66356"></span>
+        <span class="liketext liketext_min"><span id="likenum_66356">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@爱上平顶山 http://connect.qq.com/widget/wpa/chat.html?tuin=2250086856&amp;sigT=b8e105fd6b66834430eac6d152cec743a0e03ddd81ea5d92f3eaed27497b8e072344a5f16a294b07a82e0bc9eaab03c3&amp;sigU=69a3034e3ff2ca32fa406996ac7a91b4341876f71bd22029f7cb168b34f6fbf0e2f3fb4e13ca7b69 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">3#</span>
+                        <a title="回复 冷静" href="javascript:void(0)" class="replyBtn" onclick="Reply('冷静')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-10-18 16:31</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/feng">feng</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:760 漏洞数:90        | 想刷个6D)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="66714"></span>
+        <span class="liketext liketext_min"><span id="likenum_66714">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>这么多人与猪哥求交往啊 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">4#</span>
+                        <a title="回复 feng" href="javascript:void(0)" class="replyBtn" onclick="Reply('feng')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-10-18 17:23</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/BadCat">BadCat</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:81 漏洞数:21        | 悲剧的我什么都不会)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="66719"></span>
+        <span class="liketext liketext_min"><span id="likenum_66719">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>猪猪侠很出名你不懂？XD </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">5#</span>
+                        <a title="回复 BadCat" href="javascript:void(0)" class="replyBtn" onclick="Reply('BadCat')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-11-15 17:48</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/sky">sky</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:94 漏洞数:35        | 有一天，我带着儿子@jeary 去@园长 的园长...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="69911"></span>
+        <span class="liketext liketext_min"><span id="likenum_69911">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>呵呵。。。当时我提交用的docx文档，他说不收，我就公布了，现在到了这里。 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">6#</span>
+                        <a title="回复 sky" href="javascript:void(0)" class="replyBtn" onclick="Reply('sky')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+            </ol><!-- replylist End -->
+</div><!-- replys End -->
+
+<div id="reply" class="reply">
+<a name="comment"></a>
+<p class="detail">
+登录后才能发表评论，请先 <a href="http://wooyun.org/user.php?action=login"><u>登录</u></a> 。
+</p>
+<script type="text/javascript">
+var masaic = '0';
+
+function CommentLike(id){
+	$.post("/ajaxdo.php?module=commentrating",{"id":id,"token":$("#token").val()},function(re){
+		re=parseInt(re);
+		switch(re){
+			case 1:
+				$("#likenum_"+id).html(parseInt($("#likenum_"+id).html())+1);
+				break;
+			case 4:
+				alert(_LANGJS.COMMENT_GOOD_DONE);
+				break;
+			case 6:
+				alert(_LANGJS.COMMENT_SELF);
+				break;
+			default:break;
+		}
+	});
+}
+$(document).ready(function(){
+	$(".likebox .likepre").click(function(){
+            CommentLike($(this).attr("rel"));
+        });
+});
+
+
+</script>
+<div>
+	</div>
+	<div id="footer">
+        <span class="copyright fleft">
+    		Copyright &copy; 2010 - 2015 <a href="wooyun-2013-039854#">wooyun.org</a>, All Rights Reserved
+    		<a href="http://www.miibeian.gov.cn/">京ICP备15041338号-1</a>
+    		<!--a href="http://sae.sina.com.cn" target="_blank"><img src="/images/sae_bottom_logo.png" title="Powered by Sina App Engine"></a-->
+    	</span>
+        <span class="other fright">
+                        <a href="http://wooyun.org/impression">行业观点</a>
+            · <a href="http://wooyun.org/lawer">法律顾问</a>
+            · <a href="http://wooyun.org/contactus">联系我们</a>
+            · <a href="http://wooyun.org/help">帮助</a>
+            · <a href="http://wooyun.org/about">关于</a>
+        </span>
+    </div>
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc12f88b5c1cd041a732dea597a5ec94c' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+    <script type="text/javascript" id="bdshare_js" data="type=button" ></script>
+    <script type="text/javascript" id="bdshell_js"></script>
+    <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+        
+        if (top.location !== self.location) top.location=self.location;
+    </script>
+</body>
+</html>

